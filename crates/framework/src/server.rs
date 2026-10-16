@@ -4,7 +4,6 @@ use futures_util::{
     stream::FuturesUnordered,
 };
 use maximus_core::{Handler, Limits};
-use maximus_memory::Slab;
 use maximus_net::SocketOptions;
 use maximus_runtime::{Shutdown, WorkerConfig};
 use std::{io, net::SocketAddr, rc::Rc, sync::mpsc, thread};
@@ -203,13 +202,12 @@ async fn worker_loop<H: Handler>(
     transport: crate::transport::Transport,
 ) -> io::Result<()> {
     let capacity = transport.capacity(&limits);
-    let mut connections = Slab::new(capacity);
     let mut tasks = FuturesUnordered::new();
     // Keep submitted accepts alive when another connection completes. Cancelling an
     // io_uring accept can otherwise discard a socket the kernel already accepted.
     let mut accept = futures_util::future::Fuse::terminated();
     loop {
-        if connections.len() < capacity && accept.is_terminated() {
+        if tasks.len() < capacity && accept.is_terminated() {
             accept = listener.accept().boxed_local().fuse();
         }
         let completed = if tasks.is_empty() {
@@ -222,7 +220,7 @@ async fn worker_loop<H: Handler>(
         futures_util::pin_mut!(completed, stop);
         futures_util::select_biased! {
             _ = stop => break,
-            completed = completed => { if let Some(key) = completed { connections.remove(key); } },
+            _ = completed => {},
             accepted = accept => {
                 let (stream, _) = match accepted {
                     Ok(value) => value,
@@ -230,7 +228,6 @@ async fn worker_loop<H: Handler>(
                     Err(error) => return Err(error),
                 };
                 stream.set_nodelay(true)?;
-                let key = connections.insert(()).expect("admitted below connection capacity");
                 let handler = handler.clone();
                 let limits = limits.clone();
                 let shutdown = shutdown.clone();
@@ -238,7 +235,6 @@ async fn worker_loop<H: Handler>(
                 tasks.push(async move {
                     // Protocol errors terminate only this connection. Malformed peers cannot stop a worker.
                     transport.serve(stream, handler, limits, shutdown).await;
-                    key
                 });
             },
         }

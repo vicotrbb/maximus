@@ -26,8 +26,8 @@ cargo check -p maximus --all-features
 dependencies=$(cargo tree -p maximus --all-features --edges normal --prefix none --format '{p}')
 for dependency in $dependencies; do
     case "$dependency" in
-        hyper|hyper-util|tokio-util|h2)
-            echo "unexpected product HTTP dependency: $dependency" >&2
+        hyper|hyper-util|tokio-util|h2|maximus-memory)
+            echo "unexpected product dependency: $dependency" >&2
             exit 1
             ;;
     esac

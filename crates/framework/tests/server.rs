@@ -267,3 +267,54 @@ fn idle_connections_release_capacity_and_partial_startup_cleans_up() {
             .is_err()
     );
 }
+
+#[test]
+fn admission_waits_for_capacity_and_reuses_it() {
+    for memory_bound in [false, true] {
+        let mut limits = maximus::Limits {
+            connections: 1,
+            ..Default::default()
+        };
+        if memory_bound {
+            limits.connections = 100;
+            limits.memory_bytes =
+                limits.body_bytes + limits.header_bytes + 8192 + 2 * limits.io_buffer_bytes;
+        }
+        assert_eq!(limits.connection_capacity(), 1);
+        let (tx, rx) = std::sync::mpsc::channel();
+        let server = Server::new("127.0.0.1:0".parse().unwrap())
+            .limits(limits)
+            .start(move || {
+                let tx = tx.clone();
+                move |_: Request| {
+                    tx.send(()).unwrap();
+                    async { "ok" }
+                }
+            })
+            .unwrap();
+        for _ in 0..3 {
+            let mut first = TcpStream::connect(server.local_addr()).unwrap();
+            first
+                .write_all(b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n")
+                .unwrap();
+            rx.recv_timeout(Duration::from_secs(2)).unwrap();
+            let mut queued = TcpStream::connect(server.local_addr()).unwrap();
+            queued
+                .write_all(b"GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n")
+                .unwrap();
+            assert!(matches!(
+                rx.recv_timeout(Duration::from_millis(50)),
+                Err(std::sync::mpsc::RecvTimeoutError::Timeout)
+            ));
+            drop(first);
+            rx.recv_timeout(Duration::from_secs(2)).unwrap();
+            queued
+                .set_read_timeout(Some(Duration::from_secs(2)))
+                .unwrap();
+            let mut response = String::new();
+            queued.read_to_string(&mut response).unwrap();
+            assert!(response.ends_with("ok"));
+        }
+        server.shutdown().unwrap();
+    }
+}

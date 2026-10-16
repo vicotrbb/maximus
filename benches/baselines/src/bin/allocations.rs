@@ -1,9 +1,10 @@
 //! Instrumentation only: counts allocations through the system allocator.
-use maximus::{Body, Handler, Request, Server};
+use maximus::{Body, DynamicRouter, Handler, Request, Server};
 use std::{
     alloc::{GlobalAlloc, Layout, System},
     hint::black_box,
     sync::atomic::{AtomicBool, AtomicUsize, Ordering},
+    time::Instant,
 };
 struct Count;
 static ACTIVE: AtomicBool = AtomicBool::new(false);
@@ -35,23 +36,25 @@ unsafe impl GlobalAlloc for Count {
 }
 #[global_allocator]
 static ALLOCATOR: Count = Count;
-fn start() {
+fn start() -> Instant {
     ALLOCS.store(0, Ordering::Relaxed);
     BYTES.store(0, Ordering::Relaxed);
     ACTIVE.store(true, Ordering::Relaxed);
+    Instant::now()
 }
-fn end(name: &str, count: usize) {
+fn end(name: &str, count: usize, started: Instant) {
     ACTIVE.store(false, Ordering::Relaxed);
     println!(
-        "{name},{count},{:.4},{:.4}",
+        "{name},{count},{:.4},{:.4},{:.2}",
         ALLOCS.load(Ordering::Relaxed) as f64 / count as f64,
-        BYTES.load(Ordering::Relaxed) as f64 / count as f64
+        BYTES.load(Ordering::Relaxed) as f64 / count as f64,
+        started.elapsed().as_nanos() as f64 / count as f64
     );
 }
 fn main() {
     use std::io::{Read, Write};
     const N: usize = 10000;
-    println!("path,requests,allocations_per_request,allocated_bytes_per_request");
+    println!("path,requests,allocations_per_request,allocated_bytes_per_request,ns_per_request");
     maximus_runtime::WorkerConfig::default()
         .build(0)
         .unwrap()
@@ -60,7 +63,7 @@ fn main() {
                 "Hello, World!".into()
             }
             let handler = maximus::routes! { GET "/" => body };
-            start();
+            let started = start();
             for _ in 0..N {
                 black_box(
                     handler
@@ -68,14 +71,14 @@ fn main() {
                         .await,
                 );
             }
-            end("static-route-body", N);
+            end("static-route-body", N, started);
             assert_eq!(
                 ALLOCS.load(Ordering::Relaxed),
                 0,
                 "static route and borrowed body must stay allocation-free"
             );
             let handler = |_: Request| async { "Hello, World!" };
-            start();
+            let started = start();
             for _ in 0..N {
                 black_box(
                     handler
@@ -83,7 +86,8 @@ fn main() {
                         .await,
                 );
             }
-            end("static-text-content-type", N);
+            end("static-text-content-type", N, started);
+            dynamic_allocations(N).await;
         });
     let server = Server::new("127.0.0.1:0".parse().unwrap())
         .limits(maximus::Limits {
@@ -95,9 +99,10 @@ fn main() {
     let mut socket = std::net::TcpStream::connect(server.local_addr()).unwrap();
     socket.set_nodelay(true).unwrap();
     let mut buffer = [0u8; 1024];
+    let mut started = Instant::now();
     for index in 0..N + 100 {
         if index == 100 {
-            start();
+            started = start();
         }
         socket
             .write_all(b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n")
@@ -110,7 +115,8 @@ fn main() {
         }
         assert!(buffer[..received].starts_with(b"HTTP/1.1 200"));
     }
-    end("http1-keepalive-complete", N);
+    end("http1-keepalive-complete", N, started);
+    drop(socket);
     server.shutdown().unwrap();
     http2_allocations(N);
 }
@@ -174,9 +180,10 @@ fn http2_allocations(count: usize) {
             break;
         }
     }
+    let mut started = Instant::now();
     for index in 0..count + 100 {
         if index == 100 {
-            start();
+            started = start();
         }
         let id = u32::try_from(index * 2 + 1).unwrap();
         let mut request = [0u8; 23];
@@ -202,7 +209,56 @@ fn http2_allocations(count: usize) {
         assert!(headers);
         assert_eq!(bytes, 13);
     }
-    end("http2-keepalive-complete", count);
+    end("http2-keepalive-complete", count, started);
     drop(socket);
     server.shutdown().unwrap();
+}
+
+async fn dynamic_allocations(count: usize) {
+    let started = start();
+    for _ in 0..100 {
+        let mut router = DynamicRouter::new(64);
+        for id in 0..32 {
+            for method in ["GET", "POST"] {
+                router
+                    .add(
+                        method,
+                        &format!("/items/{id}/{{value}}"),
+                        |_: Request| async { Body::empty() },
+                    )
+                    .unwrap();
+            }
+        }
+        black_box(router);
+    }
+    end("dynamic-register-64", 100, started);
+    let mut router = DynamicRouter::new(2);
+    for method in ["GET", "POST"] {
+        router
+            .add(method, "/", |_: Request| async { Body::empty() })
+            .unwrap();
+    }
+    for method in [
+        maximus::Method::GET,
+        maximus::Method::POST,
+        maximus::Method::PATCH,
+    ] {
+        let label = format!("dynamic-{method}");
+        let started = start();
+        for _ in 0..count {
+            let mut request = maximus::http::Request::new(Body::empty());
+            *request.method_mut() = method.clone();
+            let response = router.handle(Request::new(request)).await;
+            assert_eq!(
+                response.status(),
+                if method == maximus::Method::PATCH {
+                    maximus::StatusCode::METHOD_NOT_ALLOWED
+                } else {
+                    maximus::StatusCode::OK
+                }
+            );
+            black_box(response);
+        }
+        end(&label, count, started);
+    }
 }

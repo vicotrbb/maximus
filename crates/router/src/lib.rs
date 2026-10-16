@@ -53,16 +53,15 @@ mod dynamic {
                 return Err(Error::bad_request("route limit exceeded"));
             }
             validate_path(pattern)?;
-            let normalized = |s: &str| {
-                s.split('/')
-                    .map(|s| if s.starts_with('{') { "{}" } else { s })
-                    .collect::<Vec<_>>()
-                    .join("/")
-            };
+            let shape = pattern
+                .split('/')
+                .map(|s| if s.starts_with('{') { "{}" } else { s })
+                .collect::<Vec<_>>()
+                .join("/");
             if self
                 .routes
                 .iter()
-                .any(|r| r.method == method && normalized(&r.pattern) == normalized(pattern))
+                .any(|r| r.method == method && r.shape == shape)
             {
                 return Err(Error::bad_request("duplicate route"));
             }
@@ -77,25 +76,27 @@ mod dynamic {
                 }
             }
             let handler = Rc::new(handler);
-            self.routes.push(Route {
-                method,
-                shape: normalized(pattern),
-                pattern: pattern.to_owned(),
-                handler: Box::new(move |request| {
-                    let handler = handler.clone();
-                    Box::pin(async move { handler.handle(request).await })
-                }),
+            let index = self.routes.partition_point(|route| {
+                route
+                    .pattern
+                    .split('/')
+                    .map(|s| s.starts_with('{'))
+                    .cmp(pattern.split('/').map(|s| s.starts_with('{')))
+                    .then_with(|| (route.method != Method::HEAD).cmp(&(method != Method::HEAD)))
+                    .is_le()
             });
-            self.routes.sort_by_key(|route| {
-                (
-                    route
-                        .pattern
-                        .split('/')
-                        .map(|s| s.starts_with('{'))
-                        .collect::<Vec<_>>(),
-                    route.method != Method::HEAD,
-                )
-            });
+            self.routes.insert(
+                index,
+                Route {
+                    method,
+                    shape,
+                    pattern: pattern.to_owned(),
+                    handler: Box::new(move |request| {
+                        let handler = handler.clone();
+                        Box::pin(async move { handler.handle(request).await })
+                    }),
+                },
+            );
             Ok(())
         }
     }
@@ -104,38 +105,38 @@ mod dynamic {
             if let Err(error) = validate_path(request.uri().path()) {
                 return error.into_response();
             }
+            let Some(index) = self
+                .routes
+                .iter()
+                .position(|r| matches(&r.pattern, request.uri().path()))
+            else {
+                return StatusCode::NOT_FOUND.into_response();
+            };
+            let matching = &self.routes[index..];
+            let routes = matching.iter().filter(|r| r.shape == matching[0].shape);
+            if let Some(route) = routes.clone().find(|r| {
+                request.method() == r.method
+                    || (request.method() == Method::HEAD && r.method == Method::GET)
+            }) {
+                request.set_route(route.pattern.clone());
+                return (route.handler)(request).await;
+            }
             let mut allowed = String::new();
-            let mut selected: Option<&str> = None;
-            for route in &self.routes {
-                if selected.is_none_or(|shape| shape == route.shape)
-                    && matches(&route.pattern, request.uri().path())
-                {
-                    selected = Some(&route.shape);
-                    if request.method() == route.method
-                        || (request.method() == Method::HEAD && route.method == Method::GET)
-                    {
-                        request.set_route(route.pattern.clone());
-                        return (route.handler)(request).await;
-                    }
-                    if !allowed.is_empty() {
-                        allowed.push_str(", ");
-                    }
-                    allowed.push_str(if route.method == Method::GET {
-                        "GET, HEAD"
-                    } else {
-                        route.method.as_str()
-                    });
+            for route in routes {
+                if !allowed.is_empty() {
+                    allowed.push_str(", ");
                 }
+                allowed.push_str(if route.method == Method::GET {
+                    "GET, HEAD"
+                } else {
+                    route.method.as_str()
+                });
             }
-            if allowed.is_empty() {
-                StatusCode::NOT_FOUND.into_response()
-            } else {
-                let mut response = StatusCode::METHOD_NOT_ALLOWED.into_response();
-                response
-                    .headers_mut()
-                    .insert("allow", allowed.parse().expect("validated method tokens"));
-                response
-            }
+            let mut response = StatusCode::METHOD_NOT_ALLOWED.into_response();
+            response
+                .headers_mut()
+                .insert("allow", allowed.parse().expect("validated method tokens"));
+            response
         }
     }
 }

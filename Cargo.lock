@@ -1038,7 +1038,6 @@ dependencies = [
  "maximus-http2",
  "maximus-http3",
  "maximus-macros",
- "maximus-memory",
  "maximus-net",
  "maximus-router",
  "maximus-runtime",
