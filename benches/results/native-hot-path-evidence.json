@@ -1,0 +1,2649 @@
+{
+  "date": "2026-10-16",
+  "baseline": "a13603b59384438478defb59b3a94bb29c606cc4",
+  "http2_selected_build": "28e0525ea8086059bf67190d51f87a865ce044ab",
+  "tls_experiment_build": "2b59af8",
+  "final_selected_build": "b6a08b8c71143475ca97bb8ef4fbd94ca8c82345",
+  "selected_reviewed_source": "b6a08b8",
+  "source_relationship": "Initial H2 selection 28e0525 and 3d65dbb have identical crate source/manifests and root Cargo files. TLS candidate 2b59af8 changes adapter maximum and admission reserve. Final b6a08b8 scopes the extra reserve to TCP and restores unchanged QUIC admission; its TCP wire behavior and reserve match 2b59af8, but source/binaries are distinct.",
+  "hardware": {
+    "cpu": "AMD Ryzen 7 5825U",
+    "cores": 8,
+    "threads": 16,
+    "numa_nodes": 1,
+    "kernel": "6.6.68",
+    "governor": "powersave",
+    "shared_host": true,
+    "configured_server_cpu_mask": "0,2,4,6",
+    "effective_server_affinity": "First N CPUs of configured mask for N workers; CPU 0 for one worker",
+    "client_cpu_mask": "8,10,12,14",
+    "cpu_quota_each": 4
+  },
+  "rustc": "1.96.1 (31fca3adb 2026-06-26)",
+  "profile": {
+    "release": true,
+    "lto": "thin",
+    "codegen_units": 1
+  },
+  "container_images": [
+    {
+      "name": "client",
+      "image": "docker.io/grafana/k6:1.6.0",
+      "imageID": "docker.io/grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532"
+    },
+    {
+      "name": "server",
+      "image": "docker.io/library/rust:1.96-bookworm",
+      "imageID": "docker.io/library/rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663"
+    }
+  ],
+  "variants": {
+    "baseline": {
+      "source_commit": "a13603b",
+      "engine_argument": "maximus",
+      "binary_name": "baseline-bin"
+    },
+    "hyper": {
+      "source_commit": "a13603b",
+      "engine_argument": "hyper",
+      "binary_name": "baseline-bin"
+    },
+    "axum": {
+      "source_commit": "a13603b",
+      "engine_argument": "axum",
+      "binary_name": "baseline-bin"
+    },
+    "actix": {
+      "source_commit": "a13603b",
+      "engine_argument": "actix",
+      "binary_name": "baseline-bin"
+    },
+    "control": {
+      "source_commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+      "engine_argument": "maximus",
+      "binary_name": "control-bin"
+    },
+    "ending": {
+      "source_commit": "e0b37646d2aec3a5690db4275a78710c55cda70d",
+      "engine_argument": "maximus",
+      "binary_name": "ending-bin"
+    },
+    "headers": {
+      "source_commit": "8af6e4999ab5f49344a65f2648f8cbbe2825287e",
+      "engine_argument": "maximus",
+      "binary_name": "headers-bin"
+    },
+    "reuse": {
+      "source_commit": "eac8cf7f1cdf0650d8b052f649323310f573deed",
+      "engine_argument": "maximus",
+      "binary_name": "reuse-bin"
+    },
+    "candidate": {
+      "source_commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+      "engine_argument": "maximus",
+      "binary_name": "candidate-bin"
+    },
+    "stack": {
+      "source_commit": "341b2efa1a1984863d07e28c068c43fb1ad655ba",
+      "engine_argument": "maximus",
+      "binary_name": "stack-bin"
+    },
+    "noreuse": {
+      "source_commit": "4a83069618593336f7ab2696a1250d6d9530b080",
+      "engine_argument": "maximus",
+      "binary_name": "noreuse-bin"
+    },
+    "simple": {
+      "source_commit": "819358de4b76b7a4cc4b045e818d2ffc594f8a1d",
+      "engine_argument": "maximus",
+      "binary_name": "simple-bin"
+    },
+    "maximus": {
+      "source_commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+      "engine_argument": "maximus",
+      "binary_name": "candidate-bin"
+    },
+    "tlsbuffer": {
+      "source_commit": "2b59af8690f5f198a5695c13f3a6519c8dac42ec",
+      "engine_argument": "maximus",
+      "binary_name": "tlsbuffer-bin"
+    },
+    "tlsfinal": {
+      "source_commit": "b6a08b8c71143475ca97bb8ef4fbd94ca8c82345",
+      "engine_argument": "maximus",
+      "binary_name": "tlsfinal-bin"
+    }
+  },
+  "campaigns": {
+    "baseline-h2": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/plaintext,/echo",
+        "duration": "10s",
+        "repeats": 1,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 0,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h2",
+        "engines": "baseline,hyper,axum",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "source_archives": {
+        "baseline": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "e9f9fe00bf112045eecb0cff809df3b6246f7e083b491b8bbff61b036356b86e"
+        }
+      },
+      "binaries_sha256": {
+        "baseline-bin": "58f53da4280c7c804e5275e0450676cff5a16f30fa22d1eeae624505d675292f"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296",
+        "client": "1073741824"
+      },
+      "memory_limit_source": "retained initial Pod configuration"
+    },
+    "ablation": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/plaintext",
+        "duration": "5s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 0,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h2",
+        "engines": "control,ending,headers,reuse,candidate",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "ending": {
+          "commit": "e0b37646d2aec3a5690db4275a78710c55cda70d",
+          "manifest_sha256": "669c4d9184046e98b12593394c45eef3206990629062e472c7f5b38c6221614d"
+        },
+        "headers": {
+          "commit": "8af6e4999ab5f49344a65f2648f8cbbe2825287e",
+          "manifest_sha256": "4612dc3692f152e70aa5f43265369db285f41f98ac614a3e32f9ded4a3d6adfd"
+        },
+        "reuse": {
+          "commit": "eac8cf7f1cdf0650d8b052f649323310f573deed",
+          "manifest_sha256": "5e983175c4a8cad63989bcc205803415fbdbaed5eecd198d8c85efa30171f735"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        }
+      },
+      "binaries_sha256": {
+        "control-bin": "b2b62ee473d6101a5445d5fd29489d1b934068de200a1e6127e24bc68bd846f8",
+        "ending-bin": "91550ccd7f9cda74298ab0fe286459786592da6aa4d67b6eb3e69a52a66e678e",
+        "headers-bin": "64a0500f554a91f62c6ef477d3eb8610f934dfbd6a471964f90fb3477c17e6d9",
+        "reuse-bin": "7bba8e90aac0c7ccb2929e5fb381105fc7e3827d0bb306d9095ae741a1945bfe",
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296",
+        "client": "1073741824"
+      },
+      "memory_limit_source": "retained initial Pod configuration"
+    },
+    "arrival-confirm": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/plaintext",
+        "duration": "30s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 1000,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h2",
+        "engines": "tlsfinal,control",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "fcb0fcbf48a5d15efdcee09136e78f2a7c5eb465160d1006e1039bfbb7e3921d",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "tlsfinal": {
+          "commit": "b6a08b8c71143475ca97bb8ef4fbd94ca8c82345",
+          "manifest_sha256": "5ab8b4eed48fbb6145a88e5e9802983da67853e9252c9c603b3eac9a804f9381"
+        }
+      },
+      "binaries_sha256": {
+        "tlsfinal-bin": "25d131641ac5512b4a21a20e959df1557b86343d11aa5e1b1eecb4794759b1f5",
+        "control-bin": "b2b62ee473d6101a5445d5fd29489d1b934068de200a1e6127e24bc68bd846f8"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296\n",
+        "client": "4294967296\n"
+      },
+      "memory_limit_source": "observed cgroup memory.max"
+    },
+    "arrival-h1": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/plaintext",
+        "duration": "10s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 1000,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h1",
+        "engines": "control,maximus",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        }
+      },
+      "binaries_sha256": {
+        "control-bin": "b2b62ee473d6101a5445d5fd29489d1b934068de200a1e6127e24bc68bd846f8",
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296",
+        "client": "1073741824"
+      },
+      "memory_limit_source": "retained initial Pod configuration"
+    },
+    "arrival-h2": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/plaintext,/echo",
+        "duration": "10s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 1000,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h2",
+        "engines": "control,maximus",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        }
+      },
+      "binaries_sha256": {
+        "control-bin": "b2b62ee473d6101a5445d5fd29489d1b934068de200a1e6127e24bc68bd846f8",
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296",
+        "client": "1073741824"
+      },
+      "memory_limit_source": "retained initial Pod configuration"
+    },
+    "arrival-plain-5000": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/plaintext",
+        "duration": "10s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 5000,
+        "vus": 512,
+        "arrival_vus": null,
+        "protocol": "plain",
+        "engines": "control,maximus",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        }
+      },
+      "binaries_sha256": {
+        "control-bin": "b2b62ee473d6101a5445d5fd29489d1b934068de200a1e6127e24bc68bd846f8",
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296",
+        "client": "1073741824"
+      },
+      "memory_limit_source": "retained initial Pod configuration"
+    },
+    "arrival-plain-selected": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/plaintext",
+        "duration": "10s",
+        "repeats": 1,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 15000,
+        "vus": 512,
+        "arrival_vus": null,
+        "protocol": "plain",
+        "engines": "maximus",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        }
+      },
+      "binaries_sha256": {
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296",
+        "client": "1073741824"
+      },
+      "memory_limit_source": "retained initial Pod configuration"
+    },
+    "arrival-plain": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/plaintext",
+        "duration": "10s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 15000,
+        "vus": 512,
+        "arrival_vus": null,
+        "protocol": "plain",
+        "engines": "control,maximus",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        }
+      },
+      "binaries_sha256": {
+        "control-bin": "b2b62ee473d6101a5445d5fd29489d1b934068de200a1e6127e24bc68bd846f8",
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296",
+        "client": "1073741824"
+      },
+      "memory_limit_source": "retained initial Pod configuration"
+    },
+    "fixed-header": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/plaintext,/echo",
+        "duration": "10s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 0,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h2",
+        "engines": "candidate,stack,noreuse",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        },
+        "stack": {
+          "commit": "341b2efa1a1984863d07e28c068c43fb1ad655ba",
+          "manifest_sha256": "ab183efe95e3dcaa2c1d2fe937b5927425656ed794c5de10e941267a3291153f"
+        },
+        "noreuse": {
+          "commit": "4a83069618593336f7ab2696a1250d6d9530b080",
+          "manifest_sha256": "b0d6944612ceaa2a2d1f1fcb549f333c75e7201bb08c3072f0fc0e9a47877896"
+        }
+      },
+      "binaries_sha256": {
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155",
+        "stack-bin": "b6a278d031316faf30ddb146532f84bd9a3fd14dbc68e59d61103ecc5353d32a",
+        "noreuse-bin": "715acb895c18cb0efebddcf6134045f8ae52c06df9e7751dc8ea06f938b75a6d"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296",
+        "client": "1073741824"
+      },
+      "memory_limit_source": "retained initial Pod configuration"
+    },
+    "h1": {
+      "arguments": {
+        "workers": "1,4",
+        "paths": "/plaintext",
+        "duration": "10s",
+        "repeats": 3,
+        "generator": "wrk",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 0,
+        "vus": 128,
+        "arrival_vus": null,
+        "protocol": "plain",
+        "engines": "control,maximus,hyper,axum,actix",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        },
+        "baseline": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "e9f9fe00bf112045eecb0cff809df3b6246f7e083b491b8bbff61b036356b86e"
+        }
+      },
+      "binaries_sha256": {
+        "control-bin": "b2b62ee473d6101a5445d5fd29489d1b934068de200a1e6127e24bc68bd846f8",
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155",
+        "baseline-bin": "58f53da4280c7c804e5275e0450676cff5a16f30fa22d1eeae624505d675292f"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296",
+        "client": "1073741824"
+      },
+      "memory_limit_source": "retained initial Pod configuration"
+    },
+    "h2": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/plaintext,/echo",
+        "duration": "10s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 0,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h2",
+        "engines": "control,maximus,hyper,axum",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        },
+        "baseline": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "e9f9fe00bf112045eecb0cff809df3b6246f7e083b491b8bbff61b036356b86e"
+        }
+      },
+      "binaries_sha256": {
+        "control-bin": "b2b62ee473d6101a5445d5fd29489d1b934068de200a1e6127e24bc68bd846f8",
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155",
+        "baseline-bin": "58f53da4280c7c804e5275e0450676cff5a16f30fa22d1eeae624505d675292f"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296",
+        "client": "1073741824"
+      },
+      "memory_limit_source": "retained initial Pod configuration"
+    },
+    "large": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/echo",
+        "duration": "10s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 0,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h2",
+        "engines": "control,maximus,hyper,axum",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        },
+        "baseline": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "e9f9fe00bf112045eecb0cff809df3b6246f7e083b491b8bbff61b036356b86e"
+        }
+      },
+      "binaries_sha256": {
+        "control-bin": "b2b62ee473d6101a5445d5fd29489d1b934068de200a1e6127e24bc68bd846f8",
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155",
+        "baseline-bin": "58f53da4280c7c804e5275e0450676cff5a16f30fa22d1eeae624505d675292f"
+      },
+      "workloads_sha256": {
+        "load.js": "ba001b17fcd2f132d92de4ad2ea1a89c0b37ef30d2d7995aab73773d8b4a54e1",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296",
+        "client": "1073741824"
+      },
+      "memory_limit_source": "retained initial Pod configuration"
+    },
+    "selection": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/plaintext,/echo",
+        "duration": "10s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 0,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h2",
+        "engines": "candidate,noreuse,simple",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        },
+        "noreuse": {
+          "commit": "4a83069618593336f7ab2696a1250d6d9530b080",
+          "manifest_sha256": "b0d6944612ceaa2a2d1f1fcb549f333c75e7201bb08c3072f0fc0e9a47877896"
+        },
+        "simple": {
+          "commit": "819358de4b76b7a4cc4b045e818d2ffc594f8a1d",
+          "manifest_sha256": "ee01ab4404b9302d84945571b286485c8cfe5c74e5b2321d7e830262e7a7f9a7"
+        }
+      },
+      "binaries_sha256": {
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155",
+        "noreuse-bin": "715acb895c18cb0efebddcf6134045f8ae52c06df9e7751dc8ea06f938b75a6d",
+        "simple-bin": "9135c37f0e7de87a2c885cfbdcd3d237e53a1cbccb015b6165fe47bc6fc6e904"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296",
+        "client": "1073741824"
+      },
+      "memory_limit_source": "retained initial Pod configuration"
+    },
+    "soak-recovery": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/echo",
+        "duration": "300s",
+        "repeats": 1,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": true,
+        "rate": 0,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h2",
+        "engines": "control,tlsfinal",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "fcb0fcbf48a5d15efdcee09136e78f2a7c5eb465160d1006e1039bfbb7e3921d",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "tlsfinal": {
+          "commit": "b6a08b8c71143475ca97bb8ef4fbd94ca8c82345",
+          "manifest_sha256": "5ab8b4eed48fbb6145a88e5e9802983da67853e9252c9c603b3eac9a804f9381"
+        }
+      },
+      "binaries_sha256": {
+        "control-bin": "b2b62ee473d6101a5445d5fd29489d1b934068de200a1e6127e24bc68bd846f8",
+        "tlsfinal-bin": "25d131641ac5512b4a21a20e959df1557b86343d11aa5e1b1eecb4794759b1f5"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296\n",
+        "client": "4294967296\n"
+      },
+      "memory_limit_source": "observed cgroup memory.max"
+    },
+    "tls-buffer-h1": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/plaintext,/echo",
+        "duration": "10s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 0,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h1",
+        "engines": "maximus,tlsbuffer",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "fcb0fcbf48a5d15efdcee09136e78f2a7c5eb465160d1006e1039bfbb7e3921d",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        },
+        "tlsbuffer": {
+          "commit": "2b59af8690f5f198a5695c13f3a6519c8dac42ec",
+          "manifest_sha256": "67ad3293d3425f409bbf512741b974b4f9465858bf0e1f5ef8019e92369724c3"
+        }
+      },
+      "binaries_sha256": {
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155",
+        "tlsbuffer-bin": "ab43a0e4f084f56d74d316a23942d80552bec057717c5a46dc4007702650fb72"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296\n",
+        "client": "4294967296\n"
+      },
+      "memory_limit_source": "observed cgroup memory.max"
+    },
+    "tls-buffer-large": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/echo",
+        "duration": "10s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 0,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h2",
+        "engines": "maximus,tlsbuffer,hyper",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "fcb0fcbf48a5d15efdcee09136e78f2a7c5eb465160d1006e1039bfbb7e3921d",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        },
+        "tlsbuffer": {
+          "commit": "2b59af8690f5f198a5695c13f3a6519c8dac42ec",
+          "manifest_sha256": "67ad3293d3425f409bbf512741b974b4f9465858bf0e1f5ef8019e92369724c3"
+        },
+        "baseline": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "e9f9fe00bf112045eecb0cff809df3b6246f7e083b491b8bbff61b036356b86e"
+        }
+      },
+      "binaries_sha256": {
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155",
+        "tlsbuffer-bin": "ab43a0e4f084f56d74d316a23942d80552bec057717c5a46dc4007702650fb72",
+        "baseline-bin": "58f53da4280c7c804e5275e0450676cff5a16f30fa22d1eeae624505d675292f"
+      },
+      "workloads_sha256": {
+        "load.js": "ba001b17fcd2f132d92de4ad2ea1a89c0b37ef30d2d7995aab73773d8b4a54e1",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296\n",
+        "client": "4294967296\n"
+      },
+      "memory_limit_source": "observed cgroup memory.max"
+    },
+    "tls-buffer-small": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/plaintext,/echo",
+        "duration": "10s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 0,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h2",
+        "engines": "maximus,tlsbuffer",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "fcb0fcbf48a5d15efdcee09136e78f2a7c5eb465160d1006e1039bfbb7e3921d",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        },
+        "tlsbuffer": {
+          "commit": "2b59af8690f5f198a5695c13f3a6519c8dac42ec",
+          "manifest_sha256": "67ad3293d3425f409bbf512741b974b4f9465858bf0e1f5ef8019e92369724c3"
+        }
+      },
+      "binaries_sha256": {
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155",
+        "tlsbuffer-bin": "ab43a0e4f084f56d74d316a23942d80552bec057717c5a46dc4007702650fb72"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296\n",
+        "client": "4294967296\n"
+      },
+      "memory_limit_source": "observed cgroup memory.max"
+    },
+    "tls-final-h1-confirm": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/echo",
+        "duration": "30s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 0,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h1",
+        "engines": "tlsfinal,maximus",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "fcb0fcbf48a5d15efdcee09136e78f2a7c5eb465160d1006e1039bfbb7e3921d",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "tlsfinal": {
+          "commit": "b6a08b8c71143475ca97bb8ef4fbd94ca8c82345",
+          "manifest_sha256": "5ab8b4eed48fbb6145a88e5e9802983da67853e9252c9c603b3eac9a804f9381"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        }
+      },
+      "binaries_sha256": {
+        "tlsfinal-bin": "25d131641ac5512b4a21a20e959df1557b86343d11aa5e1b1eecb4794759b1f5",
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296\n",
+        "client": "4294967296\n"
+      },
+      "memory_limit_source": "observed cgroup memory.max"
+    },
+    "tls-final-large": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/echo",
+        "duration": "10s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 0,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h2",
+        "engines": "maximus,tlsfinal,hyper",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "fcb0fcbf48a5d15efdcee09136e78f2a7c5eb465160d1006e1039bfbb7e3921d",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        },
+        "tlsfinal": {
+          "commit": "b6a08b8c71143475ca97bb8ef4fbd94ca8c82345",
+          "manifest_sha256": "5ab8b4eed48fbb6145a88e5e9802983da67853e9252c9c603b3eac9a804f9381"
+        },
+        "baseline": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "e9f9fe00bf112045eecb0cff809df3b6246f7e083b491b8bbff61b036356b86e"
+        }
+      },
+      "binaries_sha256": {
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155",
+        "tlsfinal-bin": "25d131641ac5512b4a21a20e959df1557b86343d11aa5e1b1eecb4794759b1f5",
+        "baseline-bin": "58f53da4280c7c804e5275e0450676cff5a16f30fa22d1eeae624505d675292f"
+      },
+      "workloads_sha256": {
+        "load.js": "ba001b17fcd2f132d92de4ad2ea1a89c0b37ef30d2d7995aab73773d8b4a54e1",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296\n",
+        "client": "4294967296\n"
+      },
+      "memory_limit_source": "observed cgroup memory.max"
+    },
+    "tls-h1": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/plaintext,/echo",
+        "duration": "10s",
+        "repeats": 3,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": false,
+        "rate": 0,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h1",
+        "engines": "control,maximus,hyper,axum",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        },
+        "baseline": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "e9f9fe00bf112045eecb0cff809df3b6246f7e083b491b8bbff61b036356b86e"
+        }
+      },
+      "binaries_sha256": {
+        "control-bin": "b2b62ee473d6101a5445d5fd29489d1b934068de200a1e6127e24bc68bd846f8",
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155",
+        "baseline-bin": "58f53da4280c7c804e5275e0450676cff5a16f30fa22d1eeae624505d675292f"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296",
+        "client": "1073741824"
+      },
+      "memory_limit_source": "retained initial Pod configuration"
+    },
+    "soak": {
+      "arguments": {
+        "workers": "1",
+        "paths": "/echo",
+        "duration": "300s",
+        "repeats": 1,
+        "generator": "k6",
+        "perf": false,
+        "sample_rss": true,
+        "rate": 0,
+        "vus": 64,
+        "arrival_vus": null,
+        "protocol": "h2",
+        "engines": "control,maximus",
+        "server_cpus": "0,2,4,6",
+        "client_cpus": "8,10,12,14"
+      },
+      "harness_sha256": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "source_archives": {
+        "control": {
+          "commit": "a13603b59384438478defb59b3a94bb29c606cc4",
+          "manifest_sha256": "0ba3ee9a092e6f35fb6841f2be80d264d1d6e7bf065248e6099b18ece8bd3fad"
+        },
+        "candidate": {
+          "commit": "28e0525ea8086059bf67190d51f87a865ce044ab",
+          "manifest_sha256": "709c4b2022f69d4914145036ae9a316c78b3558fd2260fe0526427188a8e82ad"
+        }
+      },
+      "binaries_sha256": {
+        "control-bin": "b2b62ee473d6101a5445d5fd29489d1b934068de200a1e6127e24bc68bd846f8",
+        "candidate-bin": "030cf73dc8c9e701cbb75c5f4498b2edf867f866bcd8f112b5af76fb2545a155"
+      },
+      "workloads_sha256": {
+        "load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+        "wrk.lua": "58cfea99b6463d50eb08a4f9a4ff9135c2b16748a2869ce42c4c64432745cbf1"
+      },
+      "cgroup_memory_max": {
+        "server": "4294967296",
+        "client": "1073741824"
+      },
+      "memory_limit_source": "retained initial Pod configuration"
+    }
+  },
+  "comparison_dependencies": {
+    "source": "a13603b",
+    "lockfile_sha256": "fea9faa52b790b0f32baa8999697af8249ac89646ef90469fe006bc653d6302c",
+    "versions": {
+      "actix-web": "4.17.0",
+      "axum": "0.8.9",
+      "compio": "0.19.2",
+      "hyper": "1.12.0",
+      "rustls": "0.23.46",
+      "tokio": "1.53.3"
+    }
+  },
+  "allocation_diagnostic": {
+    "source_sha256": "dd6e135b53a76c06508dc75c7c7eb26b5925ab7271c4e9b25482587046896eea",
+    "scope": "Cleartext HTTP/1 and HTTP/2 process-wide System allocation counts, including server scheduling and client; 100 warmup and 10000 measured requests, three runs each; diagnostic overlay identical across all source archives."
+  },
+  "dependency_count_scope": {
+    "target": "x86_64-unknown-linux-gnu",
+    "edges": "normal",
+    "unique_key": "package name and version",
+    "includes_root_package": true
+  },
+  "dependencies": [
+    {
+      "source": "baseline",
+      "package": "maximus",
+      "features": [
+        "--no-default-features"
+      ],
+      "unique_packages": 65
+    },
+    {
+      "source": "baseline",
+      "package": "maximus",
+      "features": [
+        "--all-features"
+      ],
+      "unique_packages": 129
+    },
+    {
+      "source": "baseline",
+      "package": "maximus-core",
+      "features": [
+        "--no-default-features"
+      ],
+      "unique_packages": 56
+    },
+    {
+      "source": "baseline",
+      "package": "maximus-io",
+      "features": [
+        "--no-default-features"
+      ],
+      "unique_packages": 52
+    },
+    {
+      "source": "current",
+      "package": "maximus",
+      "features": [
+        "--no-default-features"
+      ],
+      "unique_packages": 65
+    },
+    {
+      "source": "current",
+      "package": "maximus",
+      "features": [
+        "--all-features"
+      ],
+      "unique_packages": 129
+    },
+    {
+      "source": "current",
+      "package": "maximus-core",
+      "features": [
+        "--no-default-features"
+      ],
+      "unique_packages": 52
+    },
+    {
+      "source": "current",
+      "package": "maximus-io",
+      "features": [
+        "--no-default-features"
+      ],
+      "unique_packages": 46
+    },
+    {
+      "source": "final-b6a08b8",
+      "package": "maximus",
+      "features": [
+        "--no-default-features"
+      ],
+      "unique_packages": 65
+    },
+    {
+      "source": "final-b6a08b8",
+      "package": "maximus",
+      "features": [
+        "--all-features"
+      ],
+      "unique_packages": 129
+    },
+    {
+      "source": "final-b6a08b8",
+      "package": "maximus-core",
+      "features": [
+        "--no-default-features"
+      ],
+      "unique_packages": 52
+    },
+    {
+      "source": "final-b6a08b8",
+      "package": "maximus-io",
+      "features": [
+        "--no-default-features"
+      ],
+      "unique_packages": 46
+    }
+  ],
+  "fuzz": {
+    "hpack": {
+      "executions": 5450305,
+      "seconds": 181,
+      "code_sha256": "d0df939f7dff51d0cd98e246867219582e1b3c2a91182f3bf394afe134ee83db",
+      "max_input_bytes": 7087
+    },
+    "http2": {
+      "revision": "d802594",
+      "executions": 4363148,
+      "seconds": 181,
+      "source_sha256": {
+        "crates/http2/src/lib.rs": "e11cdf8f113ec8103ba63454e6bbd6cfd083e120c88784c3e45aa5dfac4b77be",
+        "crates/http2/src/hpack.rs": "d0df939f7dff51d0cd98e246867219582e1b3c2a91182f3bf394afe134ee83db",
+        "fuzz/fuzz_targets/http2.rs": "a49b42ad33282a40086d2c9c1c38f83ef1fdbf4c8c5b364d237c285ce7f140a8",
+        "fuzz/fuzz_targets/hpack.rs": "f285e8677f8985689f995439ed7efe560eab4947f311ef85812665c15e40df1f",
+        "fuzz/Cargo.lock": "628847be5aecaa43d5c0c8fdd35998295b0adc93f1856429037765f186cdceaf"
+      },
+      "max_input_bytes": 16384
+    },
+    "toolchain": "rustc 1.99.0-nightly (87e5904f5 2026-07-20)"
+  },
+  "tls_write_diagnostic": {
+    "scope": "Local loopback TCP completion writer with captured writes and real Rustls encryption/client decryption; three identical repetitions per cell, unchanged plaintext batches.",
+    "source_sha256": "7f05fde6201cfcd41e1a5acf5f68dd5650e51ece87f03fd6fcb2edc8cfeb5038",
+    "log_sha256": "e525eca4f747c89343c5abf7813be2a18e381aa79fda0e64a8edae4e2e683ad4",
+    "cells": [
+      {
+        "body_bytes": 1024,
+        "base_bytes": 16384,
+        "max_bytes": 16384,
+        "plaintext_batches": 1,
+        "native_writes": 1,
+        "tls_records": 1,
+        "ciphertext_bytes": 1066
+      },
+      {
+        "body_bytes": 1024,
+        "base_bytes": 16384,
+        "max_bytes": 32768,
+        "plaintext_batches": 1,
+        "native_writes": 1,
+        "tls_records": 1,
+        "ciphertext_bytes": 1066
+      },
+      {
+        "body_bytes": 131072,
+        "base_bytes": 16384,
+        "max_bytes": 16384,
+        "plaintext_batches": 8,
+        "native_writes": 16,
+        "tls_records": 16,
+        "ciphertext_bytes": 131507
+      },
+      {
+        "body_bytes": 131072,
+        "base_bytes": 16384,
+        "max_bytes": 32768,
+        "plaintext_batches": 8,
+        "native_writes": 8,
+        "tls_records": 16,
+        "ciphertext_bytes": 131507
+      }
+    ]
+  },
+  "incomplete_attempts": [
+    {
+      "campaign": "soak",
+      "engine": "control",
+      "result": "No valid completion summary; client container terminated OOMKilled, exit 137, with 1 GiB memory limit. Repeated separately in soak-recovery with 4 GiB client memory and unchanged 4 GiB server limit.",
+      "attempt_key": "native-perf-soak-control-echo-w1-n0-ae5a4861313084bd3b8b589b775a7e496",
+      "pod_status_sha256": "9b6065cd8846602a531397f719085fdeee6fec3638f3514579417cb8f866fe84"
+    }
+  ],
+  "client_memory_limit_gib": {
+    "default": 1,
+    "after_recovery": 4,
+    "campaigns_after_recovery": [
+      "soak-recovery",
+      "arrival-confirm",
+      "tls-buffer-small",
+      "tls-buffer-large",
+      "tls-buffer-h1",
+      "tls-final-large",
+      "tls-final-h1-confirm"
+    ]
+  },
+  "soak_rss_samples": {
+    "native-perf-soak-control-echo-w1-n0-ae5a4861313084bd3b8b589b775a7e496-rss.jsonl": [
+      {
+        "time_unix": 1792176245.327955,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2816827175,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176251.1789608,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2821393199,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176256.942247,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2825912352,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176262.696228,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2830456649,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176268.61466,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2835097211,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176274.4085681,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2839656126,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176280.2435489,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2844270993,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176286.07024,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2848887289,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176291.934775,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2853521802,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176297.806205,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2858156054,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176303.644375,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2862793581,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176309.472637,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2867370524,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176315.331168,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2871967107,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176321.104564,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2876557451,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176326.934999,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2881181445,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176332.8203678,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2885856517,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176338.563828,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2890422357,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176344.391594,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2895033701,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176350.1675148,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2899632135,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176355.963799,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2904213637,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176361.800061,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2908850962,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176367.58436,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2913459392,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176373.439347,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2918110387,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176379.208987,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2922686297,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176384.9733078,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2927246493,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176390.792865,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2931865999,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176396.5958772,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2936493659,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176402.459305,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2941124293,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176408.206232,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2945694180,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176413.927712,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2950238620,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176419.6959329,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954582285,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176424.8976882,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954586307,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176430.5106041,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954590450,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176436.144623,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954594738,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176441.792393,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954599340,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176447.459139,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954603878,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176453.099753,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954608498,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176458.733093,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954612678,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176464.342838,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954617014,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176469.940508,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954621127,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176475.543521,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954626566,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176481.1739168,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954630953,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176486.787221,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954635381,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176492.443916,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954639543,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176498.014261,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954643725,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176503.577615,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954647921,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176509.156256,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954651573,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176514.785032,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954655668,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176520.931984,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954659729,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176526.687011,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954663701,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176532.300396,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954667827,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176537.8815749,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954671640,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176543.5039659,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954675902,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176549.199687,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954680210,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176554.825702,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954684490,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176560.453712,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954688269,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176566.158777,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954692404,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176571.782849,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954696340,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176577.571785,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954700294,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176583.27087,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954704847,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176588.931681,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954708802,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      },
+      {
+        "time_unix": 1792176594.762561,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 2954713127,
+        "nr_throttled": 368,
+        "throttled_usec": 967591
+      }
+    ],
+    "native-perf-soak-recovery-control-echo-w1-n0-a7dbb2ef16ca54384adb41a83f2c09fef-rss.jsonl": [
+      {
+        "time_unix": 1792178264.208092,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 730490429,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178269.95907,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 734976475,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178275.7640672,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 739509945,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178281.5043352,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 744005792,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178287.3034298,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 748558853,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178293.0820322,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 753074263,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178298.9073868,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 757671274,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178304.64215,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 762218497,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178310.6468601,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 766959790,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178316.4192379,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 771519352,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178322.237492,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 776131459,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178328.019423,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 780726891,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178333.852654,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 785328142,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178339.667823,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 789919964,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178345.575926,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 794610162,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178351.3600729,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 799170738,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178357.2585258,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 803848928,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178363.013678,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 808419559,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178368.776659,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 812999706,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178374.6030312,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 817625152,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178380.430687,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 822220881,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178386.3366961,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 826932898,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178392.312449,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 831534508,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178398.16802,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 836292254,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178404.153099,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 841028210,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178409.966584,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 845644980,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178415.773488,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 850263181,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178421.583051,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 854887859,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178427.4982982,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 859594097,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178433.359802,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 864257184,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178439.296742,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 868956273,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178445.137231,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 873603109,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178450.972299,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 878251757,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178456.8761752,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 882943798,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178462.6611042,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 887531391,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178468.5865788,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 892239396,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178474.387655,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 896811376,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178480.1344981,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 901363480,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178485.891049,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 905912667,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178491.6422458,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 910497302,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178497.359819,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 915035173,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178503.197244,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 919682225,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178510.4656808,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 925449402,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178516.279354,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 930091141,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178522.0437481,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 934674901,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178527.8763552,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 939296639,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178533.7123818,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 943931464,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178539.556691,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 948589353,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178545.485544,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 953286018,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178551.294104,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 957928797,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178557.3071702,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 962716725,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178563.14243,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 963675068,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      }
+    ],
+    "native-perf-soak-recovery-tlsfinal-echo-w1-n0-a8a2c25c1282d4665a4b2a47ff581fa94-rss.jsonl": [
+      {
+        "time_unix": 1792178578.722854,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 970274682,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178584.666703,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 974866655,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178590.524031,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 979429091,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178596.3292842,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 983959805,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178602.134583,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 988532226,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178608.062968,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 993230167,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178613.8644722,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 997824585,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178619.660334,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1002434058,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178625.387743,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1006993419,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178631.161723,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1011577574,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178637.03504,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1016271017,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178642.8758452,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1020934243,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178648.603969,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1025493899,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178654.443588,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1030157121,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178660.190984,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1034757871,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178665.9551349,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1039352976,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178671.870337,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1044054484,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178677.6502771,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1048714685,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178683.430994,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1053346025,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178689.374277,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1058096031,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178695.197471,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1062766218,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178701.1863291,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1067575985,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178707.0582368,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1072261594,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178712.913253,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1076934239,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178718.6655092,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1081554915,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178724.546056,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1086269509,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178730.321385,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1090901473,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178736.056486,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1095487028,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178741.8200588,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1100116119,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178747.733751,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1104895930,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178753.4742038,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1109540353,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178759.199691,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1114147546,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178765.008394,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1118827063,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178770.741579,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1123437157,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178776.506283,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1128074148,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178782.23957,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1132682993,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178788.0051851,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1137317948,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178793.8195899,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1141948715,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178799.571708,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1146589287,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178805.345133,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1151232008,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178811.1771278,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1155915248,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178817.03367,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1160617173,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178822.819517,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1165273624,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178828.746748,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1170039752,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178834.648855,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1174776175,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178840.529294,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1179513605,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178846.626417,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1184345250,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178852.666401,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1189199526,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178858.543989,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1193930123,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178864.38023,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1198615924,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178870.334143,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1203386069,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      },
+      {
+        "time_unix": 1792178876.243695,
+        "VmHWM": 9472,
+        "VmRSS": 9472,
+        "usage_usec": 1205440034,
+        "nr_throttled": 49,
+        "throttled_usec": 60968
+      }
+    ]
+  },
+  "github_ci": {
+    "source_revision": "b6a08b8",
+    "run_url": "https://github.com/vicotrbb/maximus/actions/runs/38951145784",
+    "conclusion": "success",
+    "linux_test_executions": 130,
+    "linux_privileged_tests_ignored": 1,
+    "macos_workspace_and_patched_h3_test_executions": 388
+  },
+  "qualification_logs": {
+    "arrival-plain-selected.log": "0895b2a491433c3d553a24a1b9723b0853887df9c760d7cf337eb7ad30745d12",
+    "check-selected.log": "d572a8402490640eacb8960301938e4f2bd89d37a999055de910507ef52c8e07",
+    "ci-format-selected.log": "4afec24b07d180a3458c6f6e303aaad536734b6655792a773db5a32c2c801343",
+    "ci-selected.log": "9e0f68504d60d97849bf5191cb316af4dd2915c2eea403b0e9f8e7f26fcde8cd",
+    "ci-tls-selected.log": "7cb1aa10cf6f29e4ca7bb85456e6dc1c3edb23ae2d2a51a63ca7e054ba73c6f4",
+    "conformance-tls-selected.log": "712fb1788ce402fc105b6caec3d71a93fb462ed5dccf6423fd3d38d1189c5564",
+    "examples-selected.log": "756dad601a59f0c99e13a78573d8638f869596ce88c3055522abcb90ce96703a",
+    "fuzz-http2-selected.log": "822d4edc59ba75b104132278989d4565174033d3f191eb9f60950ea4d18480f5",
+    "h2spec-gate-selected.log": "254cedac4cbe4ff81c5efb6e501a55564f69f9db1d3b0c03497c342ba87a9f2e",
+    "h2spec-plain-selected.log": "7008f23d69ca62ee3172536d4d2cf98ae0b252cd84dc414f26118d094d37bdca",
+    "h2spec-tls-buffer-selected.log": "5f8384a445da01f4271d223c83ce2134113a0d73a60c0884bbfa65752e428d8a",
+    "h2spec-tls-selected.log": "5f8384a445da01f4271d223c83ce2134113a0d73a60c0884bbfa65752e428d8a",
+    "interop-selected.log": "f66be960e884cc01c49e965ca9293a381f2000baca58d90c409a0ab976d91b5f",
+    "interop-tls-selected.log": "28bf67e57001eda5f408de2c4eda075948f17caf5caafe473779d92779e46a61",
+    "isolated-format-selected.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-arm64-selected.log": "f43d30e5e93d892c94e6ebb8adc46c3b68e6b04408dcbe8a64f24408e546109f",
+    "linux-arm64-tls-selected.log": "62318e5359e4b8c44e8fd827ef2a2e48d1cc861f3c03581f22132134a36c92a5",
+    "wire-selected.log": "3d3fa7b76fe7ffc70ee0600e3933fd7b852acd0aa052a8ea4dc1ce0b5fd2fe23"
+  }
+}
