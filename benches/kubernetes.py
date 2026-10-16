@@ -168,7 +168,8 @@ def profile_start(key):
 
 
 def snapshot(container):
-    script = "cat /sys/fs/cgroup/cpu.stat"
+    # Read the clock beside cpu.stat, before slower process diagnostics/control I/O.
+    script = "cat /sys/fs/cgroup/cpu.stat; awk '{print \"sample_monotonic_seconds\", $1}' /proc/uptime"
     if container == "server":
         script += "; cat /proc/$(cat /work/server.pid)/status; cat /proc/$(cat /work/server.pid)/stat; ps -T -p $(cat /work/server.pid) -o pid,tid,comm; head -n 17 /proc/stat; for t in /proc/$(cat /work/server.pid)/task/*; do echo TID $t; cat $t/schedstat; done"
     values = {}
@@ -177,13 +178,18 @@ def snapshot(container):
         f.write(container + " " + str(time.time()) + "\n" + raw + "\n")
     for line in raw.splitlines():
         parts = line.replace(":", "").split()
-        if len(parts) > 1 and parts[0] in (
+        if len(parts) > 1 and parts[0] == "sample_monotonic_seconds":
+            values[parts[0]] = float(parts[1])
+        elif len(parts) > 1 and parts[0] in (
             "usage_usec",
             "VmRSS",
             "nr_throttled",
             "throttled_usec",
         ):
             values[parts[0]] = int(parts[1])
+    stamp = values.get("sample_monotonic_seconds")
+    if stamp is None or not math.isfinite(stamp) or stamp < 0:
+        raise ValueError(f"invalid {container} CPU sample timestamp: {stamp!r}")
     return values
 
 
@@ -501,6 +507,13 @@ try:
                             c: after[c]["usage_usec"] - before[c]["usage_usec"]
                             for c in before
                         }
+                        sample_seconds = {
+                            c: after[c]["sample_monotonic_seconds"] - before[c]["sample_monotonic_seconds"]
+                            for c in before
+                        }
+                        for container, seconds in sample_seconds.items():
+                            if not math.isfinite(seconds) or seconds <= 0 or cpu[container] < 0:
+                                raise ValueError(f"invalid {container} CPU sample interval or counter delta")
                         measured_seconds = summary["state"]["testRunDurationMs"] / 1000
                         if not math.isfinite(measured_seconds) or measured_seconds <= 0:
                             raise ValueError("invalid client measurement duration")
@@ -525,8 +538,10 @@ try:
                             dropped=metric("dropped_iterations", "count", optional=True),
                             network_errors=metric("network_errors", "count", optional=True),
                             cpu_us_per_request=cpu["server"] / max(count, 1),
-                            server_cpu_percent=cpu["server"] / measured_seconds / 10000,
-                            client_cpu_percent=cpu["client"] / measured_seconds / 10000,
+                            server_sample_seconds=sample_seconds["server"],
+                            client_sample_seconds=sample_seconds["client"],
+                            server_cpu_percent=cpu["server"] / sample_seconds["server"] / 10000,
+                            client_cpu_percent=cpu["client"] / sample_seconds["client"] / 10000,
                             measurement_wall_seconds=wall,
                             rss_kib=after["server"]["VmRSS"],
                             observed_rss_kib=max(
