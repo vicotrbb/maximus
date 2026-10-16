@@ -33,7 +33,7 @@ trait ReadWire {
     async fn exact(&mut self, size: usize) -> io::Result<Vec<u8>>;
 }
 trait WriteWire {
-    async fn all(&mut self, bytes: Vec<u8>) -> io::Result<Vec<u8>>;
+    async fn all(&mut self, bytes: Vec<u8>) -> io::Result<()>;
 }
 struct Native<T>(T);
 impl<T: compio::io::AsyncRead> ReadWire for Native<T> {
@@ -55,12 +55,10 @@ impl<T: compio::io::AsyncRead> ReadWire for Native<T> {
     }
 }
 impl<T: compio::io::AsyncWrite> WriteWire for Native<T> {
-    async fn all(&mut self, bytes: Vec<u8>) -> io::Result<Vec<u8>> {
+    async fn all(&mut self, bytes: Vec<u8>) -> io::Result<()> {
         use compio::io::AsyncWriteExt;
-        let (result, bytes) = self.0.write_all(bytes).await.into_parts();
-        result?;
-        self.0.flush().await?;
-        Ok(bytes)
+        self.0.write_all(bytes).await.0?;
+        self.0.flush().await
     }
 }
 struct Compat<T>(T);
@@ -79,11 +77,10 @@ impl<T: futures_util::AsyncRead + Unpin> ReadWire for Compat<T> {
     }
 }
 impl<T: futures_util::AsyncWrite + Unpin> WriteWire for Compat<T> {
-    async fn all(&mut self, bytes: Vec<u8>) -> io::Result<Vec<u8>> {
+    async fn all(&mut self, bytes: Vec<u8>) -> io::Result<()> {
         use futures_util::AsyncWriteExt;
         self.0.write_all(&bytes).await?;
-        self.0.flush().await?;
-        Ok(bytes)
+        self.0.flush().await
     }
 }
 /// Serve native completion I/O, retaining each submitted read until completion.
@@ -1122,7 +1119,7 @@ async fn run<R: ReadWire + 'static, W: WriteWire, H: Handler>(
                 result=writing=>Some(result),
                 _=stop=>None,
             };
-            let mut bytes = match result {
+            match result {
                 Some(result) => result.map_err(|_| {
                     io::Error::new(io::ErrorKind::TimedOut, "HTTP/2 write timeout")
                 })??,
@@ -1135,14 +1132,8 @@ async fn run<R: ReadWire + 'static, W: WriteWire, H: Handler>(
                         })?
                         .map_err(|_| {
                             io::Error::new(io::ErrorKind::TimedOut, "HTTP/2 write timeout")
-                        })??
+                        })??;
                 }
-            };
-            // Reuse normal frame batches without retaining unusually large header batches.
-            if bytes.capacity() <= limits.io_buffer_bytes.saturating_mul(2) {
-                bytes.clear();
-                bytes.extend_from_slice(&output);
-                output = bytes;
             }
             connection.last_activity = Instant::now();
             if !output.is_empty() {
@@ -1277,115 +1268,6 @@ mod tests {
                     compat.read_header().await.unwrap_err().kind(),
                     io::ErrorKind::UnexpectedEof
                 );
-            }
-        });
-    }
-
-    struct PartialWriter {
-        bytes: Vec<u8>,
-        fail_after: usize,
-        fail_flush: bool,
-    }
-    impl PartialWriter {
-        fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
-            if self.bytes.len() >= self.fail_after {
-                return Err(io::ErrorKind::BrokenPipe.into());
-            }
-            let n = bytes.len().min(2).min(self.fail_after - self.bytes.len());
-            self.bytes.extend_from_slice(&bytes[..n]);
-            Ok(n)
-        }
-        fn flush(&self) -> io::Result<()> {
-            if self.fail_flush {
-                Err(io::ErrorKind::Other.into())
-            } else {
-                Ok(())
-            }
-        }
-    }
-    impl compio::io::AsyncWrite for PartialWriter {
-        async fn write<T: compio::buf::IoBuf>(&mut self, bytes: T) -> compio::BufResult<usize, T> {
-            compio::BufResult(self.write(bytes.as_init()), bytes)
-        }
-        async fn flush(&mut self) -> io::Result<()> {
-            PartialWriter::flush(self)
-        }
-        async fn shutdown(&mut self) -> io::Result<()> {
-            Ok(())
-        }
-    }
-    impl futures_util::AsyncWrite for PartialWriter {
-        fn poll_write(
-            mut self: Pin<&mut Self>,
-            _: &mut Context<'_>,
-            bytes: &[u8],
-        ) -> Poll<io::Result<usize>> {
-            Poll::Ready(self.write(bytes))
-        }
-        fn poll_flush(self: Pin<&mut Self>, _: &mut Context<'_>) -> Poll<io::Result<()>> {
-            Poll::Ready(PartialWriter::flush(&self))
-        }
-        fn poll_close(self: Pin<&mut Self>, _: &mut Context<'_>) -> Poll<io::Result<()>> {
-            Poll::Ready(Ok(()))
-        }
-    }
-
-    #[test]
-    fn wire_writers_return_original_buffer_after_partial_writes() {
-        let runtime = compio::runtime::Runtime::new().unwrap();
-        runtime.block_on(async {
-            for native in [true, false] {
-                let writer = PartialWriter {
-                    bytes: vec![],
-                    fail_after: usize::MAX,
-                    fail_flush: false,
-                };
-                let mut bytes = Vec::with_capacity(128);
-                bytes.extend_from_slice(b"hello");
-                let pointer = bytes.as_ptr();
-                let returned = if native {
-                    let mut writer = Native(writer);
-                    let returned = writer.all(bytes).await.unwrap();
-                    assert_eq!(writer.0.bytes, b"hello");
-                    returned
-                } else {
-                    let mut writer = Compat(writer);
-                    let returned = writer.all(bytes).await.unwrap();
-                    assert_eq!(writer.0.bytes, b"hello");
-                    returned
-                };
-                assert_eq!(returned, b"hello");
-                assert_eq!(returned.as_ptr(), pointer);
-                assert_eq!(returned.capacity(), 128);
-            }
-        });
-    }
-
-    #[test]
-    fn wire_writers_propagate_partial_write_and_flush_errors() {
-        let runtime = compio::runtime::Runtime::new().unwrap();
-        runtime.block_on(async {
-            for native in [true, false] {
-                for (fail_after, fail_flush, expected, written) in [
-                    (3, false, io::ErrorKind::BrokenPipe, b"hel".as_slice()),
-                    (usize::MAX, true, io::ErrorKind::Other, b"hello".as_slice()),
-                ] {
-                    let writer = PartialWriter {
-                        bytes: vec![],
-                        fail_after,
-                        fail_flush,
-                    };
-                    let bytes = b"hello".to_vec();
-                    if native {
-                        let mut writer = Native(writer);
-                        assert_eq!(writer.all(bytes).await.unwrap_err().kind(), expected);
-                        assert_eq!(writer.0.bytes, written);
-                    } else {
-                        let mut writer = Compat(writer);
-                        assert_eq!(writer.all(bytes).await.unwrap_err().kind(), expected);
-                        assert_eq!(writer.0.bytes, written);
-                    }
-                }
             }
         });
     }
