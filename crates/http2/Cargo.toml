@@ -11,12 +11,12 @@ workspace = true
 [dependencies]
 maximus-core = { path = "../core" }
 maximus-runtime = { path = "../runtime" }
-compio.workspace = true
+compio = { workspace = true, features = ["io"] }
 futures-util.workspace = true
 bytes.workspace = true
-httpdate = "1"
 
 [dev-dependencies]
+compio = { workspace = true, features = ["net", "io-compat"] }
 http-body-util.workspace = true
 hyper = { workspace = true, features = ["client", "http2"] }
 hyper-util = { version = "0.1", features = ["tokio"] }

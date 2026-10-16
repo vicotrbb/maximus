@@ -153,11 +153,37 @@ fn body_ending_at_exact_send_window_completes_without_more_credit() {
         if k == 0 && id == 1 {
             count += p.len();
             if f & 1 != 0 {
+                assert!(!p.is_empty(), "final payload must carry END_STREAM");
                 break;
             }
         }
     }
     assert_eq!(count, 65535);
+}
+#[test]
+fn buffered_response_ends_on_last_payload_after_frame_splitting() {
+    for size in [5, 16385] {
+        let mut s = server_with(
+            move || move |_: Request| async move { "x".repeat(size) },
+            Limits::default(),
+        );
+        handshake(&mut s);
+        s.write_all(&frame(1, 5, 1, &request())).unwrap();
+        let mut count = 0;
+        loop {
+            let (kind, flags, id, payload) = receive(&mut s);
+            if kind == 0 && id == 1 {
+                assert!(!payload.is_empty(), "final payload must carry END_STREAM");
+                assert!(payload.iter().all(|&b| b == b'x'));
+                count += payload.len();
+                assert_eq!(flags & 1 != 0, count == size);
+                if flags & 1 != 0 {
+                    break;
+                }
+            }
+        }
+        assert_eq!(count, size);
+    }
 }
 #[test]
 fn zero_stream_window_does_not_block_headers_or_other_streams() {
@@ -257,6 +283,39 @@ fn reset_cancels_handler_and_preserves_connection() {
     assert_eq!(until(&mut s, 0, 3).1, b"hello");
 }
 #[test]
+fn half_closed_remote_stream_rejects_data_and_headers_while_handler_is_pending() {
+    use http_body_util::BodyExt;
+    for (kind, payload) in [(0, b"late".to_vec()), (1, request())] {
+        let mut s = server_with(
+            || {
+                |r: Request| async move {
+                    let hold = r.uri().path() == "/half-closed";
+                    r.into_body().collect().await.unwrap();
+                    if hold {
+                        futures_util::future::pending::<()>().await;
+                    }
+                    "hello"
+                }
+            },
+            Limits::default(),
+        );
+        handshake(&mut s);
+        let mut held_request = vec![0x82, 0x86, 0x04, 12];
+        held_request.extend(b"/half-closed");
+        held_request.extend([0x01, 9]);
+        held_request.extend(b"localhost");
+        s.write_all(&frame(1, 5, 1, &held_request)).unwrap();
+        // A PING acknowledgment proves the preceding END_STREAM was processed.
+        s.write_all(&frame(6, 0, 0, b"heldopen")).unwrap();
+        assert_eq!(until(&mut s, 6, 0), (1, b"heldopen".to_vec()));
+        s.write_all(&frame(kind, if kind == 1 { 5 } else { 1 }, 1, &payload))
+            .unwrap();
+        assert_eq!(until(&mut s, 3, 1).1, 5u32.to_be_bytes());
+        s.write_all(&frame(1, 5, 3, &request())).unwrap();
+        assert_eq!(until(&mut s, 0, 3).1, b"hello");
+    }
+}
+#[test]
 fn invalid_response_length_resets_stream() {
     use maximus_core::{HeaderValue, IntoResponse};
     let mut s = server_with(
@@ -273,6 +332,59 @@ fn invalid_response_length_resets_stream() {
     handshake(&mut s);
     s.write_all(&frame(1, 5, 1, &request())).unwrap();
     assert_eq!(until(&mut s, 3, 1).1, 2u32.to_be_bytes());
+}
+#[test]
+fn mismatched_buffered_response_length_never_completes_successfully() {
+    use maximus_core::{HeaderValue, IntoResponse};
+    for length in ["4", "6"] {
+        let mut s = server_with(
+            move || {
+                move |_: Request| async move {
+                    let mut response = "hello".into_response();
+                    response
+                        .headers_mut()
+                        .insert("content-length", HeaderValue::from_static(length));
+                    response
+                }
+            },
+            Limits::default(),
+        );
+        handshake(&mut s);
+        s.write_all(&frame(1, 5, 1, &request())).unwrap();
+        loop {
+            let (kind, flags, id, payload) = receive(&mut s);
+            if id == 1 {
+                if kind == 3 {
+                    assert_eq!(payload, 2u32.to_be_bytes());
+                    break;
+                }
+                assert_eq!(flags & 1, 0, "mismatched length must not END_STREAM");
+            }
+        }
+    }
+}
+#[test]
+fn streaming_data_keeps_stream_open_for_response_trailers() {
+    use maximus_core::{Body, Bytes, Frame, HeaderMap, HeaderValue};
+    let mut s = server_with(
+        || {
+            |_: Request| async {
+                let mut trailers = HeaderMap::new();
+                trailers.insert("x-end", HeaderValue::from_static("yes"));
+                Body::frames(futures_util::stream::iter([
+                    Ok(Frame::data(Bytes::from_static(b"hello"))),
+                    Ok(Frame::trailers(trailers)),
+                ]))
+            }
+        },
+        Limits::default(),
+    );
+    handshake(&mut s);
+    s.write_all(&frame(1, 5, 1, &request())).unwrap();
+    let (flags, payload) = until(&mut s, 0, 1);
+    assert_eq!(flags & 1, 0);
+    assert_eq!(payload, b"hello");
+    assert_eq!(until(&mut s, 1, 1).0, 5);
 }
 #[test]
 fn forbidden_response_trailers_reset_stream() {
@@ -713,9 +825,9 @@ fn options_asterisk_is_preserved() {
 }
 
 #[test]
-fn independent_hyper_client_receives_complete_early_responses() {
+fn independent_hyper_client_receives_headers_and_complete_early_responses() {
     use http_body_util::BodyExt;
-    use maximus_core::{Body, StatusCode};
+    use maximus_core::{Body, HeaderValue, IntoResponse, StatusCode};
     use tokio_util::compat::FuturesAsyncReadCompatExt;
     #[derive(Clone)]
     struct Executor;
@@ -733,7 +845,21 @@ fn independent_hyper_client_receives_complete_early_responses() {
                 } else {
                     StatusCode::OK
                 };
-                (status, "answer")
+                let mut response = (status, "answer").into_response();
+                response.headers_mut().insert(
+                    "date",
+                    HeaderValue::from_static("Thu, 01 Jan 1970 00:00:00 GMT"),
+                );
+                response
+                    .headers_mut()
+                    .append("set-cookie", HeaderValue::from_static("a=1"));
+                response
+                    .headers_mut()
+                    .append("set-cookie", HeaderValue::from_static("b=2"));
+                response
+                    .headers_mut()
+                    .insert("x-binary", HeaderValue::from_bytes(&[0x80, 0xff]).unwrap());
+                response
             }
         },
         Limits::default(),
@@ -761,6 +887,18 @@ fn independent_hyper_client_receives_complete_early_responses() {
                     .await
                     .unwrap();
                 assert_eq!(response.status(), status);
+                assert_eq!(response.headers()["date"], "Thu, 01 Jan 1970 00:00:00 GMT");
+                assert_eq!(response.headers().get_all("date").iter().count(), 1);
+                assert_eq!(
+                    response
+                        .headers()
+                        .get_all("set-cookie")
+                        .iter()
+                        .map(|v| v.as_bytes())
+                        .collect::<Vec<_>>(),
+                    [b"a=1".as_slice(), b"b=2".as_slice()]
+                );
+                assert_eq!(response.headers()["x-binary"].as_bytes(), &[0x80, 0xff]);
                 assert_eq!(
                     response.into_body().collect().await.unwrap().to_bytes(),
                     "answer"

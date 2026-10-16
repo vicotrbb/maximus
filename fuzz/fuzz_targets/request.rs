@@ -11,7 +11,12 @@ fuzz_target!(|input: &str| {
     let _ = maximus_router::validate_path(input);
     let _ = maximus_router::matches("/users/{id}", input);
     if let Ok(uri) = input.parse::<http::Uri>() {
-        let mut request = Request::new(http::Request::builder().uri(uri).body(Body::empty()).unwrap());
+        let mut request = Request::new(
+            http::Request::builder()
+                .uri(uri)
+                .body(Body::empty())
+                .unwrap(),
+        );
         request.set_route("/users/{id}");
         let _ = request.path::<u64>("id");
         let _ = request.path::<String>("id");

@@ -12,7 +12,7 @@ workspace = true
 maximus-core = { path = "../core" }
 maximus-runtime = { path = "../runtime" }
 maximus-tls = { path = "../tls" }
-compio = { workspace = true, features = ["h3", "ring"] }
+compio = { workspace = true, features = ["net", "h3", "ring"] }
 bytes.workspace = true
 http-body-util.workspace = true
 futures-util.workspace = true

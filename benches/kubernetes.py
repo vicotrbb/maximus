@@ -348,6 +348,10 @@ metadata = {
         c: command(c, "cat", "/sys/fs/cgroup/cpu.max").stdout
         for c in ["server", "client"]
     },
+    "cgroup_memory_max": {
+        c: command(c, "cat", "/sys/fs/cgroup/memory.max").stdout
+        for c in ["server", "client"]
+    },
 }
 metadata["workload_sha256"] = command(
     "server", "sha256sum", WORKLOADS[0], WORKLOADS[1]
@@ -408,6 +412,7 @@ metadata["stable_environment"] = {
     "cpu_topology": metadata["cpu_topology"].strip(),
     "effective_cpus": {k: v.strip() for k, v in metadata["effective_cpus"].items()},
     "cgroup_cpu_max": {k: v.strip() for k, v in metadata["cgroup_cpu_max"].items()},
+    "cgroup_memory_max": {k: v.strip() for k, v in metadata["cgroup_memory_max"].items()},
     "container_images": sorted(metadata["container_images"], key=lambda image: image["name"]),
     "toolchain": metadata["toolchain"].strip(),
 }

@@ -20,7 +20,7 @@ Compression applies gzip only when negotiated, smaller than the original, inside
 
 ## Limits and backpressure
 
-`Limits` applies per worker. TCP and QUIC split `memory_bytes` equally when both are enabled. Admission reserves I/O buffers, headers, maximum request bodies, metadata, multiplexed stream budgets, flow-control windows and TLS record space. `protocol_capacity` exposes the resulting connection count. A configuration unable to admit one connection is rejected.
+`Limits` applies per worker. TCP and QUIC split `memory_bytes` equally when both are enabled. Admission reserves I/O buffers, headers, maximum request bodies, metadata, multiplexed stream budgets, flow-control windows and TLS record space. `protocol_capacity` exposes the generic connection estimate. TCP TLS additionally reserves two `io_buffer_bytes` units for ciphertext adapter growth (32 KiB per connection with the default); QUIC uses the generic estimate. A configuration unable to admit one connection is rejected.
 
 This is a conservative admission estimate, **not a hard RSS allocator limit**. Application state, response payloads, allocator fragmentation, runtime overhead and kernel socket buffers require their own budget. Use container/process memory limits for a final OS boundary. Maximum body and stream settings can substantially reduce admitted TLS/H2/H3 connections: tune them together rather than raising only `connections`.
 

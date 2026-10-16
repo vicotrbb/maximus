@@ -1060,6 +1060,7 @@ dependencies = [
  "http",
  "http-body",
  "http-body-util",
+ "httpdate",
  "multer",
  "send_wrapper",
  "serde",
@@ -1073,7 +1074,6 @@ dependencies = [
  "compio",
  "futures-util",
  "http-body-util",
- "httpdate",
  "maximus-core",
  "maximus-runtime",
  "send_wrapper",
@@ -1087,7 +1087,6 @@ dependencies = [
  "compio",
  "futures-util",
  "http-body-util",
- "httpdate",
  "hyper",
  "hyper-util",
  "maximus-core",
@@ -1163,6 +1162,7 @@ name = "maximus-tls"
 version = "0.2.0"
 dependencies = [
  "compio",
+ "futures-util",
  "rcgen",
  "rustls",
 ]

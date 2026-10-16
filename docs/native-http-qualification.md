@@ -1,5 +1,7 @@
 # Native HTTP qualification
 
+The [subsequent HTTP/2 optimization report](../benches/results/native-hot-paths.md) records the current hot-path changes and their fresh validation. The evidence below describes the original native-engine replacement at the named revisions.
+
 The native product revision is `8a8fa9b23c652ae4b6e40fec6322cb9e094e22c9`, version 0.2.0. Benchmark build revision `f85abcc841ee47c4d7739e21d669fd062112414b` changes only the comparison lockfile package versions; product source is identical. It replaces the original Hyper-backed HTTP/1 and HTTP/2 engines. The original qualification at `2f2f798` remains historical; it is not evidence for the replacement.
 
 ## Executed checks

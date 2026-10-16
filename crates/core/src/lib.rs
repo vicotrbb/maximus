@@ -1,6 +1,9 @@
 //! Shared request, streaming body, response and statically dispatched handler API.
 #![forbid(unsafe_code)]
 mod body;
+mod date;
+#[doc(hidden)]
+pub use date::response_date;
 mod request;
 pub use body::Body;
 pub use bytes::Bytes;
@@ -222,3 +225,39 @@ pub use http_body::Body as HttpBody;
 
 mod policy;
 pub use policy::{content_length, dispatch_request, suppress_body, validate_path};
+
+#[cfg(test)]
+mod tests {
+    use super::Limits;
+
+    #[test]
+    fn quic_admission_preserves_the_generic_tls_budget() {
+        let limits = Limits {
+            streams: 2,
+            body_bytes: 0,
+            header_bytes: 8192,
+            io_buffer_bytes: 16384,
+            connection_window_bytes: 65536,
+            memory_bytes: 262144,
+            ..Limits::default()
+        };
+        limits.validate().unwrap();
+        assert_eq!(limits.protocol_capacity(true, true), 1);
+    }
+
+    #[test]
+    fn admission_buffer_accounting_saturates_without_wrapping() {
+        let mut limits = Limits {
+            io_buffer_bytes: usize::MAX,
+            memory_bytes: usize::MAX - 1,
+            ..Limits::default()
+        };
+        for tls in [false, true] {
+            assert_eq!(limits.protocol_capacity(false, tls), 0);
+        }
+        limits.memory_bytes = usize::MAX;
+        for tls in [false, true] {
+            assert_eq!(limits.protocol_capacity(false, tls), 1);
+        }
+    }
+}

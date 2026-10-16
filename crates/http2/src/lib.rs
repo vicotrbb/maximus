@@ -32,7 +32,7 @@ trait ReadWire {
     async fn exact(&mut self, size: usize) -> io::Result<Vec<u8>>;
 }
 trait WriteWire {
-    async fn all(&mut self, bytes: Vec<u8>) -> io::Result<()>;
+    async fn all(&mut self, bytes: Vec<u8>) -> io::Result<Vec<u8>>;
 }
 struct Native<T>(T);
 impl<T: compio::io::AsyncRead> ReadWire for Native<T> {
@@ -48,10 +48,12 @@ impl<T: compio::io::AsyncRead> ReadWire for Native<T> {
     }
 }
 impl<T: compio::io::AsyncWrite> WriteWire for Native<T> {
-    async fn all(&mut self, bytes: Vec<u8>) -> io::Result<()> {
+    async fn all(&mut self, bytes: Vec<u8>) -> io::Result<Vec<u8>> {
         use compio::io::AsyncWriteExt;
-        self.0.write_all(bytes).await.0?;
-        self.0.flush().await
+        let (result, bytes) = self.0.write_all(bytes).await.into_parts();
+        result?;
+        self.0.flush().await?;
+        Ok(bytes)
     }
 }
 struct Compat<T>(T);
@@ -64,10 +66,11 @@ impl<T: futures_util::AsyncRead + Unpin> ReadWire for Compat<T> {
     }
 }
 impl<T: futures_util::AsyncWrite + Unpin> WriteWire for Compat<T> {
-    async fn all(&mut self, bytes: Vec<u8>) -> io::Result<()> {
+    async fn all(&mut self, bytes: Vec<u8>) -> io::Result<Vec<u8>> {
         use futures_util::AsyncWriteExt;
         self.0.write_all(&bytes).await?;
-        self.0.flush().await
+        self.0.flush().await?;
+        Ok(bytes)
     }
 }
 /// Serve native completion I/O, retaining each submitted read until completion.
@@ -715,10 +718,6 @@ impl<H: Handler> Connection<H> {
                     response.headers_mut().remove("content-length");
                 }
                 let (parts, body) = response.into_parts();
-                let mut headers = vec![(
-                    b":status".to_vec(),
-                    parts.status.as_str().as_bytes().to_vec(),
-                )];
                 let mut map = parts.headers;
                 map.remove("connection");
                 map.remove("transfer-encoding");
@@ -726,12 +725,7 @@ impl<H: Handler> Connection<H> {
                 map.remove("proxy-connection");
                 map.remove("upgrade");
                 if !map.contains_key("date") {
-                    map.insert(
-                        "date",
-                        httpdate::fmt_http_date(std::time::SystemTime::now())
-                            .parse()
-                            .unwrap(),
-                    );
+                    map.insert("date", maximus_core::response_date());
                 }
                 if !map.contains_key("content-length")
                     && parts.status != http::StatusCode::NO_CONTENT
@@ -757,10 +751,7 @@ impl<H: Handler> Connection<H> {
                     reset.push((id, INTERNAL));
                     continue;
                 }
-                for (n, v) in &map {
-                    headers.push((n.as_str().as_bytes().to_vec(), v.as_bytes().to_vec()));
-                }
-                if !valid_fields(&headers[1..], false, &self.limits) {
+                if !valid_fields(&map, false, &self.limits) {
                     reset.push((id, INTERNAL));
                     continue;
                 }
@@ -773,7 +764,17 @@ impl<H: Handler> Connection<H> {
                     reset.push((id, INTERNAL));
                     continue;
                 }
-                emit_headers(out, id, &headers, empty, self.max_frame);
+                emit_headers(
+                    out,
+                    id,
+                    std::iter::once((b":status".as_slice(), parts.status.as_str().as_bytes()))
+                        .chain(
+                            map.iter()
+                                .map(|(n, v)| (n.as_str().as_bytes(), v.as_bytes())),
+                        ),
+                    empty,
+                    self.max_frame,
+                );
                 s.local_end = empty;
                 if !empty {
                     s.body = Some(body);
@@ -792,18 +793,20 @@ impl<H: Handler> Connection<H> {
                                     cx.waker().wake_by_ref();
                                 }
                             } else if let Ok(trailers) = frame.into_trailers() {
-                                let headers = trailers
-                                    .iter()
-                                    .map(|(n, v)| {
-                                        (n.as_str().as_bytes().to_vec(), v.as_bytes().to_vec())
-                                    })
-                                    .collect::<Vec<_>>();
-                                if !valid_fields(&headers, true, &self.limits)
+                                if !valid_fields(&trailers, true, &self.limits)
                                     || s.response_length.is_some_and(|n| n != s.sent)
                                 {
                                     reset.push((id, INTERNAL));
                                 } else {
-                                    emit_headers(out, id, &headers, true, self.max_frame);
+                                    emit_headers(
+                                        out,
+                                        id,
+                                        trailers
+                                            .iter()
+                                            .map(|(n, v)| (n.as_str().as_bytes(), v.as_bytes())),
+                                        true,
+                                        self.max_frame,
+                                    );
                                     s.local_end = true;
                                     s.body = None;
                                 }
@@ -830,16 +833,22 @@ impl<H: Handler> Connection<H> {
                         .min(self.limits.io_buffer_bytes)
                         .min(s.send as usize)
                         .min(self.send as usize);
-                    if s.response_length
-                        .is_some_and(|total| s.sent + n as u64 > total)
-                    {
+                    let end = s.pending.len() == n
+                        && s.body.as_ref().is_some_and(HttpBody::is_end_stream);
+                    if s.response_length.is_some_and(|total| {
+                        s.sent + n as u64 > total || end && s.sent + n as u64 != total
+                    }) {
                         reset.push((id, INTERNAL));
                     } else {
                         let data = s.pending.split_to(n);
                         s.sent += n as u64;
                         s.send -= n as i64;
                         self.send -= n as i64;
-                        emit(out, 0, 0, id, &data);
+                        emit(out, 0, u8::from(end), id, &data);
+                        if end {
+                            s.local_end = true;
+                            s.body = None;
+                        }
                         s.deadline = Instant::now() + self.limits.request_timeout;
                     }
                 }
@@ -923,13 +932,15 @@ impl<H: Handler> Connection<H> {
         false
     }
 }
-fn emit_headers(out: &mut Vec<u8>, id: u32, fields: &[(Vec<u8>, Vec<u8>)], end: bool, max: usize) {
-    let fields = fields
-        .iter()
-        .map(|(n, v)| (n.as_slice(), v.as_slice()))
-        .collect::<Vec<_>>();
+fn emit_headers<'a>(
+    out: &mut Vec<u8>,
+    id: u32,
+    fields: impl IntoIterator<Item = (&'a [u8], &'a [u8])>,
+    end: bool,
+    max: usize,
+) {
     let mut block = vec![];
-    hpack::encode(&fields, &mut block);
+    hpack::encode(fields, &mut block);
     let chunks = block.chunks(max);
     let count = chunks.len();
     for (i, chunk) in chunks.enumerate() {
@@ -942,34 +953,36 @@ fn emit_headers(out: &mut Vec<u8>, id: u32, fields: &[(Vec<u8>, Vec<u8>)], end: 
         );
     }
 }
-fn valid_fields(fields: &[(Vec<u8>, Vec<u8>)], trailers: bool, limits: &Limits) -> bool {
+fn valid_fields(fields: &http::HeaderMap, trailers: bool, limits: &Limits) -> bool {
     fields.len() <= limits.headers
         && fields
             .iter()
             .try_fold(0usize, |total, (n, v)| {
-                total.checked_add(n.len() + v.len() + 32)
+                total.checked_add(n.as_str().len() + v.len() + 32)
             })
             .is_some_and(|n| n <= limits.header_bytes)
-        && regular_headers(fields, trailers).is_ok()
+        && fields
+            .iter()
+            .all(|(n, v)| valid_field(n.as_str().as_bytes(), v.as_bytes(), trailers))
+}
+fn valid_field(n: &[u8], v: &[u8], trailers: bool) -> bool {
+    !n.is_empty()
+        && n[0] != b':'
+        && !n.iter().any(u8::is_ascii_uppercase)
+        && !v.first().is_some_and(|b| b.is_ascii_whitespace())
+        && !v.last().is_some_and(|b| b.is_ascii_whitespace())
+        && !v.iter().any(|b| matches!(b, 0 | 10 | 13))
+        && !matches!(
+            n,
+            b"connection" | b"proxy-connection" | b"keep-alive" | b"transfer-encoding" | b"upgrade"
+        )
+        && !(n == b"te" && v != b"trailers")
+        && !(trailers && matches!(n, b"content-length" | b"host" | b"te"))
 }
 fn regular_headers(fields: &[(Vec<u8>, Vec<u8>)], trailers: bool) -> Result<http::HeaderMap, ()> {
     let mut map = http::HeaderMap::new();
     for (n, v) in fields {
-        if n.is_empty()
-            || n[0] == b':'
-            || n.iter().any(u8::is_ascii_uppercase)
-            || v.first().is_some_and(|b| b.is_ascii_whitespace())
-            || v.last().is_some_and(|b| b.is_ascii_whitespace())
-            || v.iter().any(|b| matches!(b, 0 | 10 | 13))
-        {
-            return Err(());
-        }
-        if matches!(
-            n.as_slice(),
-            b"connection" | b"proxy-connection" | b"keep-alive" | b"transfer-encoding" | b"upgrade"
-        ) || n == b"te" && v != b"trailers"
-            || trailers && matches!(n.as_slice(), b"content-length" | b"host" | b"te")
-        {
+        if !valid_field(n, v, trailers) {
             return Err(());
         }
         let name = http::header::HeaderName::from_bytes(n).map_err(|_| ())?;
@@ -1101,7 +1114,7 @@ async fn run<R: ReadWire + 'static, W: WriteWire, H: Handler>(
                 result=writing=>Some(result),
                 _=stop=>None,
             };
-            match result {
+            let mut bytes = match result {
                 Some(result) => result.map_err(|_| {
                     io::Error::new(io::ErrorKind::TimedOut, "HTTP/2 write timeout")
                 })??,
@@ -1114,8 +1127,14 @@ async fn run<R: ReadWire + 'static, W: WriteWire, H: Handler>(
                         })?
                         .map_err(|_| {
                             io::Error::new(io::ErrorKind::TimedOut, "HTTP/2 write timeout")
-                        })??;
+                        })??
                 }
+            };
+            // Reuse normal frame batches without retaining unusually large header batches.
+            if bytes.capacity() <= limits.io_buffer_bytes.saturating_mul(2) {
+                bytes.clear();
+                bytes.extend_from_slice(&output);
+                output = bytes;
             }
             connection.last_activity = Instant::now();
             if !output.is_empty() {
@@ -1186,5 +1205,160 @@ async fn run<R: ReadWire + 'static, W: WriteWire, H: Handler>(
             Event::Stop => connection.drain(&mut output),
             Event::Timer => stopped = connection.expired(&mut output),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct PartialWriter {
+        bytes: Vec<u8>,
+        fail_after: usize,
+        fail_flush: bool,
+    }
+    impl PartialWriter {
+        fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+            if self.bytes.len() >= self.fail_after {
+                return Err(io::ErrorKind::BrokenPipe.into());
+            }
+            let n = bytes.len().min(2).min(self.fail_after - self.bytes.len());
+            self.bytes.extend_from_slice(&bytes[..n]);
+            Ok(n)
+        }
+        fn flush(&self) -> io::Result<()> {
+            if self.fail_flush {
+                Err(io::ErrorKind::Other.into())
+            } else {
+                Ok(())
+            }
+        }
+    }
+    impl compio::io::AsyncWrite for PartialWriter {
+        async fn write<T: compio::buf::IoBuf>(&mut self, bytes: T) -> compio::BufResult<usize, T> {
+            compio::BufResult(self.write(bytes.as_init()), bytes)
+        }
+        async fn flush(&mut self) -> io::Result<()> {
+            PartialWriter::flush(self)
+        }
+        async fn shutdown(&mut self) -> io::Result<()> {
+            Ok(())
+        }
+    }
+    impl futures_util::AsyncWrite for PartialWriter {
+        fn poll_write(
+            mut self: Pin<&mut Self>,
+            _: &mut Context<'_>,
+            bytes: &[u8],
+        ) -> Poll<io::Result<usize>> {
+            Poll::Ready(self.write(bytes))
+        }
+        fn poll_flush(self: Pin<&mut Self>, _: &mut Context<'_>) -> Poll<io::Result<()>> {
+            Poll::Ready(PartialWriter::flush(&self))
+        }
+        fn poll_close(self: Pin<&mut Self>, _: &mut Context<'_>) -> Poll<io::Result<()>> {
+            Poll::Ready(Ok(()))
+        }
+    }
+
+    #[test]
+    fn wire_writers_return_original_buffer_after_partial_writes() {
+        let runtime = compio::runtime::Runtime::new().unwrap();
+        runtime.block_on(async {
+            for native in [true, false] {
+                let writer = PartialWriter {
+                    bytes: vec![],
+                    fail_after: usize::MAX,
+                    fail_flush: false,
+                };
+                let mut bytes = Vec::with_capacity(128);
+                bytes.extend_from_slice(b"hello");
+                let pointer = bytes.as_ptr();
+                let returned = if native {
+                    let mut writer = Native(writer);
+                    let returned = writer.all(bytes).await.unwrap();
+                    assert_eq!(writer.0.bytes, b"hello");
+                    returned
+                } else {
+                    let mut writer = Compat(writer);
+                    let returned = writer.all(bytes).await.unwrap();
+                    assert_eq!(writer.0.bytes, b"hello");
+                    returned
+                };
+                assert_eq!(returned, b"hello");
+                assert_eq!(returned.as_ptr(), pointer);
+                assert_eq!(returned.capacity(), 128);
+            }
+        });
+    }
+
+    #[test]
+    fn wire_writers_propagate_partial_write_and_flush_errors() {
+        let runtime = compio::runtime::Runtime::new().unwrap();
+        runtime.block_on(async {
+            for native in [true, false] {
+                for (fail_after, fail_flush, expected, written) in [
+                    (3, false, io::ErrorKind::BrokenPipe, b"hel".as_slice()),
+                    (usize::MAX, true, io::ErrorKind::Other, b"hello".as_slice()),
+                ] {
+                    let writer = PartialWriter {
+                        bytes: vec![],
+                        fail_after,
+                        fail_flush,
+                    };
+                    let bytes = b"hello".to_vec();
+                    if native {
+                        let mut writer = Native(writer);
+                        assert_eq!(writer.all(bytes).await.unwrap_err().kind(), expected);
+                        assert_eq!(writer.0.bytes, written);
+                    } else {
+                        let mut writer = Compat(writer);
+                        assert_eq!(writer.all(bytes).await.unwrap_err().kind(), expected);
+                        assert_eq!(writer.0.bytes, written);
+                    }
+                }
+            }
+        });
+    }
+
+    #[test]
+    fn outbound_fields_preserve_h2_validation_and_duplicate_limits() {
+        for (name, value, trailers, valid) in [
+            ("x-test", "good", false, true),
+            ("x-test", " good", false, false),
+            ("x-test", "good ", false, false),
+            ("x-test", "\tgood", false, false),
+            ("x-test", "good\t", false, false),
+            ("te", "trailers", false, true),
+            ("te", "gzip", false, false),
+            ("connection", "close", false, false),
+            ("host", "localhost", true, false),
+            ("content-length", "0", true, false),
+            ("te", "trailers", true, false),
+            ("x-test", "good", true, true),
+        ] {
+            let mut headers = http::HeaderMap::new();
+            headers.insert(name, http::HeaderValue::from_static(value));
+            assert_eq!(
+                valid_fields(&headers, trailers, &Limits::default()),
+                valid,
+                "{name}: {value:?}"
+            );
+        }
+
+        let mut headers = http::HeaderMap::new();
+        headers.append("x", http::HeaderValue::from_static("a"));
+        headers.append("x", http::HeaderValue::from_static("b"));
+        let mut limits = Limits {
+            headers: 2,
+            header_bytes: 68,
+            ..Limits::default()
+        };
+        assert!(valid_fields(&headers, false, &limits));
+        limits.headers = 1;
+        assert!(!valid_fields(&headers, false, &limits));
+        limits.headers = 2;
+        limits.header_bytes = 67;
+        assert!(!valid_fields(&headers, false, &limits));
     }
 }

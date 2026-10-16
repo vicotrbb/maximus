@@ -1464,6 +1464,7 @@ dependencies = [
  "http 1.5.0",
  "http-body",
  "http-body-util",
+ "httpdate",
 ]
 
 [[package]]
@@ -1473,7 +1474,6 @@ dependencies = [
  "compio",
  "futures-util",
  "http-body-util",
- "httpdate",
  "maximus-core",
  "maximus-runtime",
 ]
@@ -1485,7 +1485,6 @@ dependencies = [
  "bytes",
  "compio",
  "futures-util",
- "httpdate",
  "maximus-core",
  "maximus-runtime",
 ]

@@ -1,6 +1,6 @@
 # Benchmark results
 
-The [native HTTP comparison](native-http-comparison.md) is the current report. It includes the previous Maximus engine, Hyper, Axum and Actix, with failed load targets and measurement limitations retained.
+The [native hot-path experiments](native-hot-paths.md) are the latest report, with [trial data](native-hot-path-trials.csv), [allocation data](native-hot-path-allocations.csv) and [source/build identities](native-hot-path-evidence.json). The earlier [native HTTP comparison](native-http-comparison.md) records the engine replacement. It includes the previous Maximus engine, Hyper, Axum and Actix, with failed load targets and measurement limitations retained.
 
 - [Primary trials](native-http-trials.csv), [median summaries](native-http-comparison.csv), [phase map](native-http-phases.json) and [scaling chart](native-scaling.svg).
 - [Buffer sweep](native-http-buffer-sweep.csv), [allocations](native-http-allocations.csv), [connection churn](native-http-churn.csv) and [sustained run](native-http-soak.csv).

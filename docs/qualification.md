@@ -32,14 +32,17 @@ python3 scripts/check-h2spec.py /path/to/h2spec --tls
 The wrapper requires all 147 legacy cases to execute and reports their raw
 outcomes. Five specific closed-stream expectations differ from the minimal
 processing explicitly permitted by [RFC 9113 §5.1](https://www.rfc-editor.org/rfc/rfc9113.html#section-5.1).
-They remain visible as legacy differences; any other failure or skipped case
-fails the check. This is not a claim of 147/147 h2spec compliance. The fixture
-consumes request bodies before returning a nonempty 200, so early responses
-cannot mask malformed live-stream checks. The TLS h2spec fixture uses a local
-self-signed certificate and disables that tool's certificate verification;
-the independent Python suite separately verifies the local CA and hostname.
+They remain visible as legacy differences. Three half-closed tests can also
+race a completed response: their extra frame arrives after the stream closes.
+The wrapper always repeats those exact cases against `/half-closed`, where the
+fixture consumes the request and holds the response pending. All three must
+pass there, with no skips; their original outcomes remain separately reported.
+Any other failure, missing case, or skipped case fails the check. This is not a
+claim of 147/147 h2spec compliance. The TLS fixture disables h2spec certificate
+verification for its local self-signed certificate; the independent Python
+suite separately verifies the local CA and hostname.
 
-`check.sh` runs formatting, warnings-denied Clippy, workspace/all-feature tests, minimal-framework tests, each optional feature in isolation, TLS/H2 compatibility, and warnings-denied documentation. Compile-fail examples validate route declarations and typed handler signatures. Linux tests require explicit io_uring support; an environment that denies it is not an io_uring pass. BPF tests need Linux BPF and network-administration capabilities and are excluded from ordinary test runs.
+`check.sh` runs formatting, warnings-denied Clippy, workspace/all-feature tests, minimal-framework tests, each optional feature in isolation, TLS/H2 compatibility, compilation of every fuzz target, and warnings-denied documentation. Compile-fail examples validate route declarations and typed handler signatures. Linux tests require explicit io_uring support; an environment that denies it is not an io_uring pass. BPF tests need Linux BPF and network-administration capabilities and are excluded from ordinary test runs.
 
 The independent client suite uses pinned Python packages in `scripts/interop-requirements.txt`; it tests the executable `features` example with HTTPX/h2, websockets and aioquic, verifies a locally generated certificate, and checks HTTP/1.1 plaintext/TLS, ALPN HTTP/2, QUIC HTTP/3, JSON, malformed JSON, multipart, SSE, compression, CORS, HEAD, typed routes, binary/text WebSockets, and sixteen concurrent 128 KiB uploads. `tests/wire.py` uses only the Python standard library and sends 2,062 deterministic wire mutations and early disconnects, then verifies the workers remain healthy. The Rust integration tests cover TLS resumption, strict TLS1.3 configuration, pipelining, deadlines, body/header policy, shutdown, worker failure, repeated io_uring acceptance, H2 flow control and H3 requests, malformed message lengths, response producer failures, withheld stream credit, trailer handling, and cancellation. The independent suite also sends malformed H3 pseudo/connection/trailer fields and validates split Cookie normalization for H2/H3. The vendored decoder retains its upstream tests plus focused regressions; its provenance and downstream Cargo override are documented separately.
 
