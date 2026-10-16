@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 cargo fmt --all --check
+cargo fmt --manifest-path benches/baselines/Cargo.toml --check
+cargo fmt --manifest-path fuzz/Cargo.toml --check
 cargo clippy --workspace --all-features --all-targets -- -D warnings
 cargo test --workspace --all-features
 cargo test -p maximus --no-default-features
