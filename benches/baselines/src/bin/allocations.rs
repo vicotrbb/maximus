@@ -112,4 +112,97 @@ fn main() {
     }
     end("http1-keepalive-complete", N);
     server.shutdown().unwrap();
+    http2_allocations(N);
+}
+
+/// Sequential cleartext H2 with a stack-only wire client. Counts process-wide
+/// allocations, including server scheduling; excludes handshake and warmup.
+fn http2_allocations(count: usize) {
+    use std::io::{Read, Write};
+    use std::time::Duration;
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .http2_prior_knowledge(true)
+        .limits(maximus::Limits {
+            requests_per_connection: usize::MAX,
+            ..Default::default()
+        })
+        .start(|| |_: Request| async { "Hello, World!" })
+        .unwrap();
+    let mut socket = std::net::TcpStream::connect(server.local_addr()).unwrap();
+    socket.set_nodelay(true).unwrap();
+    socket
+        .set_read_timeout(Some(Duration::from_secs(5)))
+        .unwrap();
+    socket
+        .write_all(b"PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n")
+        .unwrap();
+    socket.write_all(&[0, 0, 0, 4, 0, 0, 0, 0, 0]).unwrap();
+    // Plenty of connection credit for every measured 13-byte response. Each
+    // stream retains its default 65,535-byte window; no timed WINDOW_UPDATEs.
+    let credit = u32::try_from((count + 100) * 13).unwrap();
+    socket.write_all(&[0, 0, 4, 8, 0, 0, 0, 0, 0]).unwrap();
+    socket.write_all(&credit.to_be_bytes()).unwrap();
+    let mut payload = [0u8; 16384];
+    let mut receive = |socket: &mut std::net::TcpStream| {
+        let mut header = [0u8; 9];
+        socket.read_exact(&mut header).unwrap();
+        let size = u32::from_be_bytes([0, header[0], header[1], header[2]]) as usize;
+        assert!(size <= payload.len());
+        socket.read_exact(&mut payload[..size]).unwrap();
+        let stream = u32::from_be_bytes(header[5..].try_into().unwrap());
+        if header[3] == 0 && size != 0 {
+            assert_eq!(&payload[..size], b"Hello, World!");
+        }
+        if header[3] == 1 {
+            let status = usize::from(payload[0] == 0x20); // optional table-size reset
+            assert!(size > status);
+            assert_eq!(payload[status], 0x88, "HPACK static :status 200");
+        }
+        (header[3], header[4], stream, size)
+    };
+    loop {
+        let (kind, flags, stream, size) = receive(&mut socket);
+        assert_eq!(stream, 0);
+        if kind == 8 {
+            assert_eq!(size, 4);
+            continue;
+        }
+        assert_eq!(kind, 4, "unexpected handshake frame");
+        if flags == 0 {
+            socket.write_all(&[0, 0, 0, 4, 1, 0, 0, 0, 0]).unwrap();
+        } else {
+            break;
+        }
+    }
+    for index in 0..count + 100 {
+        if index == 100 {
+            start();
+        }
+        let id = u32::try_from(index * 2 + 1).unwrap();
+        let mut request = [0u8; 23];
+        request[..9].copy_from_slice(&[0, 0, 14, 1, 5, 0, 0, 0, 0]);
+        request[5..9].copy_from_slice(&id.to_be_bytes());
+        request[9..].copy_from_slice(b"\x82\x86\x84\x01\x09localhost");
+        socket.write_all(&request).unwrap();
+        let mut bytes = 0;
+        let mut headers = false;
+        loop {
+            let (kind, flags, stream, size) = receive(&mut socket);
+            assert_eq!(stream, id);
+            assert!(kind == 0 || kind == 1, "unexpected response frame {kind}");
+            if kind == 1 {
+                headers = true;
+            } else {
+                bytes += size;
+            }
+            if flags & 1 != 0 {
+                break;
+            }
+        }
+        assert!(headers);
+        assert_eq!(bytes, 13);
+    }
+    end("http2-keepalive-complete", count);
+    drop(socket);
+    server.shutdown().unwrap();
 }
