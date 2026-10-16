@@ -166,5 +166,100 @@
         "unique_package_versions": 136
       }
     }
+  },
+  "benchmark_tooling": {
+    "commit": "dbc77a8",
+    "scope": "Current tracked runners and workload. The primary performance campaign used a separately frozen earlier harness; these gates do not retroactively qualify its measurements.",
+    "local_fixture_assertions": 56,
+    "actual_local_k6_cases": 2,
+    "source_sha256": {
+      "benches/load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+      "benches/kubernetes.py": "ae7662027270cecdd9137ec8f53a8f605f51e634bb475245bbd316aefeea3f4e",
+      "benches/run.py": "91701fcc5997813d7ff615c6c925f303da2a6ea4c1c9d3de46c47baab798ed68"
+    },
+    "evidence": [
+      {
+        "path": "artifacts/native-http/tooling-tests/iterations-green.json",
+        "sha256": "5f4ea4e1c6783ef8ca42f82959d7dd46221a6e4085c63a612282f2be6af0c55e",
+        "bytes": 2263
+      },
+      {
+        "path": "artifacts/native-http/tooling-tests/results.json",
+        "sha256": "9baf8b612d1dcefd4486bd658f28898d68a53e94143925d96a0325a1ea10f57d",
+        "bytes": 3068
+      },
+      {
+        "path": "artifacts/native-http/tooling-tests/review-regressions-green.json",
+        "sha256": "e0c464198ed3ae0a339e17d27e5ba21bbedd4e9e6df6c33db34d6102408144be",
+        "bytes": 3269
+      },
+      {
+        "path": "artifacts/native-http/tooling-tests/cpu-interval-green.json",
+        "sha256": "8f4f22189e3929fd4b2cdec12c61aca4800d5133d9891a18bdab13fd090b7203",
+        "bytes": 1229
+      },
+      {
+        "path": "artifacts/native-http/tooling-tests/local-k6-e9d01ca6/report.json",
+        "sha256": "88c242a246d7f830ace94756c3cbd6b4db714ccc08991524d8a2ee02f449d8e0",
+        "bytes": 3327
+      },
+      {
+        "path": "artifacts/native-http/tooling-tests/iteration-report.md",
+        "sha256": "790dc52c71dd79465f74f856a2772a7ad8013733b5dfdf66c92f230c7b3c635c",
+        "bytes": 5116
+      }
+    ],
+    "actual_live_kubernetes_smoke_cases": 1
+  },
+  "comparative_qualification": {
+    "primary_trials": 217,
+    "checked_completed_requests": 215599359,
+    "passing_workload_targets": 193,
+    "failed_tls_arrival_targets": 24,
+    "dropped_tls_arrivals": 2498,
+    "buffer_sweep_trials": 36,
+    "buffer_sweep_checked_requests": 6414454,
+    "native_churn_cycles": 10,
+    "connections_per_cycle": 20000,
+    "native_churn_checked_requests": 400000,
+    "churn_limit": "Closed live Rust requested bytes increased by294912 bytes in cycles9\u201310; cause unresolved. Baseline observer has only 3 cycles.",
+    "evidence": [
+      {
+        "path": "artifacts/native-http/reviewer/final-217-audit.json",
+        "sha256": "4a8be8cdfe780370573c57f65966b7e83b46ecce6b6960daf3b575665d94954c",
+        "bytes": 36099
+      },
+      {
+        "path": "artifacts/native-http/reviewer/buffer-36-audit.json",
+        "sha256": "2cc84ec5ff2c3845c810a1edda78802505c0ecddbb38712612397c2ed00b7b76",
+        "bytes": 1735
+      },
+      {
+        "path": "artifacts/native-http/reviewer/allocation-audit.json",
+        "sha256": "3c15660e9cd91e87f9f1890befab735844e5d35bb14df749c0890b7b2bc6d1bc",
+        "bytes": 664
+      },
+      {
+        "path": "artifacts/native-http/qualification/published-runner-smoke/audit.json",
+        "sha256": "d28dd99ab67d441114967dc364bf0db442da345306af2e04db663e6e6c596919",
+        "bytes": 1404
+      },
+      {
+        "path": "artifacts/native-http/reviewer/remaining-diagnostics-audit.json",
+        "sha256": "d1dbebd09538b302af4a8e2e43e848087d35fc3d377625ddec421d695adea610",
+        "bytes": 580
+      },
+      {
+        "path": "artifacts/native-http/qualification/remote-retention-audit.json",
+        "sha256": "5c4387c94f95c28dc198ed50241ca45ab7fe7e66269b879df12bb0a55e645dee",
+        "bytes": 303
+      },
+      {
+        "path": "artifacts/native-http/qualification/cleanup-evidence.json",
+        "sha256": "b342b6208d22de4c342872f5af20cfe6285adf0fa30a361f7f7dd1cbf238db2e",
+        "bytes": 16768
+      }
+    ],
+    "temporary_namespace_removed": "maximus-native-9cb096a-opportunities"
   }
 }

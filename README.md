@@ -69,7 +69,7 @@ cargo doc --workspace --all-features --no-deps --open
 
 ## API and resource policy
 
-See [API and operating guide](docs/guide.md) for extraction, state, middleware, streaming, limits and shutdown. See [qualification](docs/qualification.md) for commands and the [native implementation record](docs/native-http-qualification.md) for current evidence, and [benchmarks](benches/README.md) for reproducible k6/wrk comparisons, including the [measured results and limits](benches/results/README.md). Performance leadership is an objective, not a claim: results must distinguish load-generator limits, server saturation and VM noise.
+See [API and operating guide](docs/guide.md) for extraction, state, middleware, streaming, limits and shutdown. See [qualification](docs/qualification.md) for commands and the [native implementation record](docs/native-http-qualification.md) for current evidence, and [benchmarks](benches/README.md) for reproducible k6/wrk comparisons, including the [native measured results and limits](benches/results/native-http-comparison.md). The [original Hyper-backed results](benches/results/README.md) remain available for comparison. Performance leadership is an objective, not a claim: results must distinguish load-generator limits, server saturation and VM noise.
 
 The twelve crates follow the supplied specification. Benchmark servers and fuzz tooling are separate workspaces. Optional integrations do not enter a minimal build. Unsafe product code is confined to the optional Linux eBPF syscall adapter, with its invariant documented at the call.
 

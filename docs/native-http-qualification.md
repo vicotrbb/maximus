@@ -55,8 +55,18 @@ The first native H1 writer regressed throughput. Controlled experiments isolated
 
 The [opportunity report](../benches/results/native-opportunities.md) records the Compio WouldBlock allocation experiment, CPU pinning, live-heap versus RSS churn, and policy/adapter profiles. The Compio patch was not added to the product or vendored. CPU pinning remains configurable because it did not consistently improve throughput. Synthetic policy profiles are partial attribution; bare Hyper does not enforce every Maximus policy, so its comparison is not an equivalent-policy causal experiment.
 
+## Comparative load evidence
+
+The primary comparison contains 217 trials and 215,599,359 checked completed requests. Independent validation reconciles raw client outputs, warmups, thresholds, exit status, commands, CSV rows, source and binary identities, and environment metadata. Of these trials, 193 meet their workload gates. All 24 TLS fixed-arrival trials at 5,000/s and 64 preallocated users fail the zero-drop target; completed responses pass validation. These failed targets remain part of the comparison. Separate sizing attempts and an earlier over-capacity HTTP/2 attempt are retained outside the primary matrix.
+
+A separate 36-cell buffer-size sweep completes 6,414,454 checked responses with no failed or incomplete iterations. Ten cycles of 20,000 simultaneous connections validate 400,000 responses and return to six file descriptors after each close. Live Rust requested bytes step upward by 288 KiB in cycles nine and ten; the cause remains unresolved. The current published runner separately passes a live Kubernetes smoke with 91,415 starts, completions and valid responses.
+
+The 300-second native soak completes 34,849,362 checked responses. Four-worker plaintext throughput improves about 3.6% over the old engine in the measured median, while one-worker native HTTP/2 throughput regresses about 19% for plaintext responses and 17% for echo. Hyper and Actix remain faster in the four-worker plaintext comparison. These results establish neither performance leadership nor the cause of the HTTP/2 gap. See the [comparison report](../benches/results/native-http-comparison.md) for per-workload medians, tails, failed targets and measurement limits.
+
 ## Reproduction and limits
 
-Use the commands and requirement map in [qualification](qualification.md), the [benchmark instructions](../benches/README.md), and the native benchmark reports. Raw local logs remain under ignored `artifacts/native-http/`; the compact evidence manifest records their hashes and execution scope.
+Use the commands and requirement map in [qualification](qualification.md), the [benchmark instructions](../benches/README.md), and the [native comparison](../benches/results/native-http-comparison.md). Raw local logs remain under ignored `artifacts/native-http/`; the compact evidence manifest records their hashes and execution scope.
+
+Benchmark review hardened required-metric validation, resume identity checks, CPU sampling intervals and interrupted-iteration detection. The final tracked tooling passed 56 local fixture assertions and two actual local k6 cases. The negative case returned five valid responses, interrupted its sixth iteration and exited successfully; the runner now rejects it because starts exceed completions. These are tooling checks, not Maximus throughput measurements. The comparative campaign used an earlier frozen harness and workload; its raw results receive separate validation, and the report preserves excluded attempts. The new counter adds client work and must be identical across future compared variants.
 
 The tests, differential checks, fuzz campaigns and stress runs are finite. They establish the observed behavior of the recorded source in the tested environments. They do not guarantee absence of bugs, universal performance leadership, production acceptance, arbitrary platform support or untested multi-NUMA scaling.

@@ -1,6 +1,8 @@
-# Maximus performance qualification
+# Original Hyper-backed Maximus performance qualification
 
-Product and comparison-server revision: `2f2f79818df2845df624016939ac63444c3c6f7a`. The qualification comprises **166 k6 trials on an ARM64 Linux VM** and **91 k6/wrk trials on an x86-64 Linux host**, plus allocation, kernel primitive, profiling, malformed-request and connection-churn checks. Later commits package tooling and evidence without changing the measured product.
+This is the historical 0.1 implementation. The [native HTTP comparison](native-http-comparison.md) records version 0.2, which owns HTTP/1.1, HTTP/2 and HPACK. See its [correctness qualification](../../docs/native-http-qualification.md) separately; the results below do not qualify the replacement.
+
+Product and comparison-server revision: `2f2f79818df2845df624016939ac63444c3c6f7a`. The qualification comprises **166 k6 trials on an ARM64 Linux VM** and **91 k6/wrk trials on an x86-64 Linux host**, plus allocation, kernel primitive, profiling, malformed-request and connection-churn checks. Subsequent packaging commits through `9cb096a` did not change this measured product; later native implementation commits did.
 
 [VM median tables](tables.md), [VM trials](trials.csv), [hardware median tables](hardware-tables.md), [hardware trials](hardware-trials.csv), [test evidence](evidence.json), [exact measured driver revisions](drivers.json), [reproduction commands](../README.md), [hardware setup](../HARDWARE.md).
 

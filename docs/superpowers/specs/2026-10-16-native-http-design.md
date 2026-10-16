@@ -1,6 +1,6 @@
 # Native HTTP engines and measured optimization
 
-Status: scope confirmed by the user: own HTTP/1.1 and HTTP/2; retain Rustls and h3/Quinn. Implementation and experiments are pending. Baseline: `9cb096a`, whose measured product source is `2f2f798`.
+Status: scope confirmed by the user: own HTTP/1.1 and HTTP/2; retain Rustls and h3/Quinn. Native implementation is frozen at `8a8fa9b`; correctness qualification is recorded in [native HTTP qualification](../../native-http-qualification.md). Comparative qualification is complete in the [native comparison report](../../../benches/results/native-http-comparison.md), including retained failed load targets and the HTTP/2 regression. Baseline: `9cb096a`, whose measured product source is `2f2f798`.
 
 ## Intent and boundaries
 
