@@ -14,7 +14,6 @@ maximus-runtime = { path = "../runtime" }
 compio = { workspace = true, features = ["io"] }
 futures-util.workspace = true
 bytes.workspace = true
-httpdate = "1"
 
 [dev-dependencies]
 compio = { workspace = true, features = ["net", "io-compat"] }

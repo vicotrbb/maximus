@@ -725,12 +725,7 @@ impl<H: Handler> Connection<H> {
                 map.remove("proxy-connection");
                 map.remove("upgrade");
                 if !map.contains_key("date") {
-                    map.insert(
-                        "date",
-                        httpdate::fmt_http_date(std::time::SystemTime::now())
-                            .parse()
-                            .unwrap(),
-                    );
+                    map.insert("date", maximus_core::response_date());
                 }
                 if !map.contains_key("content-length")
                     && parts.status != http::StatusCode::NO_CONTENT

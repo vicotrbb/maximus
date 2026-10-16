@@ -1087,7 +1087,6 @@ dependencies = [
  "compio",
  "futures-util",
  "http-body-util",
- "httpdate",
  "hyper",
  "hyper-util",
  "maximus-core",
