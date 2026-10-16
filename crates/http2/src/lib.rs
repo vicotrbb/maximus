@@ -156,27 +156,14 @@ async fn read_frame<R: ReadWire>(
     mut header_deadline: Option<Instant>,
 ) -> (R, Result<ReceivedFrame, ReadError>) {
     let result = async {
-        let h = if let Some(deadline) = header_deadline {
-            if Instant::now() >= deadline {
-                return Err(ReadError::Protocol(PROTOCOL));
-            }
-            compio::time::timeout(
-                deadline.saturating_duration_since(Instant::now()),
-                reader.read_header(),
-            )
-            .await
-            .map_err(|_| ReadError::Protocol(PROTOCOL))?
-            .map_err(ReadError::Io)?
-        } else {
-            reader.read_header().await.map_err(ReadError::Io)?
-        };
+        let h = read_before(reader.read_header(), header_deadline).await?;
         let header = Header::decode(h, MAX_FRAME).map_err(ReadError::Protocol)?;
         // The deadline starts at the first HEADERS envelope, not after its payload.
         // A continuation retains the same absolute deadline, including its envelope read.
         if header.kind == 1 && header_deadline.is_none() {
             header_deadline = Some(Instant::now() + header_timeout);
         }
-        let payload = read_before(&mut reader, header.len, header_deadline).await?;
+        let payload = read_before(reader.exact(header.len), header_deadline).await?;
         Ok(ReceivedFrame {
             header,
             payload,
@@ -186,24 +173,20 @@ async fn read_frame<R: ReadWire>(
     .await;
     (reader, result)
 }
-async fn read_before<R: ReadWire>(
-    reader: &mut R,
-    size: usize,
+async fn read_before<T>(
+    read: impl std::future::Future<Output = io::Result<T>>,
     deadline: Option<Instant>,
-) -> Result<Vec<u8>, ReadError> {
+) -> Result<T, ReadError> {
     if let Some(deadline) = deadline {
         if Instant::now() >= deadline {
             return Err(ReadError::Protocol(PROTOCOL));
         }
-        compio::time::timeout(
-            deadline.saturating_duration_since(Instant::now()),
-            reader.exact(size),
-        )
-        .await
-        .map_err(|_| ReadError::Protocol(PROTOCOL))?
-        .map_err(ReadError::Io)
+        compio::time::timeout(deadline.saturating_duration_since(Instant::now()), read)
+            .await
+            .map_err(|_| ReadError::Protocol(PROTOCOL))?
+            .map_err(ReadError::Io)
     } else {
-        reader.exact(size).await.map_err(ReadError::Io)
+        read.await.map_err(ReadError::Io)
     }
 }
 enum ReadError {
