@@ -6,4 +6,4 @@ Run `scripts/check.sh` and `scripts/test-linux.sh`. The latter requires Docker w
 
 For performance changes, preserve baseline and candidate raw results, use identical workloads and CPU placement, repeat trials, and report medians plus tail latency, errors, dropped iterations, CPU and memory. A lower latency under a lower offered load is not an improvement. Do not commit build outputs, private keys, profiler dumps or generated fuzz corpora.
 
-HTTP/3 changes must also run the retained upstream tests with `cargo test --manifest-path vendor/h3/Cargo.toml` and `scripts/check-downstream.sh`. Keep changes to vendored code minimal and listed in `vendor/h3/PATCHES.md`; the copy exists only for validation defects that cannot be repaired after decoding.
+HTTP/3 changes must also run the retained upstream tests with `cargo test --manifest-path vendor/h3/Cargo.toml --all-features --locked` and `scripts/check-downstream.sh`. Keep changes to vendored code minimal and listed in `vendor/h3/PATCHES.md`; the copy exists only for validation defects that cannot be repaired after decoding.

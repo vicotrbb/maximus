@@ -1,0 +1,210 @@
+{
+  "workloads": {
+    "date_utc": "2026-10-16T03:40:00Z",
+    "args": {
+      "engines": "maximus,epoll,hyper,axum,actix,nginx",
+      "paths": "/plaintext,/json,/echo,/users/42",
+      "rates": "0",
+      "workers": 1,
+      "duration": "10s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "qualified-workloads",
+      "client_cpus": "2",
+      "sample_seconds": 0,
+      "protocol": "plain"
+    },
+    "source_commit": "2f2f79818df2845df624016939ac63444c3c6f7a",
+    "source_dirty": false,
+    "docker": "29.4.0",
+    "kernel": "Linux b6bb456c46bc 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+    "cpus": "3",
+    "images": {
+      "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+      "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+    },
+    "background_container_count": 11
+  },
+  "arrival": {
+    "date_utc": "2026-10-16T03:57:39Z",
+    "args": {
+      "engines": "maximus,epoll,hyper,axum,actix",
+      "paths": "/plaintext",
+      "rates": "5000",
+      "workers": 1,
+      "duration": "10s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "qualified-arrival",
+      "client_cpus": "2",
+      "sample_seconds": 0,
+      "protocol": "plain"
+    },
+    "source_commit": "2f2f79818df2845df624016939ac63444c3c6f7a",
+    "source_dirty": false,
+    "docker": "29.4.0",
+    "kernel": "Linux 0632107735bb 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+    "cpus": "3",
+    "images": {
+      "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+      "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+    },
+    "background_container_count": 11
+  },
+  "scaling": {
+    "date_utc": "2026-10-16T04:01:35Z",
+    "args": {
+      "engines": "maximus,epoll,hyper,axum,actix",
+      "paths": "/plaintext",
+      "rates": "0",
+      "workers": 2,
+      "duration": "10s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "qualified-scaling",
+      "client_cpus": "2",
+      "sample_seconds": 0,
+      "protocol": "plain"
+    },
+    "source_commit": "2f2f79818df2845df624016939ac63444c3c6f7a",
+    "source_dirty": false,
+    "docker": "29.4.0",
+    "kernel": "Linux 28363ec280ea 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+    "cpus": "3",
+    "images": {
+      "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+      "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+    },
+    "background_container_count": 11
+  },
+  "tls-h1": {
+    "date_utc": "2026-10-16T04:05:35Z",
+    "args": {
+      "engines": "maximus,hyper,axum",
+      "paths": "/plaintext,/echo",
+      "rates": "0",
+      "workers": 1,
+      "duration": "10s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "qualified-tls-h1",
+      "client_cpus": "2",
+      "sample_seconds": 0,
+      "protocol": "h1"
+    },
+    "source_commit": "2f2f79818df2845df624016939ac63444c3c6f7a",
+    "source_dirty": false,
+    "docker": "29.4.0",
+    "kernel": "Linux c750497dfdab 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+    "cpus": "3",
+    "images": {
+      "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+      "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+    },
+    "background_container_count": 12
+  },
+  "tls-h2": {
+    "date_utc": "2026-10-16T04:10:17Z",
+    "args": {
+      "engines": "maximus,hyper,axum",
+      "paths": "/plaintext,/echo",
+      "rates": "0",
+      "workers": 1,
+      "duration": "10s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "qualified-tls-h2",
+      "client_cpus": "2",
+      "sample_seconds": 0,
+      "protocol": "h2"
+    },
+    "source_commit": "2f2f79818df2845df624016939ac63444c3c6f7a",
+    "source_dirty": false,
+    "docker": "29.4.0",
+    "kernel": "Linux 396a967a2130 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+    "cpus": "3",
+    "images": {
+      "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+      "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+    },
+    "background_container_count": 12
+  },
+  "sustained": {
+    "date_utc": "2026-10-16T04:14:52Z",
+    "args": {
+      "engines": "maximus",
+      "paths": "/echo",
+      "rates": "0",
+      "workers": 1,
+      "duration": "5m",
+      "repeats": 1,
+      "vus": 64,
+      "label": "qualified-sustained",
+      "client_cpus": "2",
+      "sample_seconds": 5.0,
+      "protocol": "plain"
+    },
+    "source_commit": "2f2f79818df2845df624016939ac63444c3c6f7a",
+    "source_dirty": false,
+    "docker": "29.4.0",
+    "kernel": "Linux d544ab39b208 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+    "cpus": "3",
+    "images": {
+      "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+      "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+    },
+    "background_container_count": 11
+  },
+  "capacity": {
+    "date_utc": "2026-10-16T04:27:46Z",
+    "args": {
+      "engines": "maximus,epoll,hyper,axum,actix",
+      "paths": "/plaintext",
+      "rates": "0",
+      "workers": 1,
+      "duration": "30s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "qualified-capacity",
+      "client_cpus": "1,2",
+      "sample_seconds": 0,
+      "protocol": "plain"
+    },
+    "source_commit": "2f2f79818df2845df624016939ac63444c3c6f7a",
+    "source_dirty": false,
+    "docker": "29.4.0",
+    "kernel": "Linux 0fe25a375c1e 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+    "cpus": "3",
+    "images": {
+      "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+      "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+    },
+    "background_container_count": 11
+  },
+  "arrival-provisioned": {
+    "date_utc": "2026-10-16T04:23:53Z",
+    "args": {
+      "engines": "maximus,epoll,hyper,axum,actix",
+      "paths": "/plaintext",
+      "rates": "5000",
+      "workers": 1,
+      "duration": "10s",
+      "repeats": 3,
+      "vus": 512,
+      "label": "qualified-arrival-provisioned",
+      "client_cpus": "2",
+      "sample_seconds": 0,
+      "protocol": "plain"
+    },
+    "source_commit": "2f2f79818df2845df624016939ac63444c3c6f7a",
+    "source_dirty": false,
+    "docker": "29.4.0",
+    "kernel": "Linux 4bd3a7d72c90 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+    "cpus": "3",
+    "images": {
+      "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+      "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+    },
+    "background_container_count": 11
+  }
+}

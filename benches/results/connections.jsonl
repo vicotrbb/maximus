@@ -1,0 +1,32 @@
+{"phase": "baseline", "usage_usec": 29062, "VmRSS": 4716, "Threads": 2, "fds": 6}
+{"cycle": 0, "phase": "connected", "connections": 20000, "seconds": 2.913944084000832, "usage_usec": 602276, "VmRSS": 538888, "Threads": 2, "fds": 20006}
+{"cycle": 0, "phase": "revalidated", "connections": 20000, "usage_usec": 820393, "VmRSS": 539008, "Threads": 2, "fds": 20006}
+{"cycle": 0, "phase": "closed", "seconds": 14.729359917000693, "usage_usec": 1014004, "VmRSS": 539008, "Threads": 3, "fds": 6}
+{"cycle": 1, "phase": "connected", "connections": 20000, "seconds": 2.8598887730004208, "usage_usec": 1397431, "VmRSS": 608456, "Threads": 3, "fds": 20006}
+{"cycle": 1, "phase": "revalidated", "connections": 20000, "usage_usec": 1588730, "VmRSS": 608456, "Threads": 3, "fds": 20006}
+{"cycle": 1, "phase": "closed", "seconds": 14.699253832000977, "usage_usec": 1837765, "VmRSS": 608456, "Threads": 3, "fds": 6}
+{"cycle": 2, "phase": "connected", "connections": 20000, "seconds": 3.455583602999468, "usage_usec": 2296220, "VmRSS": 614924, "Threads": 3, "fds": 20006}
+{"cycle": 2, "phase": "revalidated", "connections": 20000, "usage_usec": 2679912, "VmRSS": 615252, "Threads": 3, "fds": 20006}
+{"cycle": 2, "phase": "closed", "seconds": 15.648093209998478, "usage_usec": 2977297, "VmRSS": 612400, "Threads": 4, "fds": 6}
+{"cycle": 3, "phase": "connected", "connections": 20000, "seconds": 3.916157260999171, "usage_usec": 3548447, "VmRSS": 615916, "Threads": 4, "fds": 20006}
+{"cycle": 3, "phase": "revalidated", "connections": 20000, "usage_usec": 3912587, "VmRSS": 616052, "Threads": 3, "fds": 20006}
+{"cycle": 3, "phase": "closed", "seconds": 15.907733636000557, "usage_usec": 4144662, "VmRSS": 616052, "Threads": 3, "fds": 6}
+{"cycle": 4, "phase": "connected", "connections": 20000, "seconds": 2.8402336559993273, "usage_usec": 4515663, "VmRSS": 616168, "Threads": 3, "fds": 20006}
+{"cycle": 4, "phase": "revalidated", "connections": 20000, "usage_usec": 4746017, "VmRSS": 616168, "Threads": 3, "fds": 20006}
+{"cycle": 4, "phase": "closed", "seconds": 14.680507716999273, "usage_usec": 4937874, "VmRSS": 616168, "Threads": 3, "fds": 6}
+{"cycle": 5, "phase": "connected", "connections": 20000, "seconds": 3.408803609001552, "usage_usec": 5355971, "VmRSS": 616168, "Threads": 3, "fds": 20006}
+{"cycle": 5, "phase": "revalidated", "connections": 20000, "usage_usec": 5591615, "VmRSS": 616168, "Threads": 3, "fds": 20006}
+{"cycle": 5, "phase": "closed", "seconds": 15.21663049000017, "usage_usec": 5799007, "VmRSS": 615460, "Threads": 3, "fds": 6}
+{"cycle": 6, "phase": "connected", "connections": 20000, "seconds": 3.0469998019998457, "usage_usec": 6193707, "VmRSS": 615716, "Threads": 3, "fds": 20006}
+{"cycle": 6, "phase": "revalidated", "connections": 20000, "usage_usec": 6382393, "VmRSS": 615724, "Threads": 3, "fds": 20006}
+{"cycle": 6, "phase": "closed", "seconds": 14.957827620000899, "usage_usec": 6585036, "VmRSS": 615724, "Threads": 4, "fds": 6}
+{"cycle": 7, "phase": "connected", "connections": 20000, "seconds": 3.038589673000388, "usage_usec": 6964611, "VmRSS": 615724, "Threads": 4, "fds": 20006}
+{"cycle": 7, "phase": "revalidated", "connections": 20000, "usage_usec": 7495458, "VmRSS": 615724, "Threads": 3, "fds": 20006}
+{"cycle": 7, "phase": "closed", "seconds": 15.31195717799892, "usage_usec": 7877946, "VmRSS": 613764, "Threads": 3, "fds": 6}
+{"cycle": 8, "phase": "connected", "connections": 20000, "seconds": 3.576419316999818, "usage_usec": 8418991, "VmRSS": 615548, "Threads": 3, "fds": 20006}
+{"cycle": 8, "phase": "revalidated", "connections": 20000, "usage_usec": 9217487, "VmRSS": 615684, "Threads": 3, "fds": 20006}
+{"cycle": 8, "phase": "closed", "seconds": 16.25525378599923, "usage_usec": 9486582, "VmRSS": 615684, "Threads": 3, "fds": 6}
+{"cycle": 9, "phase": "connected", "connections": 20000, "seconds": 3.472723667000537, "usage_usec": 9967077, "VmRSS": 615684, "Threads": 3, "fds": 20006}
+{"cycle": 9, "phase": "revalidated", "connections": 20000, "usage_usec": 10195781, "VmRSS": 615684, "Threads": 3, "fds": 20006}
+{"cycle": 9, "phase": "closed", "seconds": 15.395221381999363, "usage_usec": 10397857, "VmRSS": 615684, "Threads": 4, "fds": 6}
+{"phase": "finished", "usage_usec": 10404491, "VmRSS": 615684, "Threads": 4, "fds": 6}

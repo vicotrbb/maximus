@@ -1,0 +1,8 @@
+Linux 6.6.68 x86_64 GNU/Linux
+MemTotal:       32245544 kB
+MemFree:          816340 kB
+MemAvailable:   17552560 kB
+powersave
+100
+09c2952fdd0a982d797978c35e590bb00bdc02dbfee9ec13fe50fadafb25c22f  /usr/bin/perf
+k6 v1.6.0+dirty (commit/d97957fc61-dirty, go1.25.6, linux/amd64)

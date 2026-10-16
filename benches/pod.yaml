@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: benchmark
+  labels:
+    app.kubernetes.io/part-of: maximus-qualification
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: benchmark-node
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 5
+  automountServiceAccountToken: false
+  containers:
+  - name: server
+    image: rust:1.96-bookworm
+    command: ["/bin/sh", "-c", "sleep infinity"]
+    resources:
+      requests: {cpu: "4", memory: "4Gi", ephemeral-storage: "1Gi"}
+      limits: {cpu: "4", memory: "4Gi", ephemeral-storage: "12Gi"}
+    securityContext:
+      seccompProfile: {type: Unconfined}
+      capabilities:
+        add: [PERFMON, SYS_PTRACE]
+    volumeMounts:
+    - {name: work, mountPath: /work}
+  - name: client
+    image: grafana/k6:1.6.0
+    command: ["/bin/sh", "-c", "sleep infinity"]
+    resources:
+      requests: {cpu: "4", memory: "1Gi"}
+      limits: {cpu: "4", memory: "1Gi"}
+    securityContext:
+      runAsUser: 0
+    volumeMounts:
+    - {name: work, mountPath: /work}
+  volumes:
+  - name: work
+    emptyDir: {sizeLimit: "8Gi"}

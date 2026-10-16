@@ -1,0 +1,33 @@
+perf version 6.1.187
+wrk debian/4.1.0-3+b2 [epoll] Copyright (C) 2012 Will Glozer
+Usage: wrk <options> <url>
+  Options:
+    -c, --connections <N>  Connections to keep open
+    -d, --duration    <T>  Duration of test
+    -t, --threads     <N>  Number of threads to use
+
+    -s, --script      <S>  Load Lua script file
+    -H, --header      <H>  Add header to request
+        --latency          Print latency statistics
+        --timeout     <T>  Socket/request timeout
+    -v, --version          Print version details
+
+  Numeric arguments may include a SI unit (1k, 1M, 1G)
+  Time arguments may include a time unit (2s, 2m, 2h)
+libc6:amd64	2.36-9+deb12u14
+libgcc-s1:amd64	12.2.0-14+deb12u1
+libluajit-5.1-2:amd64	2.1.0~beta3+git20220320+dfsg-4.1+deb12u1
+libssl3:amd64	3.0.20-1~deb12u2
+linux-perf	6.1.187-1
+util-linux	2.38.1-5+deb12u3
+wrk	4.1.0-3+b2
+02bcda52c1a5dfc236f94d9e5255b4a0e26347d8a372a5223b650e31f291ce3c  /work/tools/ld-linux-x86-64.so.2
+6b4a45352fd0c540a9c7c718f35ce8c8e46a4e482f9d3885a910c32d1a0e1421  /work/tools/libc.so.6
+72db1b3de8b7dfbaba4c056135f408da555f9d5e137c82129478e07e769f8070  /work/tools/libcrypto.so.3
+2bd1552c47799ef67e701e81d4383061fd76059868e446e63560f0dd0d5ec14e  /work/tools/libgcc_s.so.1
+438bec72abf7e57f87818c2e019006440aee5e512c2b082d4310cfb983f6f647  /work/tools/libluajit-5.1.so.2
+7f2ca87f652f56b094462474b076749e90e689d0ecb9cb63c7679820b271b4e7  /work/tools/libm.so.6
+b93a680da8a05b939b235c1533572e7a2f6d3d8808bf70209997edc64ea5fedc  /work/tools/libpthread.so.0
+9aec161fdbc82d3e4280f5084843118939f1f4acc53c98ec963de03cfe812fad  /work/tools/libssl.so.3
+42e38b38d3926bb1ad156ed0ec0c485d33c8819cf1c3088cd6ec79ae13b8fbc6  /work/tools/taskset
+70fccc21498d8c55400deab34fa2fc913b65bfe45fa28fc944a0921026ee58f0  /work/tools/wrk

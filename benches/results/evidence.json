@@ -1,0 +1,153 @@
+{
+  "product_revision": "2f2f79818df2845df624016939ac63444c3c6f7a",
+  "notes": "Counts are executions, include separate configurations and doc tests, and are not feature counts. Zero parsed test executions denotes a non-Rust-test command. BPF and parser fuzz paths were unchanged in the final hardening commit. Raw local logs remain ignored. See qualification.md for evidence limits.",
+  "checks": [
+    {
+      "log": "final-host-check.log",
+      "command": "scripts/check.sh",
+      "sha256": "e91184244642c0015af6a1da30e112ed2b0ae2b1e820db32789c342c8cb6d459",
+      "bytes": 45497,
+      "passed_test_executions": 57,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "final-linux-check.log",
+      "command": "scripts/test-linux.sh && scripts/test-interop-linux.sh",
+      "sha256": "55f107c5d841abf625be57d36686f5bb12c998594849e00cfd4e06ab4666ce9a",
+      "bytes": 27570,
+      "passed_test_executions": 51,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "log": "homelab-tests.log",
+      "command": "cargo test --workspace --all-features --locked (x86-64 Linux)",
+      "sha256": "7ec0d13b0d62aea2b4a596a4391bf98517eedbe51010ed6e37d56e4ecba3a72b",
+      "bytes": 20488,
+      "passed_test_executions": 51,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "log": "final-ebpf.log",
+      "command": "scripts/test-linux-ebpf.sh",
+      "sha256": "8d05675cc9b641e61b2cc292e89401ca8e35e33582d2b5c420bb2da08ebfefef",
+      "bytes": 415,
+      "passed_test_executions": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "vendor-tests.log",
+      "command": "cargo test --manifest-path vendor/h3/Cargo.toml --all-features --locked",
+      "sha256": "6d770d6433e3328ae381b22bafdeca8e479f784f343ac6d62a7eebd1a94b086f",
+      "bytes": 20057,
+      "passed_test_executions": 237,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "downstream-check.log",
+      "command": "scripts/check-downstream.sh",
+      "sha256": "d67fa0d06b8a1a3725bc4da286ad398bb6bd677f0128814b28a8ce39cdd15c96",
+      "bytes": 9887,
+      "passed_test_executions": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "final-audit.log",
+      "command": "cargo audit",
+      "sha256": "03e5a98dad44dd4215aa29c9c380f9e61c13905563f37b58161e4cac6df82a65",
+      "bytes": 261,
+      "passed_test_executions": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "final-coverage.log",
+      "command": "cargo llvm-cov --workspace --all-features --summary-only",
+      "sha256": "dfbad7fa2573b480679ec93d8a5f30b95bbecbf7bf5b403614c4de3c39dd59a5",
+      "bytes": 20128,
+      "passed_test_executions": 46,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "fuzz.log",
+      "command": "cargo +nightly fuzz run request -- -max_total_time=60 -max_len=4096",
+      "sha256": "60a5cf26343637f9a0caa3ea8f851c9dc899cb5f5c4562326ebb2ec7703c74be",
+      "bytes": 381737,
+      "passed_test_executions": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "final-integrations.log",
+      "command": "focused telemetry and WebSocket integration regressions",
+      "sha256": "24650466b7c423dad69872a72d295d5fd14d2922ab053ab336827bb8e8377e0d",
+      "bytes": 5499,
+      "passed_test_executions": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "final-h3-length.log",
+      "command": "focused HTTP/3 bodyless304 Content-Length regression",
+      "sha256": "2fc278f3ba72df2842d23d95c24f264294ebc1a57d2c655e9e028c9cfd4752a8",
+      "bytes": 5837,
+      "passed_test_executions": 1,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "benchmark_runner": {
+    "path": "benches/kubernetes.py",
+    "sha256": "da7a81bff4d8654eeac175395cee2c729dfb46d658604ecb1fed027f4b4d4cdf",
+    "checks": [
+      {
+        "log": "published-k6-valid-smoke.log",
+        "sha256": "8745cc34d94909cb7c0c0d39025483816523709f07ef65eaee9e83725e44720a",
+        "bytes": 608,
+        "outcome": "PASS: 86,853 validated responses; zero failures or dropped iterations"
+      },
+      {
+        "log": "published-wrk-smoke.log",
+        "sha256": "1f63b7768aa3ae658290211cb71fadbdd581de2c8d4cf82d14ea75a7c14158d8",
+        "bytes": 747,
+        "outcome": "PASS: 241,143 validated responses; zero failures/network errors; hardware counters recorded"
+      },
+      {
+        "log": "published-negative.log",
+        "sha256": "fb1c56a52bdef0455e66ad8269d54d7a25d48ee7f9b645692ae6f3f04e551304",
+        "bytes": 207,
+        "outcome": "PASS: expected nonzero exit on invalid response status/body during warmup"
+      },
+      {
+        "log": "homelab/published-negative-maximus-missing-w1-n0.log",
+        "sha256": "1c1718262afe97e935f17871ec79bc12a81cbc4081898faab882c3770f270ed3",
+        "bytes": 448,
+        "outcome": "48,718 invalid responses correctly rejected; excluded from qualified trials"
+      },
+      {
+        "log": "control-tests.log",
+        "sha256": "7763b003e8c5ccd885ab2fc2e047922c7bf5218d4cde72192d46ec15f5064fb3",
+        "bytes": 153,
+        "outcome": "PASS: bounded subprocess timeout, ambiguous launch without resubmission, polling deadline and failed client"
+      },
+      {
+        "log": "homelab-control-failure-test.log",
+        "sha256": "4a02d309fe509648270ac9cea63580aa3f86ba0cf0edea3447d78432adfde4af",
+        "bytes": 609,
+        "outcome": "PASS: injected control-stream failure after launch recovered persisted completion without duplicate workload"
+      },
+      {
+        "log": "final-cleanup.log",
+        "sha256": "1de7f82224161961a1f56f2c3830872b7f4c342d5aa7615a987119eccfb1f112",
+        "bytes": 739,
+        "outcome": "PASS: source manifest unchanged; owned process PID files absent after positive and negative runs; temporary namespace deleted and absence verified"
+      }
+    ]
+  }
+}

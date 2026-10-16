@@ -1,0 +1,13 @@
+{
+  "wrk": {
+    "revision": "d34635e9b12f38d77401ee1c92151272a725a3ea",
+    "path": "benches/kubernetes.py",
+    "sha256": "22f6f3d2819af5f1ad48953d3d8528f328b3f4194cc31492aa1dae0fb6dc6f9b"
+  },
+  "k6": {
+    "revision": "abc0ffc76d9a825335a3d71a1d24315da22666f5",
+    "path": "benches/kubernetes.py",
+    "sha256": "38107799bb9e10233877b815e334143e20400700219a98e4a082c1724a6c1b90"
+  },
+  "notes": "wrk uses the first driver; k6, arrival and sustained use the completion-persisting driver. The final published runner adds bounded control-call timeouts and richer provenance without changing the server, payloads or measurement calculations."
+}
