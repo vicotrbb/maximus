@@ -54,6 +54,7 @@ fn expand(routes: Routes) -> syn::Result<proc_macro2::TokenStream> {
     });
     let mut groups = std::collections::HashMap::new();
     let mut seen = std::collections::HashSet::new();
+    // ponytail: direct branches suit small route sets; add a trie only after large-route measurements.
     let mut branches = Vec::new();
     for route in routes {
         let method = route.method.to_string();

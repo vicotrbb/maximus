@@ -41,6 +41,19 @@ fn real_quic_http3_request_response() {
                                 .await
                                 .map(|body| body.to_bytes())
                                 .into_response(),
+                            "/bad-length" => maximus_core::http::Response::builder()
+                                .header("content-length", "1")
+                                .body(Body::from("abc"))
+                                .unwrap(),
+                            "/short-length" => maximus_core::http::Response::builder()
+                                .header("content-length", "9")
+                                .body(Body::from("abc"))
+                                .unwrap(),
+                            "/invalid-304-length" => maximus_core::http::Response::builder()
+                                .status(304)
+                                .header("content-length", "invalid")
+                                .body(Body::empty())
+                                .unwrap(),
                             "/broken" => Body::stream(futures_util::stream::iter([
                                 Ok(Bytes::from_static(b"partial")),
                                 Err(Error::bad_request("broken producer")),
@@ -114,7 +127,14 @@ fn real_quic_http3_request_response() {
         assert_eq!(output, b"hello h3");
         drop(stream);
         // The peer must observe reset, never clean EOF, on producer error or timeout.
-        for path in ["/broken", "/stalled", "/credit"] {
+        for path in [
+            "/broken",
+            "/stalled",
+            "/credit",
+            "/bad-length",
+            "/short-length",
+            "/invalid-304-length",
+        ] {
             let mut stream = sender
                 .send_request(
                     maximus_core::http::Request::get(format!("https://localhost{path}"))

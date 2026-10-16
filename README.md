@@ -58,6 +58,8 @@ Only `macros` is enabled by default. Features are additive; `--no-default-featur
 | `opentelemetry` | Parent propagation, server spans, duration/active metrics | All |
 | `ebpf` | Attach an already loaded reuseport BPF program | Linux TCP/UDP |
 
+HTTP/3 uses a focused patch to the released `h3` decoder for strict malformed-field rejection. This workspace applies it automatically. An external application enabling `http3` must also add `[patch.crates-io] h3 = { path = "path/to/maximus/vendor/h3" }` to its own manifest. See [patch provenance and removal criteria](vendor/h3/PATCHES.md); Cargo does not inherit a dependency's patches.
+
 The [feature example](examples/features.rs) runs JSON, uploads, SSE, gzip, CORS, WebSockets and typed routes. Set `MAXIMUS_CERT` and `MAXIMUS_KEY` to PEM files to enable TLS ALPN and HTTP/3 on the same numeric port. HTTP/3 is also available independently through `maximus-http3::endpoint/serve`. WebSockets use HTTP/1.1; extended CONNECT is not implemented. HTTP/2 cleartext uses prior knowledge, not an HTTP/1 Upgrade handshake.
 
 ```sh

@@ -25,12 +25,14 @@ class H3Client(QuicConnectionProtocol):
                 if isinstance(event, HeadersReceived): headers.update(event.headers)
                 else: body.extend(event.data)
                 if event.stream_ended and not future.done(): future.set_result((headers, bytes(body)))
-    async def request(self, path, method='GET', body=b'', headers=()):
+    async def request(self, path, method='GET', body=b'', headers=(), raw_headers=None, trailers=()):
         stream = self._quic.get_next_available_stream_id()
         future = asyncio.get_running_loop().create_future()
         self.pending[stream] = future, {}, bytearray()
-        self.http.send_headers(stream, [(b':method', method.encode()), (b':scheme', b'https'), (b':authority', b'localhost'), (b':path', path.encode()), *headers], end_stream=not body)
-        if body: self.http.send_data(stream, body, end_stream=True)
+        fields = raw_headers if raw_headers is not None else [(b':method', method.encode()), (b':scheme', b'https'), (b':authority', b'localhost'), (b':path', path.encode()), *headers]
+        self.http.send_headers(stream, fields, end_stream=not body and not trailers)
+        if body: self.http.send_data(stream, body, end_stream=not trailers)
+        if trailers: self.http.send_headers(stream, trailers, end_stream=True)
         self.transmit()
         try: return await asyncio.wait_for(future, 5)
         finally: del self.pending[stream]
@@ -43,6 +45,8 @@ async def exercise(port, secure, cert):
             r = await client.get('/plaintext')
             assert r.status_code == 200 and r.text == 'Hello, World!'
             assert r.http_version == ('HTTP/2' if h2 else 'HTTP/1.1'), r.http_version
+            if h2:
+                assert (await client.get('/cookies', headers=[('cookie', 'a=1'), ('cookie', 'b=2')])).text == 'a=1; b=2'
             payload = b'x' * 256000
             r = await client.post('/echo', content=payload)
             assert r.status_code == 200 and r.content == payload
@@ -93,6 +97,27 @@ async def exercise(port, secure, cert):
                     raise AssertionError('malformed length received clean success')
                 except RuntimeError as error:
                     assert str(error) == 'H3 stream reset: 270', error  # H3_MESSAGE_ERROR
+            base = [(b':method', b'GET'), (b':scheme', b'https'), (b':authority', b'localhost'), (b':path', b'/plaintext')]
+            malformed = [base + [field] for field in base]
+            malformed += [base + [(b'x-test', b'ok'), (b':path', b'/plaintext')], base + [(b':status', b'200')]]
+            malformed += [[(name, b'' if name == b':scheme' else value) for name, value in base]]
+            malformed += [base + [(name, b'invalid')] for name in [b'connection', b'keep-alive', b'proxy-connection', b'upgrade', b'transfer-encoding', b'te']]
+            for fields in malformed:
+                try:
+                    await client.request('/plaintext', raw_headers=fields)
+                    raise AssertionError(f'malformed H3 fields accepted: {fields}')
+                except RuntimeError as error:
+                    assert str(error) == 'H3 stream reset: 270', error
+            for trailers in [[(b':path', b'/ignored')], [(b'connection', b'close')]]:
+                try:
+                    await client.request('/echo', 'POST', b'abc', trailers=trailers)
+                    raise AssertionError('malformed H3 trailers accepted')
+                except RuntimeError as error:
+                    assert str(error) == 'H3 stream reset: 270', error
+            headers, body = await client.request('/cookies', headers=[(b'cookie', b'a=1'), (b'cookie', b'b=2')])
+            assert headers[b':status'] == b'200' and body == b'a=1; b=2'
+            headers, body = await client.request('/plaintext', headers=[(b'te', b'trailers')])
+            assert headers[b':status'] == b'200'
         print('HTTP/3 verified QUIC: 16 concurrent uploads, flow control, JSON, HEAD, SSE, errors PASS', flush=True)
 
 async def main():

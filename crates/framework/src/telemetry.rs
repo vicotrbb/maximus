@@ -62,6 +62,7 @@ where
             duration: self.duration.clone(),
             active: self.active.clone(),
             attributes,
+            responded: false,
             finished: false,
         };
         let response = self
@@ -83,6 +84,7 @@ where
         ));
         let (parts, inner) = response.into_parts();
         body.body = inner;
+        body.responded = true;
         Response::from_parts(parts, Body::frames(body))
     }
 }
@@ -102,6 +104,7 @@ struct TracedBody {
     duration: Histogram<f64>,
     active: UpDownCounter<i64>,
     attributes: Vec<KeyValue>,
+    responded: bool,
     finished: bool,
 }
 impl TracedBody {
@@ -135,6 +138,6 @@ impl Stream for TracedBody {
 }
 impl Drop for TracedBody {
     fn drop(&mut self) {
-        self.finish(!self.body.is_end_stream());
+        self.finish(!self.responded || !self.body.is_end_stream());
     }
 }

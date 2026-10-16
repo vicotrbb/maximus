@@ -228,6 +228,7 @@ async fn write_response(
         "keep-alive",
         "upgrade",
         "proxy-connection",
+        "te",
     ] {
         parts.headers.remove(name);
     }
@@ -238,6 +239,8 @@ async fn write_response(
     let no_body = head
         || parts.status == http::StatusCode::NO_CONTENT
         || parts.status == http::StatusCode::NOT_MODIFIED;
+    let declared = maximus_http1::content_length(&parts.headers).map_err(io::Error::other)?;
+    let mut remaining = if no_body { None } else { declared };
     compio::time::timeout(
         timeout,
         send.send_response(http::Response::from_parts(parts, ())),
@@ -249,10 +252,17 @@ async fn write_response(
         while let Some(frame) = body.frame().await {
             let frame = frame.map_err(io::Error::other)?;
             match frame.into_data() {
-                Ok(data) => compio::time::timeout(timeout, send.send_data(data))
-                    .await
-                    .map_err(io::Error::other)?
-                    .map_err(io::Error::other)?,
+                Ok(data) => {
+                    if let Some(left) = &mut remaining {
+                        *left = left
+                            .checked_sub(data.len() as u64)
+                            .ok_or_else(|| io::Error::other("response exceeds Content-Length"))?;
+                    }
+                    compio::time::timeout(timeout, send.send_data(data))
+                        .await
+                        .map_err(io::Error::other)?
+                        .map_err(io::Error::other)?;
+                }
                 Err(frame) => {
                     if let Ok(trailers) = frame.into_trailers() {
                         compio::time::timeout(timeout, send.send_trailers(trailers))
@@ -267,6 +277,9 @@ async fn write_response(
     }
     if invalid.get() {
         return Err(io::Error::other("malformed request body"));
+    }
+    if remaining.is_some_and(|left| left != 0) {
+        return Err(io::Error::other("response shorter than Content-Length"));
     }
     compio::time::timeout(timeout, send.finish())
         .await

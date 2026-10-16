@@ -49,6 +49,7 @@ mod dynamic {
         shape: String,
         handler: HandlerFn,
     }
+    // ponytail: bounded linear lookup; replace with an index when measured route counts justify it.
     pub struct DynamicRouter {
         routes: Vec<Route>,
         limit: usize,

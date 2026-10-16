@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = ["crates/*"]
+exclude = ["vendor/h3"]
 
 [workspace.package]
 version = "0.1.0"
@@ -27,3 +28,7 @@ unsafe_op_in_unsafe_fn = "deny"
 
 [workspace.lints.clippy]
 undocumented_unsafe_blocks = "deny"
+
+# Required until upstream ships strict decoded-field validation. See vendor/h3/PATCHES.md.
+[patch.crates-io]
+h3 = { path = "vendor/h3" }

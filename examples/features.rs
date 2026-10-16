@@ -29,6 +29,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let server = server.start(|| {
         let routes = routes! {
             GET "/plaintext" => plain,
+            GET "/cookies" => cookies,
             GET "/users/{id:u64}" => user,
             POST "/echo" => echo,
             POST "/json" => json,
@@ -54,6 +55,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 async fn plain(_: Request) -> &'static str {
     "Hello, World!"
+}
+async fn cookies(request: Request) -> Result<String, maximus::Error> {
+    request.header("cookie")
 }
 async fn user(_: Request, id: u64) -> String {
     id.to_string()

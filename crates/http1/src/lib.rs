@@ -73,28 +73,32 @@ pub async fn dispatch_request<H: Handler>(
 }
 
 async fn dispatch_inner<H: Handler>(
-    request: Request,
+    mut request: Request,
     handler: Rc<H>,
     limits: Rc<Limits>,
 ) -> Response {
     if let Err(error) = maximus_router::validate_path(request.uri().path()) {
         return error.into_response();
     }
-    if request.version() == hyper::Version::HTTP_11
-        && request.headers().get_all("host").iter().count() != 1
-    {
+    let hosts = request.headers().get_all("host").iter().count();
+    if hosts > 1 || request.version() == hyper::Version::HTTP_11 && hosts != 1 {
         return (
             StatusCode::BAD_REQUEST,
             "exactly one Host header is required",
         )
             .into_response();
     }
-    if request.headers().get("host").is_some_and(|value| {
-        value
-            .to_str()
-            .ok()
-            .is_none_or(|host| !valid_authority(host))
-    }) {
+    if request
+        .uri()
+        .authority()
+        .is_some_and(|authority| !valid_authority(authority.as_str()))
+        || request.headers().get("host").is_some_and(|value| {
+            value
+                .to_str()
+                .ok()
+                .is_none_or(|host| !valid_authority(host))
+        })
+    {
         return (StatusCode::BAD_REQUEST, "invalid Host authority").into_response();
     }
     match content_length(request.headers()) {
@@ -110,6 +114,24 @@ async fn dispatch_inner<H: Handler>(
         }) > limits.header_bytes
     {
         return StatusCode::REQUEST_HEADER_FIELDS_TOO_LARGE.into_response();
+    }
+    // RFC 9113 §8.2.3 / RFC 9114 §4.2.1: generic handlers receive one Cookie field.
+    if matches!(
+        request.version(),
+        hyper::Version::HTTP_2 | hyper::Version::HTTP_3
+    ) && request.headers().get_all("cookie").iter().count() > 1
+    {
+        let mut combined = Vec::new();
+        for (index, value) in request.headers().get_all("cookie").iter().enumerate() {
+            if index != 0 {
+                combined.extend_from_slice(b"; ");
+            }
+            combined.extend_from_slice(value.as_bytes());
+        }
+        let mut value = maximus_core::HeaderValue::from_bytes(&combined)
+            .expect("valid Cookie fields joined with a valid delimiter");
+        value.set_sensitive(true);
+        request.headers_mut().insert("cookie", value);
     }
     match compio::time::timeout(limits.request_timeout, handler.handle(request)).await {
         Ok(response) => response.map(|body| {

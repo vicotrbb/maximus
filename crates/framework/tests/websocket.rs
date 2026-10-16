@@ -11,19 +11,21 @@ fn websocket_handshake_masked_echo_and_shutdown() {
     let server = Server::new("127.0.0.1:0".parse().unwrap())
         .start(|| {
             |request: Request| async move {
-                WebSocketUpgrade::new(request).map(|upgrade| {
-                    upgrade.on_upgrade(|mut socket| async move {
-                        while let Some(Ok(message)) = socket.next().await {
-                            if message.is_close() {
-                                let _ = socket.close(None).await;
-                                break;
+                WebSocketUpgrade::new(request)
+                    .and_then(|upgrade| upgrade.protocols(&["chat"]))
+                    .map(|upgrade| {
+                        upgrade.limits(8, 8).on_upgrade(|mut socket| async move {
+                            while let Some(Ok(message)) = socket.next().await {
+                                if message.is_close() {
+                                    let _ = socket.close(None).await;
+                                    break;
+                                }
+                                if socket.send(message).await.is_err() {
+                                    break;
+                                }
                             }
-                            if socket.send(message).await.is_err() {
-                                break;
-                            }
-                        }
+                        })
                     })
-                })
             }
         })
         .unwrap();
@@ -31,17 +33,32 @@ fn websocket_handshake_masked_echo_and_shutdown() {
     stream
         .set_read_timeout(Some(Duration::from_secs(2)))
         .unwrap();
+    use async_tungstenite::tungstenite::client::IntoClientRequest;
+    let mut request = format!("ws://{}/", server.local_addr())
+        .into_client_request()
+        .unwrap();
+    request
+        .headers_mut()
+        .insert("sec-websocket-protocol", "other, chat".parse().unwrap());
     let (mut websocket, response) =
-        async_tungstenite::tungstenite::client(format!("ws://{}/", server.local_addr()), stream)
-            .unwrap();
+        async_tungstenite::tungstenite::client(request, stream).unwrap();
     assert_eq!(response.status(), 101);
+    assert_eq!(response.headers()["sec-websocket-protocol"], "chat");
     websocket
         .send(async_tungstenite::tungstenite::Message::Text(
             "hello".into(),
         ))
         .unwrap();
     assert_eq!(websocket.read().unwrap().into_text().unwrap(), "hello");
-    websocket.close(None).unwrap();
+    websocket
+        .send(async_tungstenite::tungstenite::Message::Binary(
+            vec![42; 9].into(),
+        ))
+        .unwrap();
+    assert!(
+        websocket.read().is_err(),
+        "configured frame/message limit must close the connection"
+    );
     let mut bad = TcpStream::connect(server.local_addr()).unwrap();
     bad.set_read_timeout(Some(Duration::from_secs(2))).unwrap();
     bad.write_all(b"GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n")
