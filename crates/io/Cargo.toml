@@ -10,3 +10,6 @@ workspace = true
 
 [dependencies]
 compio.workspace = true
+
+[dev-dependencies]
+futures-util.workspace = true

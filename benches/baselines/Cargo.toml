@@ -1,0 +1,26 @@
+[package]
+name = "maximus-comparison"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+# Isolated: comparison servers never enter the product dependency graph.
+[workspace]
+
+[dependencies]
+maximus = { path = "../../crates/framework", features = ["tls", "http2"] }
+axum = "0.8"
+actix-web = "4"
+bytes = "1"
+http-body-util = "0.1"
+hyper = { version = "1", features = ["server", "http1", "http2"] }
+hyper-util = { version = "0.1", features = ["tokio", "service"] }
+tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12"] }
+tokio = { version = "1", features = ["rt-multi-thread", "net", "time"] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+
+[dependencies.maximus-runtime]
+path = "../../crates/runtime"

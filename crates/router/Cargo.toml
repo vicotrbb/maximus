@@ -1,0 +1,24 @@
+[package]
+name = "maximus-router"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+maximus-core = { path = "../core" }
+
+[features]
+default = []
+dynamic = []
+
+[dev-dependencies]
+compio.workspace = true
+http-body-util.workspace = true
+
+[[test]]
+name = "routes"
+required-features = ["dynamic"]

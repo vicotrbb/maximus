@@ -1,0 +1,25 @@
+[package]
+name = "maximus-http1"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+maximus-core = { path = "../core" }
+maximus-runtime = { path = "../runtime" }
+compio.workspace = true
+hyper.workspace = true
+http-body-util.workspace = true
+futures-util.workspace = true
+hyper-util = { version = "0.1", features = ["tokio"] }
+tokio-util = { version = "0.7", features = ["compat"] }
+send_wrapper = { version = "0.6", features = ["futures"] }
+maximus-router = { path = "../router" }
+
+[features]
+default = []
+websocket = []

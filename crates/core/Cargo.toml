@@ -1,0 +1,31 @@
+[package]
+name = "maximus-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+bytes.workspace = true
+http.workspace = true
+http-body.workspace = true
+http-body-util.workspace = true
+futures-util.workspace = true
+hyper.workspace = true
+
+serde = { version = "1", features = ["derive"], optional = true }
+serde_json = { version = "1", optional = true }
+multer = { version = "3", optional = true }
+send_wrapper = { version = "0.6", features = ["futures"], optional = true }
+
+[features]
+default = []
+json = ["dep:serde", "dep:serde_json"]
+multipart = ["dep:multer", "dep:send_wrapper"]
+sse = []
+
+[dev-dependencies]
+compio.workspace = true

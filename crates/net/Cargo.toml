@@ -11,3 +11,11 @@ workspace = true
 [dependencies]
 compio.workspace = true
 socket2.workspace = true
+
+[features]
+default = []
+ebpf = ["dep:libc"]
+
+[dependencies.libc]
+version = "0.2"
+optional = true

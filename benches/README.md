@@ -1,0 +1,44 @@
+# Reproducible performance checks
+
+The comparison servers are an isolated Cargo workspace. Product builds do not resolve Axum, Actix or their benchmark dependencies. All Rust servers use thin LTO and one codegen unit. Commit both lockfiles when changing dependencies.
+
+## Build and run
+
+```sh
+docker pull rust:1.96-bookworm
+docker pull grafana/k6:1.6.0
+docker pull nginx:1.29.6-alpine
+docker build -f benches/Dockerfile.tools -t maximus-tools .
+docker run --rm --security-opt seccomp=unconfined \
+  -v "$PWD:/work" -v maximus-cargo:/usr/local/cargo \
+  -v maximus-bench-target:/work/benches/baselines/target \
+  -w /work/benches/baselines rust:1.96-bookworm cargo build --release --locked
+python3 benches/run.py --label plaintext --paths /plaintext --repeats 3
+python3 benches/run.py --label arrival --rates 5000,15000 --duration 30s --repeats 3
+python3 benches/run.py --label scaling --workers 2 --paths /plaintext --repeats 3
+python3 benches/run.py --label tls-h2 --engines maximus,hyper,axum --protocol h2 --paths /plaintext,/echo --rates 5000 --repeats 3
+python3 benches/run.py --label tls-h1 --engines maximus,hyper,axum --protocol h1 --paths /plaintext --rates 5000 --repeats 3
+python3 benches/run.py --label native --engines maximus,nginx --paths /plaintext,/json --repeats 3
+```
+
+The runner assumes three Linux CPUs: server CPU 0 (0–1 with two workers), client CPU 2. Run no other workloads during measurement. It warms for 3 seconds, rotates server order across repeats, checks every status/body/protocol, records p50/p99/p99.9, achieved requests/sec, failure counts, dropped iterations, server cgroup CPU microseconds/request, and process-tree RSS. Raw JSON, logs and environment/image digests go to `artifacts/bench/`. Fixed arrival rates are open-loop; zero means a closed-loop constant-VU scenario. [k6 arrival-rate behavior](https://grafana.com/docs/k6/latest/using-k6/scenarios/executors/constant-arrival-rate/) and [threshold semantics](https://grafana.com/docs/k6/latest/using-k6/thresholds/) define the distinction. Dropped iterations are a load-generator shortfall and must not be counted as completed server requests.
+
+TLS runs use the same generated RSA certificate, Rustls/Ring configuration, TLS 1.3 range, ALPN selection and response payload. The local CA is trusted by k6; certificate verification stays enabled. H2 flow-control and concurrent-stream settings match. k6 protocol assertions reject silent HTTP/1 fallback. k6 does not qualify HTTP/3 here; aioquic interoperability is a separate test.
+
+Plaintext baselines use each framework's normal server path. Maximus performs its documented admission/extraction policy; Hyper is a lower-level library baseline. JSON here is a fixed serialized payload, not a serialization benchmark. Nginx is a native static-response reference; it does not represent application routing, uploads or middleware. `/echo` posts 1 KiB and `/users/42` exercises typed routing. Maximus's benchmark admission estimate is raised explicitly so the memory reservation does not cap 64 benchmark connections; this is not its production default.
+
+## Allocations, kernels and profiling
+
+```sh
+docker run --rm --security-opt seccomp=unconfined -v maximus-bench-target:/target:ro rust:1.96-bookworm /target/release/allocations
+docker run --rm --security-opt seccomp=unconfined -v "$PWD:/work" -v maximus-cargo:/usr/local/cargo -v maximus-target:/work/target -w /work rust:1.96-bookworm cargo run --release -p maximus-io --example kernel
+benches/profile.sh
+```
+
+Allocation instrumentation reports the in-process route separately from the complete keepalive HTTP path; it must not be used to claim zero allocations on the wire. Kernel measurements compare ordinary, managed/pool, multishot reads and zero-copy sends with verified payloads and three trials. They are socket roundtrips, not HTTP results. The main HTTP adapter stays on its maintained bounded path unless a representative HTTP benchmark demonstrates a gain.
+
+`profile.sh` records software CPU-clock samples with Linux perf and emits a flamegraph. Hardware cycles/instructions/cache misses require a PMU exposed by the host; record unsupported counters explicitly instead of deriving fictional cycle counts from wall time. For hardware profiling, run the same binaries and workload on a dedicated Linux host with a PMU and add `perf stat -e cycles,instructions,cache-misses`.
+
+`connections.py` opens 20,000 connections, validates a response on each, holds them idle, revalidates every connection, and closes them. Use `IDLE_CONNECTIONS=25000` on the Maximus comparison server, `--ulimit nofile=65536:65536` on both containers, and the same Linux host network. This workload sets body allowance to zero and uses 1 KiB I/O buffers and a 1 GiB admission budget. Collect `/proc/1/status` before, during and after to distinguish retained allocator capacity from a continuing leak.
+
+Results and caveats belong in `results/`, with raw files retained locally under `artifacts/`. A VM/client-limited run is not evidence of best-in-class throughput or near-linear scaling.

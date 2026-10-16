@@ -1,0 +1,68 @@
+[package]
+name = "maximus"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+maximus-core = { path = "../core" }
+maximus-router = { path = "../router" }
+maximus-macros = { path = "../macros", optional = true }
+maximus-runtime = { path = "../runtime" }
+maximus-net = { path = "../net" }
+maximus-memory = { path = "../memory" }
+maximus-http1 = { path = "../http1" }
+compio.workspace = true
+futures-util.workspace = true
+
+maximus-tls = { path = "../tls", optional = true }
+
+maximus-http2 = { path = "../http2", optional = true }
+
+maximus-http3 = { path = "../http3", optional = true }
+
+hyper = { workspace = true, optional = true }
+flate2 = { version = "1", optional = true }
+
+async-tungstenite = { version = "0.35", optional = true }
+hyper-util = { version = "0.1", features = ["tokio"], optional = true }
+tokio-util = { version = "0.7", features = ["compat"], optional = true }
+
+opentelemetry = { version = "0.33", default-features = false, features = ["trace", "metrics"], optional = true }
+
+[features]
+default = ["macros"]
+macros = ["dep:maximus-macros"]
+dynamic = ["maximus-router/dynamic"]
+json = ["maximus-core/json"]
+multipart = ["maximus-core/multipart"]
+sse = ["maximus-core/sse"]
+cors = []
+ebpf = ["maximus-net/ebpf"]
+opentelemetry = ["dep:opentelemetry"]
+websocket = ["dep:async-tungstenite", "dep:hyper-util", "dep:tokio-util", "maximus-http1/websocket", "dep:hyper"]
+compression = ["dep:flate2"]
+tls = ["dep:maximus-tls"]
+http2 = ["dep:maximus-http2"]
+http3 = ["dep:maximus-http3", "tls", "compio/h3", "compio/ring"]
+
+[dev-dependencies]
+serde_json = "1"
+opentelemetry_sdk = { version = "0.33", features = ["testing"] }
+hyper = { workspace = true, features = ["client", "http2"] }
+rcgen = "0.14"
+http-body-util.workspace = true
+
+[[example]]
+name = "hello"
+path = "../../examples/hello.rs"
+required-features = ["macros"]
+
+[[example]]
+name = "features"
+path = "../../examples/features.rs"
+required-features = ["macros", "tls", "http2", "http3", "json", "multipart", "sse", "compression", "cors", "websocket"]

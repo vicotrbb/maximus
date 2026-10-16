@@ -1,5 +1,5 @@
 //! Socket creation before worker startup. Descriptors remain owned by Rust.
-#![forbid(unsafe_code)]
+#![deny(unsafe_code)]
 use socket2::{Domain, Protocol, Socket, Type};
 use std::{
     io,
@@ -8,6 +8,8 @@ use std::{
 
 #[derive(Clone, Debug)]
 pub struct SocketOptions {
+    #[cfg(all(target_os = "linux", feature = "ebpf"))]
+    pub reuseport_program: Option<std::sync::Arc<std::os::fd::OwnedFd>>,
     pub backlog: i32,
     pub reuse_port: bool,
     pub receive_buffer: Option<usize>,
@@ -16,6 +18,8 @@ pub struct SocketOptions {
 impl Default for SocketOptions {
     fn default() -> Self {
         Self {
+            #[cfg(all(target_os = "linux", feature = "ebpf"))]
+            reuseport_program: None,
             backlog: 1024,
             reuse_port: true,
             receive_buffer: None,
@@ -55,9 +59,28 @@ pub fn listen(address: SocketAddr, options: &SocketOptions) -> io::Result<TcpLis
     }
     let socket = socket(address, Type::STREAM, Protocol::TCP, options)?;
     socket.listen(options.backlog)?;
+    #[cfg(all(target_os = "linux", feature = "ebpf"))]
+    attach(&socket, options)?;
     Ok(socket.into())
 }
 
 pub fn bind_udp(address: SocketAddr, options: &SocketOptions) -> io::Result<UdpSocket> {
-    socket(address, Type::DGRAM, Protocol::UDP, options).map(Into::into)
+    let socket = socket(address, Type::DGRAM, Protocol::UDP, options)?;
+    #[cfg(all(target_os = "linux", feature = "ebpf"))]
+    attach(&socket, options)?;
+    Ok(socket.into())
+}
+
+#[cfg(all(target_os = "linux", feature = "ebpf"))]
+#[allow(unsafe_code)]
+mod ebpf;
+#[cfg(all(target_os = "linux", feature = "ebpf"))]
+pub use ebpf::attach_reuseport_ebpf;
+#[cfg(all(target_os = "linux", feature = "ebpf"))]
+fn attach(socket: &Socket, options: &SocketOptions) -> io::Result<()> {
+    use std::os::fd::AsFd;
+    if let Some(program) = &options.reuseport_program {
+        attach_reuseport_ebpf(socket.as_fd(), program.as_fd())?;
+    }
+    Ok(())
 }

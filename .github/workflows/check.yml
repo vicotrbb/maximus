@@ -1,0 +1,23 @@
+name: check
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  rust:
+    strategy:
+      matrix:
+        os: [macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.96.0
+        with:
+          components: rustfmt, clippy
+      - run: scripts/check.sh
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: scripts/test-linux.sh
+      - run: docker build -f benches/Dockerfile.tools -t maximus-tools .
+      - run: docker run --rm --security-opt seccomp=unconfined -v "$PWD:/work" -v maximus-cargo:/usr/local/cargo -v maximus-target:/work/target -w /work maximus-tools sh -c 'cargo build -p maximus --all-features --example features && python3 -m venv /tmp/interop && /tmp/interop/bin/pip install -r scripts/interop-requirements.txt && /tmp/interop/bin/python scripts/interop.py'

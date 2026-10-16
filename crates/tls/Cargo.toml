@@ -1,0 +1,13 @@
+[package]
+name = "maximus-tls"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+[lints]
+workspace = true
+[dependencies]
+compio = { workspace = true, features = ["rustls", "ring"] }
+rustls = { version = "0.23", default-features = false, features = ["std", "ring"] }
+[dev-dependencies]
+rcgen = "0.14"
