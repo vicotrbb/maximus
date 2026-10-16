@@ -92,7 +92,6 @@ dependencies = [
  "compio-driver",
  "compio-io",
  "compio-log",
- "compio-net",
  "compio-quic",
  "compio-runtime",
 ]
@@ -592,6 +591,7 @@ dependencies = [
  "http",
  "http-body",
  "http-body-util",
+ "httpdate",
 ]
 
 [[package]]
@@ -616,7 +616,6 @@ dependencies = [
  "compio",
  "futures-util",
  "http-body-util",
- "httpdate",
  "maximus-core",
  "maximus-runtime",
 ]
@@ -628,7 +627,6 @@ dependencies = [
  "bytes",
  "compio",
  "futures-util",
- "httpdate",
  "maximus-core",
  "maximus-runtime",
 ]
