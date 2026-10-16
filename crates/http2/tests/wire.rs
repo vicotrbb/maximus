@@ -792,9 +792,9 @@ fn options_asterisk_is_preserved() {
 }
 
 #[test]
-fn independent_hyper_client_receives_complete_early_responses() {
+fn independent_hyper_client_receives_headers_and_complete_early_responses() {
     use http_body_util::BodyExt;
-    use maximus_core::{Body, StatusCode};
+    use maximus_core::{Body, HeaderValue, IntoResponse, StatusCode};
     use tokio_util::compat::FuturesAsyncReadCompatExt;
     #[derive(Clone)]
     struct Executor;
@@ -812,7 +812,21 @@ fn independent_hyper_client_receives_complete_early_responses() {
                 } else {
                     StatusCode::OK
                 };
-                (status, "answer")
+                let mut response = (status, "answer").into_response();
+                response.headers_mut().insert(
+                    "date",
+                    HeaderValue::from_static("Thu, 01 Jan 1970 00:00:00 GMT"),
+                );
+                response
+                    .headers_mut()
+                    .append("set-cookie", HeaderValue::from_static("a=1"));
+                response
+                    .headers_mut()
+                    .append("set-cookie", HeaderValue::from_static("b=2"));
+                response
+                    .headers_mut()
+                    .insert("x-binary", HeaderValue::from_bytes(&[0x80, 0xff]).unwrap());
+                response
             }
         },
         Limits::default(),
@@ -840,6 +854,18 @@ fn independent_hyper_client_receives_complete_early_responses() {
                     .await
                     .unwrap();
                 assert_eq!(response.status(), status);
+                assert_eq!(response.headers()["date"], "Thu, 01 Jan 1970 00:00:00 GMT");
+                assert_eq!(response.headers().get_all("date").iter().count(), 1);
+                assert_eq!(
+                    response
+                        .headers()
+                        .get_all("set-cookie")
+                        .iter()
+                        .map(|v| v.as_bytes())
+                        .collect::<Vec<_>>(),
+                    [b"a=1".as_slice(), b"b=2".as_slice()]
+                );
+                assert_eq!(response.headers()["x-binary"].as_bytes(), &[0x80, 0xff]);
                 assert_eq!(
                     response.into_body().collect().await.unwrap().to_bytes(),
                     "answer"

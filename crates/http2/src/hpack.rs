@@ -165,11 +165,11 @@ fn string(block: &mut &[u8], limit: usize) -> Result<Vec<u8>, Error> {
 
 /// Appends a deterministic block using static indices and never-indexed literals.
 /// No dynamic encoder state is needed, regardless of the peer's table limit.
-pub fn encode(headers: &[(&[u8], &[u8])], output: &mut Vec<u8>) {
+pub fn encode<'a>(headers: impl IntoIterator<Item = (&'a [u8], &'a [u8])>, output: &mut Vec<u8>) {
     // Explicitly disable the dynamic table, including after a peer lowers its
     // SETTINGS_HEADER_TABLE_SIZE. A size update may precede every block.
     output.push(0x20);
-    for &(name, value) in headers {
+    for (name, value) in headers {
         if let Some(index) = STATIC.iter().position(|&(n, v)| n == name && v == value) {
             write_integer(index + 1, 7, 0x80, output);
             continue;
@@ -620,8 +620,8 @@ mod tests {
     fn encoder_appends_static_and_never_indexed_fields() {
         let mut output = vec![0xfe];
         encode(
-            &[
-                (b":method", b"GET"),
+            [
+                (b":method".as_slice(), b"GET".as_slice()),
                 (b"custom-key", b"custom-value"),
                 (b"authorization", b"secret"),
             ],
@@ -641,6 +641,34 @@ mod tests {
             ])
         );
         assert_eq!(decoder.decode(&[0xbe]), Err(Error::InvalidIndex));
+    }
+
+    #[test]
+    fn encoder_accepts_borrowed_fields_with_duplicates_and_opaque_values() {
+        let mut headers = maximus_core::HeaderMap::new();
+        headers.append("x-repeat", maximus_core::HeaderValue::from_static("one"));
+        headers.append("x-repeat", maximus_core::HeaderValue::from_static("two"));
+        headers.insert(
+            "x-bin",
+            maximus_core::HeaderValue::from_bytes(&[0x80, 0xff]).unwrap(),
+        );
+        let mut output = Vec::new();
+        encode(
+            headers
+                .iter()
+                .map(|(n, v)| (n.as_str().as_bytes(), v.as_bytes())),
+            &mut output,
+        );
+        let decoded = Decoder::new(0, 1024, 3).decode(&output).unwrap();
+        assert_eq!(
+            decoded
+                .iter()
+                .filter(|(n, _)| n == b"x-repeat")
+                .map(|(_, v)| v.as_slice())
+                .collect::<Vec<_>>(),
+            [b"one".as_slice(), b"two".as_slice()],
+        );
+        assert!(decoded.contains(&(b"x-bin".to_vec(), vec![0x80, 0xff])));
     }
 
     #[test]
@@ -842,7 +870,7 @@ mod tests {
             (b"x".as_slice(), b"".as_slice()),
         ];
         let mut output = Vec::new();
-        encode(&input, &mut output);
+        encode(input, &mut output);
         assert_eq!(
             Decoder::new(0, 2000, 2).decode(&output).unwrap(),
             vec![(name, value), (b"x".to_vec(), vec![])]
