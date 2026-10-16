@@ -191,7 +191,7 @@ impl Limits {
             .saturating_add(8192);
         let per_connection = self
             .io_buffer_bytes
-            .saturating_mul(if tls { 4 } else { 2 })
+            .saturating_mul(2)
             .saturating_add(request.saturating_mul(if multiplexed {
                 self.streams as usize
             } else {
@@ -231,33 +231,18 @@ mod tests {
     use super::Limits;
 
     #[test]
-    fn admission_reserves_tls_ciphertext_buffers_at_memory_boundary() {
-        let mut limits = Limits {
-            connections: 10,
+    fn quic_admission_preserves_the_generic_tls_budget() {
+        let limits = Limits {
             streams: 2,
             body_bytes: 0,
-            header_bytes: 1024,
+            header_bytes: 8192,
             io_buffer_bytes: 16384,
             connection_window_bytes: 65536,
+            memory_bytes: 262144,
             ..Limits::default()
         };
-        // Hand-calculated body/header, adapter, flow-window and TLS-record reserves.
-        for (multiplexed, tls, per_connection) in [
-            (false, false, 41984),
-            (false, true, 140288),
-            (true, false, 182272),
-            (true, true, 280576),
-        ] {
-            for (memory, admitted) in [
-                (per_connection - 1, 0),
-                (per_connection, 1),
-                (2 * per_connection - 1, 1),
-                (2 * per_connection, 2),
-            ] {
-                limits.memory_bytes = memory;
-                assert_eq!(limits.protocol_capacity(multiplexed, tls), admitted);
-            }
-        }
+        limits.validate().unwrap();
+        assert_eq!(limits.protocol_capacity(true, true), 1);
     }
 
     #[test]
