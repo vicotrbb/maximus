@@ -21,7 +21,7 @@ git ls-files -z | xargs -0 shasum -a 256 | kubectl --context "$CONTEXT" -n "$NAM
 kubectl --context "$CONTEXT" -n "$NAMESPACE" exec benchmark -c server -- sh -c 'apt-get update && apt-get install -y linux-perf python3 procps wrk && cd /work/benches/baselines && cargo build --release --locked'
 ```
 
-For an exact recorded image, replace each template tag with its registry digest from `results/hardware-environment.json`. Record compiler and image digests; floating image tags can differ by architecture and date. The checked-in qualification used Rust 1.96.1 on x86-64, and 1.96.0 on the ARM64 VM. Each comparison used one compiler for all competitors.
+Record the resolved image digests in each campaign’s environment metadata and use those digests when reproducing it. Floating image tags can differ by architecture and date. The checked-in qualification used Rust 1.96.1 on x86-64, and 1.96.0 on the ARM64 VM. Each comparison used one compiler for all competitors.
 
 If registry DNS is unavailable inside the Pod, vendor the locked benchmark and product dependency graphs into an **ignored temporary directory**, copy that directory with `COPYFILE_DISABLE=1 tar --no-xattrs`, and use Cargo's printed source-replacement configuration under `/work/.cargo/config.toml`. Use `cargo vendor --locked --manifest-path benches/baselines/Cargo.toml --sync Cargo.toml artifacts/dependencies`. Do not commit this generated dependency cache. The narrow existing h3 patch remains part of the source archive.
 

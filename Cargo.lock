@@ -1135,7 +1135,6 @@ version = "0.2.0"
 name = "maximus-net"
 version = "0.2.0"
 dependencies = [
- "compio",
  "libc",
  "socket2",
 ]

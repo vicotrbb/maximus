@@ -3,6 +3,8 @@ name = "maximus-runtime"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+description = "Worker-local execution and lifecycle for Maximus"
 rust-version.workspace = true
 
 [lints]

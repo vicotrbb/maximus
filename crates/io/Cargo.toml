@@ -3,6 +3,8 @@ name = "maximus-io"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+description = "Completion I/O and backend configuration for Maximus"
 rust-version.workspace = true
 
 [lints]

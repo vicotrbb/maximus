@@ -3,6 +3,8 @@ name = "maximus-http2"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+description = "Native HTTP/2 framing, HPACK and flow control for Maximus"
 rust-version.workspace = true
 [lints]
 workspace = true

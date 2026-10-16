@@ -3,6 +3,8 @@ name = "maximus-http3"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+description = "HTTP/3 transport integration for Maximus"
 rust-version.workspace = true
 [lints]
 workspace = true

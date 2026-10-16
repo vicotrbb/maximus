@@ -3,13 +3,14 @@ name = "maximus-net"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+description = "TCP and UDP socket setup with optional reuseport eBPF for Maximus"
 rust-version.workspace = true
 
 [lints]
 workspace = true
 
 [dependencies]
-compio.workspace = true
 socket2.workspace = true
 
 [features]

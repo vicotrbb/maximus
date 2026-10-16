@@ -3,6 +3,8 @@ name = "maximus"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+description = "A modular Rust HTTP server with local workers and native HTTP engines"
 rust-version.workspace = true
 
 [lints]

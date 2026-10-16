@@ -3,6 +3,8 @@ name = "maximus-router"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+description = "Static route matching and bounded dynamic routing for Maximus"
 rust-version.workspace = true
 
 [lints]

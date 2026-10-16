@@ -43,7 +43,7 @@ Allocation instrumentation reports the in-process route separately from the comp
 
 Results and caveats belong in `results/`, with raw files retained locally under `artifacts/`. A VM/client-limited run is not evidence of best-in-class throughput or near-linear scaling.
 
-Run `python3 benches/summarize.py` after the full `qualified-*` campaign to regenerate compact tables and trial CSVs. It rejects missing trials and preserves failed trial counts. Raw artifacts remain ignored.
+Each runner writes per-trial CSVs, summaries and metadata under its output directory. Preserve failed trials when summarizing a new campaign; raw artifacts remain ignored.
 
 ## Additional qualification commands
 
@@ -52,12 +52,11 @@ Run `python3 benches/summarize.py` after the full `qualified-*` campaign to rege
 python3 benches/run.py --label qualified-arrival-provisioned --paths /plaintext --rates 5000 --vus 512 --duration 10s --repeats 3
 # Give the VM client two CPUs while keeping the server on CPU 0.
 python3 benches/run.py --label qualified-capacity --engines maximus,epoll,hyper,axum,actix --paths /plaintext --client-cpus 1,2 --duration 30s --repeats 3
-python3 benches/summarize-hardware.py
 ```
 
-The checked-in [report](results/README.md), [VM tables](results/tables.md) and [hardware tables](results/hardware-tables.md) retain failed trials and explain the observed limits. Hardware setup and cleanup are documented in [HARDWARE.md](HARDWARE.md). Benchmark infrastructure and generated caches never enter the product dependency graph.
+The checked-in [comparison report](results/native-http-comparison.md) and [trial data](results/native-http-trials.csv) retain failed targets and explain the observed limits. Hardware setup and cleanup are documented in [HARDWARE.md](HARDWARE.md). Benchmark infrastructure and generated caches never enter the product dependency graph.
 
-To redraw the native throughput and p99 scaling chart from the checked-in trial CSV, install Matplotlib in an optional local Python environment and run `python3 benches/plot.py --native`. Running without `--native` redraws the historical Hyper-backed chart. Matplotlib is not a product or benchmark-runner dependency.
+To redraw the native throughput and p99 scaling chart from the checked-in trial CSV, install Matplotlib in an optional local Python environment and run `python3 benches/plot.py`. Matplotlib is not a product or benchmark-runner dependency.
 
 ## Kubernetes archive comparisons and resume
 

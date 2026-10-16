@@ -9,7 +9,10 @@ Maximus owns HTTP/1.1 framing, HTTP/2 and HPACK, worker lifecycle, admission lim
 Requires Rust 1.96 or newer. Linux is the deployment target; macOS supports development with its native poller.
 
 ```sh
+git clone https://github.com/vicotrbb/maximus.git
+cd maximus
 cargo run --release -p maximus --example hello -- 127.0.0.1:8080
+# In another terminal:
 curl http://127.0.0.1:8080/users/42
 # Press Enter in the server terminal to drain and stop.
 ```
@@ -69,8 +72,8 @@ cargo doc --workspace --all-features --no-deps --open
 
 ## API and resource policy
 
-See [API and operating guide](docs/guide.md) for extraction, state, middleware, streaming, limits and shutdown. See [qualification](docs/qualification.md) for commands and the [native implementation record](docs/native-http-qualification.md) for current evidence, and [benchmarks](benches/README.md) for reproducible k6/wrk comparisons, including the [native measured results and limits](benches/results/native-http-comparison.md). The [original Hyper-backed results](benches/results/README.md) remain available for comparison. Performance leadership is an objective, not a claim: results must distinguish load-generator limits, server saturation and VM noise.
+See [API and operating guide](docs/guide.md) for extraction, state, middleware, streaming, limits and shutdown. See [qualification](docs/qualification.md) for commands and the [native implementation record](docs/native-http-qualification.md) for current evidence, and [benchmarks](benches/README.md) for reproducible k6/wrk comparisons, including the [native measured results and limits](benches/results/native-http-comparison.md). Historical results remain in Git history; the current comparison includes the previous engine as a control. Performance leadership is an objective, not a claim: results must distinguish load-generator limits, server saturation and VM noise.
 
-The twelve crates follow the supplied specification. Benchmark servers and fuzz tooling are separate workspaces. Optional integrations do not enter a minimal build. Unsafe product code is confined to the optional Linux eBPF syscall adapter, with its invariant documented at the call.
+The workspace separates runtime, transport, protocols, routing and framework integrations into twelve crates. Benchmark servers and fuzz tooling are separate workspaces. Optional integrations do not enter a minimal build. Unsafe product code is confined to the optional Linux eBPF syscall adapter, with its invariant documented at the call.
 
 Licensed under MIT OR Apache-2.0. The API is version 0.2; see the [native HTTP migration](docs/native-http-migration.md) for changes to low-level transport and body integration. Protocol and lifecycle behavior is covered by executable tests, and API changes must update examples and compatibility tests.

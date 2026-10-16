@@ -3,6 +3,8 @@ name = "maximus-memory"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+description = "Bounded worker-local storage and buffers for Maximus"
 rust-version.workspace = true
 
 [lints]

@@ -3,6 +3,8 @@ name = "maximus-macros"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+description = "Statically dispatched typed routing macros for Maximus"
 rust-version.workspace = true
 
 [lib]

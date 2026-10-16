@@ -3,6 +3,8 @@ name = "maximus-http1"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+description = "Native incremental HTTP/1.1 engine for Maximus"
 rust-version.workspace = true
 
 [lints]
