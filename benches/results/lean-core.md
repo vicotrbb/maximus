@@ -1,12 +1,14 @@
 # Lean core and dynamic routing
 
-This pass compares merged baseline `047d0e3` with `687d452`. It removes redundant state and registration work while preserving public APIs and features. The standalone `maximus-memory` crate remains available; the framework no longer depends on it.
+This pass compares merged baseline `047d0e3` with `687d452`. It removes redundant state and registration work while preserving the framework's public APIs and features. After these measurements, the unused standalone `maximus-memory` crate was removed as well. Direct imports of its `Slab`, `Key` and `BufferPool` APIs are no longer supported; the framework had already stopped depending on it.
 
 - TCP admission uses the live task collection's length instead of a separate generational slab containing only `()`.
 - Empty bodies use empty `Bytes`, eliminating a third body variant and the nested buffered-body extraction match.
 - Dynamic routes normalize their shape once. Binary insertion preserves the previous stable precedence order without sorting the entire table after each addition. Successful method lookup happens before allocating an `Allow` header.
 
-The runtime source is 17 lines shorter. Regression tests and the extended existing allocation diagnostic add verification code. Validation and protocol rationale comments remain. The Linux normal dependency graph, counting unique package/version pairs including Maximus, drops from 65 to 64 packages for the minimal framework and from 129 to 128 with all features. No third-party versions changed or new dependencies were added.
+At the measured commit, runtime source is 17 lines shorter. Regression tests and the extended existing allocation diagnostic add verification code. Validation and protocol rationale comments remain. The Linux normal dependency graph, counting unique package/version pairs including Maximus, drops from 65 to 64 packages for the minimal framework and from 129 to 128 with all features. No third-party versions changed or new dependencies were added.
+
+The subsequent crate removal deletes another 175 lines across its implementation, tests and manifest, plus its lockfile entry. Minimal and all-feature framework dependency trees are identical before and after this removal. With Rust 1.96.0 on macOS ARM64, `cargo build -p maximus --all-features --release --example features --locked` produces identical executables before and after removal, including a forced rebuild of the example: SHA-256 `06bb3805c3a3635d6e9c6e5170e6e46670e9069ac75b36b51a06b29b815ade85`. This establishes no executable change for that configuration, not an additional speedup. Post-removal checks passed 152 local test executions and 130 Linux test executions, with one privileged BPF test skipped; downstream compatibility, independent protocol clients and the 2,062-case raw-wire stress check also passed. The three fewer tests in each suite belong to the deleted crate. The measurements below retain their original source identities and were not rerun for the deletion.
 
 ## Allocation and layout measurements
 

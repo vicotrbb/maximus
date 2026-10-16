@@ -1126,10 +1126,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "maximus-memory"
-version = "0.2.0"
-
-[[package]]
 name = "maximus-net"
 version = "0.2.0"
 dependencies = [
