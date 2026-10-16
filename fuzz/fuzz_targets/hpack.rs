@@ -23,12 +23,11 @@ fuzz_target!(|input: &[u8]| {
                 .sum::<usize>()
                 <= 16384
         );
-        let fields: Vec<_> = headers
-            .iter()
-            .map(|(n, v)| (n.as_slice(), v.as_slice()))
-            .collect();
         let mut encoded = Vec::new();
-        hpack::encode(&fields, &mut encoded);
+        hpack::encode(
+            headers.iter().map(|(n, v)| (n.as_slice(), v.as_slice())),
+            &mut encoded,
+        );
         assert_eq!(
             hpack::Decoder::new(0, 16384, 64).decode(&encoded).unwrap(),
             headers
