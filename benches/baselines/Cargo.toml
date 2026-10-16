@@ -8,7 +8,7 @@ publish = false
 [workspace]
 
 [dependencies]
-maximus = { path = "../../crates/framework", features = ["tls", "http2"] }
+maximus = { path = "../../crates/framework", features = ["tls", "http2", "dynamic"] }
 axum = "0.8"
 actix-web = "4"
 bytes = "1"

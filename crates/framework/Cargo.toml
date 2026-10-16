@@ -16,7 +16,6 @@ maximus-router = { path = "../router" }
 maximus-macros = { path = "../macros", optional = true }
 maximus-runtime = { path = "../runtime" }
 maximus-net = { path = "../net" }
-maximus-memory = { path = "../memory" }
 maximus-http1 = { path = "../http1" }
 compio = { workspace = true, features = ["net"] }
 futures-util.workspace = true

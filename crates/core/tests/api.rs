@@ -116,3 +116,41 @@ fn neutral_incoming_body_is_bounded_and_preserves_trailers() {
         );
     });
 }
+
+#[test]
+fn buffered_body_take_and_terminal_states_preserve_limits() {
+    use maximus_core::{Bytes, HttpBody};
+    compio::runtime::Runtime::new().unwrap().block_on(async {
+        for mut body in [
+            Body::empty(),
+            Body::from(Bytes::new()),
+            Body::from("").limited(0),
+        ] {
+            assert!(body.is_buffered());
+            assert!(body.is_end_stream());
+            assert_eq!(body.size_hint().exact(), Some(0));
+            assert_eq!(body.take_bytes(), Some(Bytes::new()));
+            assert!(body.frame().await.is_none());
+        }
+        let mut body = Body::from("abc").limited(3);
+        assert_eq!(body.take_bytes().unwrap(), "abc");
+        assert!(body.is_end_stream());
+        assert_eq!(body.take_bytes(), Some(Bytes::new()));
+        let mut body = Body::from("abc").limited(2);
+        assert!(body.take_bytes().is_none());
+        assert_eq!(
+            body.frame().await.unwrap().unwrap_err().status,
+            StatusCode::PAYLOAD_TOO_LARGE
+        );
+        assert!(body.is_end_stream());
+        assert_eq!(body.take_bytes(), Some(Bytes::new()));
+        let mut body = Body::frames(futures_util::stream::iter([
+            Err(maximus_core::Error::bad_request("broken")),
+            Ok(maximus_core::Frame::data(Bytes::from_static(b"ignored"))),
+        ]));
+        assert!(body.take_bytes().is_none());
+        assert!(body.frame().await.unwrap().is_err());
+        assert!(body.is_buffered());
+        assert!(body.frame().await.is_none());
+    });
+}

@@ -1,0 +1,198 @@
+{
+  "baseline": "047d0e3b2de1878858ab7a471ff7e2904102fb22",
+  "candidate": "687d45249fe98792dc2e2c15f09d11b849ba1787",
+  "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: aarch64-apple-darwin\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+  "diagnostic_sha256": "f5b6129b2abd954fdb9cc9147f43151d51794ab83656a8dec2daf55e9f2b15de",
+  "binary_sha256": {
+    "before": "cf157a7be9fc145830279798d21268eded64f7e7e6765530ac1646bce67ccad2",
+    "after": "5e3aca8c66d0f49c3486be81245e49c698ae614c9d65cfc8b565215ae5d85da5"
+  },
+  "affinity": "Unpinned local macOS; allocation/timing diagnostic only",
+  "order": "before/after, after/before, before/after, after/before, before/after",
+  "linux_server_binaries": {
+    "before": {
+      "sha256": "78f06a626d3edf0496bb3822875a6dc21e37a0a5262e771595d98565d7effa7e",
+      "file_bytes": 9528872,
+      "source_revision": "047d0e3b2de1878858ab7a471ff7e2904102fb22"
+    },
+    "after": {
+      "sha256": "ddee51110cdfd07742bd0fc659dfa02563d661a91e797499cc1233c65a0417d4",
+      "file_bytes": 9528824,
+      "source_revision": "687d45249fe98792dc2e2c15f09d11b849ba1787"
+    }
+  },
+  "host_cpu": "Apple M5 Pro",
+  "linux_rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)\nbinary: rustc\ncommit-hash: 31fca3adb283cc9dfd56b49cdee9a96eb9c96ffd\ncommit-date: 2026-06-26\nhost: aarch64-unknown-linux-gnu\nrelease: 1.96.1\nLLVM version: 22.1.2\n",
+  "source_identity_note": "Campaign source_commit is the runner checkout; before/after server identities are the baseline/candidate revisions and binary hashes. Dirty flags reflect report edits after product code was frozen.",
+  "benchmark_source_sha256": {
+    "benches/baselines/src/main.rs": "e8b7cd2d9002b5c82d9206c14ed9457fdce2a087a23ef5d81707be2ac0152962",
+    "benches/baselines/Cargo.toml": "fc3624debc36d1f07849b3538b45b75af77048f6132a633a01ac6fece96a2401",
+    "benches/load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376"
+  },
+  "load_campaigns": {
+    "lean-plain": {
+      "date_utc": "2026-10-16T21:08:45Z",
+      "args": {
+        "engines": "before,after",
+        "paths": "/plaintext,/echo",
+        "rates": "1000",
+        "workers": 1,
+        "duration": "10s",
+        "repeats": 3,
+        "vus": 64,
+        "label": "lean-plain",
+        "client_cpus": "1,2",
+        "sample_seconds": 0,
+        "protocol": "plain"
+      },
+      "source_commit": "687d45249fe98792dc2e2c15f09d11b849ba1787",
+      "source_dirty": false,
+      "workload_sha256": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+      "docker": "29.4.0",
+      "kernel": "Linux 90d46d176d45 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+      "cpus": "3",
+      "images": {
+        "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+        "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+      },
+      "background_containers": 11
+    },
+    "lean-h2": {
+      "date_utc": "2026-10-16T21:11:44Z",
+      "args": {
+        "engines": "after,before",
+        "paths": "/plaintext,/echo",
+        "rates": "1000",
+        "workers": 1,
+        "duration": "10s",
+        "repeats": 3,
+        "vus": 64,
+        "label": "lean-h2",
+        "client_cpus": "1,2",
+        "sample_seconds": 0,
+        "protocol": "h2"
+      },
+      "source_commit": "687d45249fe98792dc2e2c15f09d11b849ba1787",
+      "source_dirty": true,
+      "workload_sha256": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+      "docker": "29.4.0",
+      "kernel": "Linux 847d9134c5b2 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+      "cpus": "3",
+      "images": {
+        "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+        "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+      },
+      "background_containers": 11
+    },
+    "lean-saturation": {
+      "date_utc": "2026-10-16T21:14:41Z",
+      "args": {
+        "engines": "before,after",
+        "paths": "/plaintext",
+        "rates": "0",
+        "workers": 1,
+        "duration": "10s",
+        "repeats": 3,
+        "vus": 64,
+        "label": "lean-saturation",
+        "client_cpus": "1,2",
+        "sample_seconds": 0,
+        "protocol": "plain"
+      },
+      "source_commit": "687d45249fe98792dc2e2c15f09d11b849ba1787",
+      "source_dirty": true,
+      "workload_sha256": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+      "docker": "29.4.0",
+      "kernel": "Linux 696f58ab60a9 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+      "cpus": "3",
+      "images": {
+        "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+        "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+      },
+      "background_containers": 11
+    },
+    "lean-h2-tail": {
+      "date_utc": "2026-10-16T21:17:18Z",
+      "args": {
+        "engines": "before,after",
+        "paths": "/plaintext",
+        "rates": "1000",
+        "workers": 1,
+        "duration": "30s",
+        "repeats": 3,
+        "vus": 64,
+        "label": "lean-h2-tail",
+        "client_cpus": "1,2",
+        "sample_seconds": 0,
+        "protocol": "h2"
+      },
+      "source_commit": "687d45249fe98792dc2e2c15f09d11b849ba1787",
+      "source_dirty": true,
+      "workload_sha256": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+      "docker": "29.4.0",
+      "kernel": "Linux b802e5ed8cc9 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+      "cpus": "3",
+      "images": {
+        "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+        "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+      },
+      "background_containers": 11
+    }
+  },
+  "load_runner_sha256": "95715b4df8e3992c8e63ba076bf8bdf20b460686dc175c7782fe404eab0b4b56",
+  "source_manifest_sha256": {
+    "before": "32d83d8e8f1cbe6ed6001e3754ac4d9aab12e033fb0747bfb0d1a715d3442e0c",
+    "after": "22aba976e61f5b1017cb4e364422ccce8de4fc10b463a7c2d09dbede82270284"
+  },
+  "dependency_counts": {
+    "before": {
+      "minimal": 65,
+      "all": 129,
+      "core": 52
+    },
+    "after": {
+      "minimal": 64,
+      "all": 128,
+      "core": 52
+    }
+  },
+  "layout_bytes": {
+    "before": {
+      "Body": 48,
+      "Request": 296,
+      "Response": 160
+    },
+    "after": {
+      "Body": 40,
+      "Request": 288,
+      "Response": 152
+    },
+    "target": "aarch64-apple-darwin"
+  },
+  "verification_log_sha256": {
+    "check-final.log": "8bd24c6607f28861e47c38a3e45d3c274b08dab4a7ca6056e2a97759a77ae8ee",
+    "interop.log": "9e393b83c56154a5cf25a6bcbb11d4a9f59878058a6fd8953d6df557bf62cbf5",
+    "router.log": "f2cf1d5d9aeaeb39ccef27acb7c4f538a251c1b7ce11d87e906ca036cecb9e34",
+    "bench-clippy.log": "dd65a775c949ff327e869f7162935b117d9756af67c7d1cfb38d3a144c976d1d",
+    "ci.log": "1f7a3be5cd0b374eeb3c2242b80cd00c082b16d9d7341696d5c44dfcd920acd0",
+    "linux-final.log": "51b10a1a71746d56dd36192080822d12c454a55ccf9bcd5afba4c798ab476f92",
+    "baseline-contracts.log": "9f2f8de46e7fc81e991ab78da73e1d9b5a1a5bd03580ff089a56e2cd1f888482"
+  },
+  "qualification": {
+    "local_check_test_executions": 155,
+    "linux_arm64_test_executions": 133,
+    "privileged_linux_tests_ignored": 1,
+    "interop": "HTTP/1 plaintext/TLS, HTTP/2, HTTP/3, WebSocket and application features passed",
+    "wire_mutations": 2062,
+    "github_ci": "https://github.com/vicotrbb/maximus/actions/runs/38967322583"
+  },
+  "counts": {
+    "trials": 36,
+    "responses": 4286291,
+    "nonzero_exits": 1,
+    "failures": 0.0,
+    "checks_failed": 0,
+    "dropped": 3
+  }
+}

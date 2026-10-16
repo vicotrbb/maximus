@@ -1038,7 +1038,6 @@ dependencies = [
  "maximus-http2",
  "maximus-http3",
  "maximus-macros",
- "maximus-memory",
  "maximus-net",
  "maximus-router",
  "maximus-runtime",
@@ -1125,10 +1124,6 @@ dependencies = [
  "quote",
  "syn 2.0.119",
 ]
-
-[[package]]
-name = "maximus-memory"
-version = "0.2.0"
 
 [[package]]
 name = "maximus-net"

@@ -2,7 +2,7 @@
 
 The comparison servers are an isolated Cargo workspace. Product builds do not resolve Axum, Actix or their benchmark dependencies. All Rust servers use thin LTO and one codegen unit. Commit both lockfiles when changing dependencies.
 
-Latest measurements: [native HTTP/2 hot-path experiments](results/native-hot-paths.md), including rejected hypotheses, matched framework comparisons and dependency scope.
+Latest measurements: [lean core and dynamic routing](results/lean-core.md). The preceding [native HTTP/2 hot-path experiments](results/native-hot-paths.md) include rejected hypotheses, matched framework comparisons and dependency scope.
 
 ## Build and run
 

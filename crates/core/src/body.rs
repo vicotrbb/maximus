@@ -9,7 +9,6 @@ use std::{
 
 type Frames = Pin<Box<dyn Stream<Item = Result<Frame<Bytes>, Error>>>>;
 enum Kind {
-    Empty,
     Full(Bytes),
     Stream(Frames),
 }
@@ -21,26 +20,17 @@ pub struct Body {
 }
 impl Body {
     pub fn is_buffered(&self) -> bool {
-        matches!(self.kind, Kind::Empty | Kind::Full(_))
+        matches!(self.kind, Kind::Full(_))
     }
     /// Take an already-buffered payload without collecting a stream or bypassing a byte limit.
     pub fn take_bytes(&mut self) -> Option<Bytes> {
-        match &self.kind {
-            Kind::Empty => Some(Bytes::new()),
-            Kind::Full(bytes) if bytes.len() <= self.remaining => {
-                match std::mem::replace(&mut self.kind, Kind::Empty) {
-                    Kind::Full(bytes) => Some(bytes),
-                    _ => unreachable!(),
-                }
-            }
+        match &mut self.kind {
+            Kind::Full(bytes) if bytes.len() <= self.remaining => Some(std::mem::take(bytes)),
             _ => None,
         }
     }
     pub fn empty() -> Self {
-        Self {
-            kind: Kind::Empty,
-            remaining: usize::MAX,
-        }
+        Bytes::new().into()
     }
     /// Incoming frames are pull-based and must be bounded by the transport producer.
     pub fn incoming(
@@ -100,10 +90,8 @@ impl HttpBody for Body {
         cx: &mut Context<'_>,
     ) -> Poll<Option<Result<Frame<Bytes>, Error>>> {
         let frame = match &mut self.kind {
-            Kind::Empty => return Poll::Ready(None),
             Kind::Full(bytes) => {
                 let bytes = std::mem::take(bytes);
-                self.kind = Kind::Empty;
                 if bytes.is_empty() {
                     return Poll::Ready(None);
                 }
@@ -112,7 +100,7 @@ impl HttpBody for Body {
             Kind::Stream(stream) => match ready!(stream.as_mut().poll_next(cx)) {
                 Some(frame) => frame,
                 None => {
-                    self.kind = Kind::Empty;
+                    self.kind = Kind::Full(Bytes::new());
                     return Poll::Ready(None);
                 }
             },
@@ -120,7 +108,7 @@ impl HttpBody for Body {
         if let Ok(frame) = &frame {
             let size = frame.data_ref().map_or(0, Bytes::len);
             if size > self.remaining {
-                self.kind = Kind::Empty;
+                self.kind = Kind::Full(Bytes::new());
                 return Poll::Ready(Some(Err(Error::new(
                     StatusCode::PAYLOAD_TOO_LARGE,
                     "body limit exceeded",
@@ -128,20 +116,18 @@ impl HttpBody for Body {
             }
             self.remaining -= size;
         } else {
-            self.kind = Kind::Empty;
+            self.kind = Kind::Full(Bytes::new());
         }
         Poll::Ready(Some(frame))
     }
     fn is_end_stream(&self) -> bool {
         match &self.kind {
-            Kind::Empty => true,
             Kind::Full(b) => b.is_empty(),
             Kind::Stream(_) => false,
         }
     }
     fn size_hint(&self) -> SizeHint {
         match &self.kind {
-            Kind::Empty => SizeHint::with_exact(0),
             Kind::Full(b) => SizeHint::with_exact(b.len() as u64),
             Kind::Stream(_) => SizeHint::default(),
         }
