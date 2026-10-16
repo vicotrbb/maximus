@@ -52,8 +52,22 @@ def workload(key,path,duration,rate,log):
  command('client','rm','-f',f'/work/{key}.json')
  client=['k6','run','--quiet','/work/benches/load.js'] if A.generator=='k6' else ['/work/tools/ld-linux-x86-64.so.2','--library-path','/work/tools','/work/tools/wrk','-t4','-c128','-d'+duration,'--latency','-s','/work/benches/load.lua','http://127.0.0.1:8080']
  launch=shlex.join([*env,'/work/tools/ld-linux-x86-64.so.2','--library-path','/work/tools','/work/tools/taskset','-c',A.client_cpus,*client])
- result=command('client','sh','-c','echo $$ > /work/client.pid; exec '+launch,check=False)
- log.write(result.stdout+result.stderr); log.flush(); return result.returncode
+ # Persist completion inside the container; a dropped exec stream must not be
+ # confused with a failed client or cause a duplicate workload submission.
+ output=f'/work/{key}.log'; done=f'/work/{key}.exit'
+ command('client','rm','-f',output,done,done+'.tmp','/work/client.pid')
+ script=f'( {launch} > {shlex.quote(output)} 2>&1 & pid=$!; echo $pid > /work/client.pid; wait $pid; status=$?; echo $status > {shlex.quote(done+".tmp")}; mv {shlex.quote(done+".tmp")} {shlex.quote(done)} ) </dev/null >/dev/null 2>&1 &'
+ started=command('client','sh','-c',script,check=False)
+ log.write(started.stderr); log.flush()
+ seconds=float(duration[:-1])*{'s':1,'m':60,'h':3600}[duration[-1]]
+ deadline=time.monotonic()+seconds+60
+ while time.monotonic()<deadline:
+  status=command('client','sh','-c','test -f '+shlex.quote(done)+' && cat '+shlex.quote(done),check=False)
+  if status.returncode==0:
+   log.write(command('client','cat',output).stdout); log.flush()
+   return int(status.stdout.strip())
+  time.sleep(1)
+ raise RuntimeError('client completion was not recorded before its deadline')
 stop('client'); stop('server','perf','INT'); stop('server')
 metadata={'args':vars(A),'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'source_dirty':bool(subprocess.check_output(['git','status','--porcelain'],text=True).strip()),'date_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'hardware':command('server','lscpu').stdout,'rustc':command('server','rustc','--version').stdout,'cgroup_cpu_max':{c:command(c,'cat','/sys/fs/cgroup/cpu.max').stdout for c in ['server','client']}}
 command('server','sh','-c','cd /work && sha256sum -c SOURCE_SHA256SUMS >/work/source-verification.log')
