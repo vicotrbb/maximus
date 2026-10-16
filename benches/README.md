@@ -58,3 +58,59 @@ python3 benches/summarize-hardware.py
 The checked-in [report](results/README.md), [VM tables](results/tables.md) and [hardware tables](results/hardware-tables.md) retain failed trials and explain the observed limits. Hardware setup and cleanup are documented in [HARDWARE.md](HARDWARE.md). Benchmark infrastructure and generated caches never enter the product dependency graph.
 
 To redraw the scaling chart from the checked-in trial CSV, install Matplotlib in an optional local Python environment and run `python3 benches/plot.py`. Matplotlib is not a product or benchmark-runner dependency.
+
+## Kubernetes archive comparisons and resume
+
+Use the existing [temporary Pod setup](HARDWARE.md) and `benches/kubernetes.py` for comparisons between separately built source archives. Run only one campaign at a time in a Pod: the runner owns its server, client and profiler PID files. The default command still uses `/work`, `/work/benches/baselines/target/release/maximus-comparison`, `/work/benches/load.js`, `/work/benches/load.lua`, and 128 connections/VUs.
+
+For the native HTTP comparison, stage these source trees on the shared `/work` volume and build each benchmark workspace with the same compiler, release profile and CPU allocation:
+
+The product source was frozen at `8a8fa9b23c652ae4b6e40fec6322cb9e094e22c9`. Use archive `f85abcc841ee47c4d7739e21d669fd062112414b` for locked reproduction: it corrects eleven stale path-package versions in the comparison lockfile without changing product code.
+
+| Tree | Source | Binary |
+| --- | --- | --- |
+| `/work/native` | `git archive f85abcc841ee47c4d7739e21d669fd062112414b` | `/work/native/benches/baselines/target/release/maximus-comparison` |
+| `/work/baseline-source` | `git archive 9cb096a27962a2966ca75b30e643f9e466c5cc4b` | `/work/baseline-source/benches/baselines/target/release/maximus-comparison` |
+| `/work/wouldblock-source` | The same baseline archive, with the experiment below | `/work/wouldblock-source/benches/baselines/target/release/maximus-comparison` |
+
+The WouldBlock experiment changes only `compio-io` 0.10.1's `src/compat/sync_stream.rs` helper:
+
+```diff
+-fn would_block(msg: &str) -> io::Error {
+-    io::Error::new(io::ErrorKind::WouldBlock, msg)
++fn would_block(_msg: &str) -> io::Error {
++    io::ErrorKind::WouldBlock.into()
+ }
+```
+
+Copy that locked dependency into `/work/wouldblock-source/compio-io`, apply the change, and add `compio-io = { path = "../../compio-io" }` to `[patch.crates-io]` in that tree's `benches/baselines/Cargo.toml`. Update its benchmark lockfile once with `cargo update --manifest-path benches/baselines/Cargo.toml -p compio-io --offline` after making the locked dependencies available. Keep this modified dependency, manifest and lockfile in the archived experiment. This preserves the error kind but changes its diagnostic text; it is a comparison variant, not a product setting.
+
+Before building, write each tree's `SOURCE_COMMIT`: the full commit for native and baseline, and `9cb096a27962a2966ca75b30e643f9e466c5cc4b+wouldblock` for the patched tree. From each staged tree on Linux, create its manifest with `find . -type f ! -name SOURCE_SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SOURCE_SHA256SUMS`. Do this before generating build outputs, and include any patched dependency and Cargo source configuration. Then build each tree with `cargo build --manifest-path benches/baselines/Cargo.toml --release --locked`. Hash checks detect subsequent changes to the recorded files; they do not establish that an arbitrary supplied binary was built from them, so retain the build commands and logs too.
+
+Save this map locally as `artifacts/native-comparison-binaries.json`:
+
+```json
+{
+  "native": {"binary": "/work/native/benches/baselines/target/release/maximus-comparison", "argument": "maximus", "source_root": "/work/native", "source_id": "f85abcc"},
+  "baseline": {"binary": "/work/baseline-source/benches/baselines/target/release/maximus-comparison", "argument": "maximus", "source_root": "/work/baseline-source", "source_id": "9cb096a"},
+  "wouldblock": {"binary": "/work/wouldblock-source/benches/baselines/target/release/maximus-comparison", "argument": "maximus", "source_root": "/work/wouldblock-source", "source_id": "9cb096a27962a2966ca75b30e643f9e466c5cc4b+wouldblock"}
+}
+```
+
+Run from the checkout containing this runner, after selecting the context, namespace and physical CPU masks as described in the hardware setup:
+
+```sh
+python3 benches/kubernetes.py --context "$CONTEXT" --namespace "$NAMESPACE" \
+  --label native-f85abcc-wrk --out artifacts/native-comparison \
+  --source-root /work/native --source-id f85abcc \
+  --binary-map artifacts/native-comparison-binaries.json \
+  --workload-root /work/native/benches --engines native,baseline,wouldblock \
+  --generator wrk --workers 1,2,4 --server-cpus 0,2,4,6 --client-cpus 8,10,12,14 \
+  --paths /plaintext,/echo --vus 128 --duration 30s --repeats 3 --perf
+```
+
+`--source-id` and `--binary-map` are optional. Source manifests are always verified before process control; an expected identity must match `SOURCE_COMMIT` exactly or be a commit prefix of at least seven hexadecimal digits. Per-engine source roots are also verified. An explicit `--workload-root` selects `load.js` and `wrk.lua` in that directory. For open-loop k6, use `--generator k6 --rate 5000 --arrival-vus 512` under a new label; `--arrival-vus` otherwise defaults to `--vus`. Offered rate and completed requests are recorded separately, and dropped arrivals fail the trial.
+
+To resume, repeat the identical command with `--resume`. It checks the retained harness, options, binary map, verified source identities/manifests, binary hashes, workload hashes, and stable hardware/toolchain/container/CPU-allocation details before process control. Live CPU-frequency readings are retained as observations but do not block resume. Successful rows are skipped; failed rows remain and their retries get unique attempt IDs. Use a new label when changing the campaign. CSV checkpoints and complete metadata/summary files are replaced atomically, with file contents flushed to disk; raw client output is retained before result validation. A malformed result fails the campaign and is not converted into a successful trial.
+
+`--sample-rss` adds roughly five-second process RSS/high-water and cgroup CPU observations during measured trials, saved separately as `*-rss.jsonl`. It adds control traffic and should be enabled consistently across comparisons. The CSV's `observed_rss_kib` remains the larger of its before/after observations, not a continuous peak. Raw evidence and failed attempts belong beside any reported tables; a locally simulated control test does not qualify Kubernetes execution or throughput.

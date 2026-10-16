@@ -1,0 +1,170 @@
+{
+  "product_revision": "8a8fa9b23c652ae4b6e40fec6322cb9e094e22c9",
+  "benchmark_build_revision": "f85abcc841ee47c4d7739e21d669fd062112414b",
+  "notes": "Counts are executions across configurations, not feature counts. Logs remain ignored; hashes preserve their identity. Some unchanged components were qualified before the final protocol fixes; scope is explicit. See docs/native-http-qualification.md.",
+  "checks": [
+    {
+      "log": "artifacts/native-http/check-final.log",
+      "command": "scripts/check.sh",
+      "scope": "final product",
+      "sha256": "f11eedfdd102d801238a3bb8b1aca13672a7d086372e52c0f056155c5a236558",
+      "bytes": 47965,
+      "passed_test_executions": 139,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "artifacts/native-http/linux-final.log",
+      "command": "scripts/test-linux.sh",
+      "scope": "final product; Linux ARM64",
+      "sha256": "59e7f33e90f44884be37de9dd3cefd3cdc31b804986b2673b17f3f547533d863",
+      "bytes": 20313,
+      "passed_test_executions": 118,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "log": "artifacts/native-http/interop-linux-final.log",
+      "command": "scripts/test-interop-linux.sh",
+      "scope": "final product; Linux ARM64",
+      "sha256": "26c5bf3d9c51843f0cf0dcf7c631683874a9db541404515f661ca9132c2e81d2",
+      "bytes": 11476
+    },
+    {
+      "log": "artifacts/native-http/qualification/final-x86-tests.log",
+      "command": "cargo test --workspace --all-features --locked --offline",
+      "scope": "final product; Linux x86-64",
+      "sha256": "f2d7bd0bc4a584a403b9747594ceab2b043f3f5c4a645365ddb05e765bbe9dab",
+      "bytes": 26230,
+      "passed_test_executions": 118,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "log": "artifacts/native-http/ebpf.log",
+      "command": "scripts/test-linux-ebpf.sh",
+      "scope": "unchanged BPF source; Linux ARM64",
+      "sha256": "1fd24118f4fe9be93d279aef3b6d1777f2eaf09c697e31ded38386801ee93ea3",
+      "bytes": 415,
+      "passed_test_executions": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "artifacts/native-http/vendor-h3.log",
+      "command": "cargo test --manifest-path vendor/h3/Cargo.toml --all-features --locked",
+      "scope": "unchanged vendored source",
+      "sha256": "018dffe610e62869069604cb397b50685307694369c69da92767b7f0af6d48a2",
+      "bytes": 19753,
+      "passed_test_executions": 237,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "artifacts/native-http/downstream-final.log",
+      "command": "scripts/check-downstream.sh",
+      "scope": "final product",
+      "sha256": "74956083ae219577f9ee20396a408cf0cd09100ce5e953df6d9c88c892a9c8ec",
+      "bytes": 5929
+    },
+    {
+      "log": "artifacts/native-http/audit.log",
+      "command": "cargo audit",
+      "scope": "final unchanged root dependency lockfile",
+      "sha256": "03e5a98dad44dd4215aa29c9c380f9e61c13905563f37b58161e4cac6df82a65",
+      "bytes": 261
+    },
+    {
+      "log": "artifacts/native-http/coverage-final.log",
+      "command": "cargo llvm-cov --workspace --all-features --summary-only",
+      "scope": "final product; host-only coverage",
+      "sha256": "e0c0a2a2f6468bd2f5a2d45a7143c8cf39487f94c160b258d6bca08234cf4227",
+      "bytes": 30398,
+      "passed_test_executions": 113,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "artifacts/native-http/baseline-locked-final.log",
+      "command": "cargo check --manifest-path benches/baselines/Cargo.toml --offline --locked",
+      "scope": "build metadata f85abcc",
+      "sha256": "a5f4c585ee974ca44916ac30a98bbc189e067a7e0a6bc6d2e8d6bc525be724af",
+      "bytes": 72
+    },
+    {
+      "log": "artifacts/native-http/h2spec-plain-final.log",
+      "command": "python3 scripts/check-h2spec.py artifacts/native-http/h2spec",
+      "scope": "final H2; plaintext",
+      "sha256": "d29200c688b1dd17e134524e83fc8b520e56ed34f44db54fd7e5dfb212a36b13",
+      "bytes": 528
+    },
+    {
+      "log": "artifacts/native-http/h2spec-tls-final.log",
+      "command": "python3 scripts/check-h2spec.py artifacts/native-http/h2spec --tls",
+      "scope": "final H2; local self-signed TLS",
+      "sha256": "ddd4d16fe129788c0c8063d114e8b22e2c34714dfd57e255cd7f2a7365022521",
+      "bytes": 526
+    },
+    {
+      "log": "artifacts/native-http/fuzz-request-final.log",
+      "command": "cargo +nightly fuzz run request -- -max_total_time=60 -max_len=4096",
+      "scope": "final target",
+      "sha256": "dbff57763f366438a91e514469a46a0c233d2e5ec8094c5f3c3cceb1329fd19c",
+      "bytes": 89169,
+      "fuzz_executions": 8012241,
+      "fuzz_seconds": 61
+    },
+    {
+      "log": "artifacts/native-http/fuzz-h1-final.log",
+      "command": "cargo +nightly fuzz run http1 -- -max_total_time=60 -max_len=16384",
+      "scope": "final target",
+      "sha256": "2ab711540773a0d6ced2424a4d19075162a431a2a5d9d0277c46990ae1cf6081",
+      "bytes": 409830,
+      "fuzz_executions": 1283528,
+      "fuzz_seconds": 61
+    },
+    {
+      "log": "artifacts/native-http/fuzz-hpack.log",
+      "command": "cargo +nightly fuzz run hpack -- -max_total_time=60 -max_len=16384",
+      "scope": "unchanged HPACK target",
+      "sha256": "6fd0148084c3516d29ff1a6646e58702f082958a84b6ea2886488934d6b1a8f0",
+      "bytes": 284534,
+      "fuzz_executions": 2201724,
+      "fuzz_seconds": 61
+    },
+    {
+      "log": "artifacts/native-http/fuzz-h2-final.log",
+      "command": "cargo +nightly fuzz run http2 -- -max_total_time=60 -max_len=16384",
+      "scope": "final H2 target",
+      "sha256": "9db940eef6ecd509c8534e00773a45df1a3d3df1d9db408e7387e072d2cbe417",
+      "bytes": 188430,
+      "fuzz_executions": 2439536,
+      "fuzz_seconds": 61
+    }
+  ],
+  "normal_dependency_graphs": {
+    "target": "macOS ARM64; counts include root and workspace packages",
+    "graphs": {
+      "minimal": {
+        "log": "artifacts/native-http/minimal-package-list.txt",
+        "sha256": "75218bcbb368a54ea6989b990bcc36c977371e2691639da23edaae3b1eb85215",
+        "unique_package_versions": 64
+      },
+      "all": {
+        "log": "artifacts/native-http/all-package-list.txt",
+        "sha256": "249e52d7626e7bdb56a44278e433289b35c366d738fd23c7bd9628c6aa6dbeaa",
+        "unique_package_versions": 127
+      },
+      "old-minimal": {
+        "log": "artifacts/native-http/old-minimal-package-list.txt",
+        "sha256": "a1d032f006544fdf0f5b4fc65497109970759d0114f9a6ffd588cd3aa7cafa39",
+        "unique_package_versions": 71
+      },
+      "old-all": {
+        "log": "artifacts/native-http/old-all-package-list.txt",
+        "sha256": "ae679617c0ede7571de3680fcf641ccf7ffc210bd4889ff537bf12607297623d",
+        "unique_package_versions": 136
+      }
+    }
+  }
+}

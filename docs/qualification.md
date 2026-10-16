@@ -66,6 +66,8 @@ Fuzzing exercises percent decoding, path validation, route matching, typed captu
 
 ## Recorded execution
 
+See [native HTTP qualification](native-http-qualification.md) for the replacement engines at version 0.2. The table below is retained as the original implementation record.
+
 The following table records the original Hyper-backed implementation. It does not qualify the native HTTP engines introduced afterward; their separate execution record must identify the tested revision.
 
 The qualified product revision is `2f2f79818df2845df624016939ac63444c3c6f7a`; the later evidence commit changes benchmark tooling and documentation only.
