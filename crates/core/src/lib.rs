@@ -1,6 +1,9 @@
 //! Shared request, streaming body, response and statically dispatched handler API.
 #![forbid(unsafe_code)]
 mod body;
+mod date;
+#[doc(hidden)]
+pub use date::response_date;
 mod request;
 pub use body::Body;
 pub use bytes::Bytes;

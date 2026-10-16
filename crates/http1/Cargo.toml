@@ -13,12 +13,14 @@ workspace = true
 [dependencies]
 maximus-core = { path = "../core" }
 maximus-runtime = { path = "../runtime" }
-compio.workspace = true
+compio = { workspace = true, features = ["io-compat"] }
 http-body-util.workspace = true
-httpdate = "1"
 futures-util.workspace = true
 send_wrapper = { version = "0.6", optional = true }
 
 [features]
 default = []
 websocket = ["dep:send_wrapper"]
+
+[dev-dependencies]
+compio = { workspace = true, features = ["net"] }

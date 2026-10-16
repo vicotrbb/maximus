@@ -11,10 +11,11 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/vicotrbb/maximus"
 
 [workspace.dependencies]
-compio = { version = "=0.19.2", default-features = false, features = ["runtime", "io-uring", "polling", "net", "time", "io-compat", "bytes"] }
+compio = { version = "=0.19.2", default-features = false, features = ["runtime", "io-uring", "polling", "time"] }
 bytes = "1.11"
 futures-util = { version = "0.3", features = ["io"] }
 http = "1.4"
+httpdate = "1"
 http-body = "1"
 http-body-util = "0.1"
 hyper = { version = "1.8", features = ["server", "http1"] }
