@@ -1,0 +1,13 @@
+[package]
+name = "maximus-net"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+compio.workspace = true
+socket2.workspace = true

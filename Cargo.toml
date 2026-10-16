@@ -1,0 +1,29 @@
+[workspace]
+resolver = "2"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+license = "MIT OR Apache-2.0"
+
+[workspace.dependencies]
+compio = { version = "=0.19.2", default-features = false, features = ["runtime", "io-uring", "polling", "net", "time", "io-compat", "bytes"] }
+bytes = "1.11"
+futures-util = { version = "0.3", features = ["io"] }
+http = "1.4"
+http-body = "1"
+http-body-util = "0.1"
+hyper = { version = "1.8", features = ["server", "http1"] }
+socket2 = { version = "0.6", features = ["all"] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+
+[workspace.lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+
+[workspace.lints.clippy]
+undocumented_unsafe_blocks = "deny"
