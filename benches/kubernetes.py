@@ -98,6 +98,11 @@ def passed(row):
     requests = float(row["requests"])
     if not math.isfinite(requests) or requests <= 0 or requests != int(requests):
         raise ValueError("invalid recorded request count")
+    if row["generator"] == "k6":
+        for name in ("iterations_started", "iterations_completed"):
+            value = float(row[name])
+            if not math.isfinite(value) or value != requests:
+                raise ValueError(f"invalid recorded iteration count: {name}")
     return int(row["exit"]) == 0 and all(float(row[k]) == 0 for k in ("failures", "checks_failed", "network_errors", "dropped"))
 
 BASE = ["kubectl", "--context", A.context, "-n", A.namespace, "exec", "benchmark"]
@@ -193,6 +198,22 @@ def snapshot(container):
     return values
 
 
+def validate_k6_iterations(summary):
+    """This workload starts exactly one HTTP request per completed iteration."""
+    counts = {}
+    for name in ("http_reqs", "iteration_starts", "iterations"):
+        try:
+            value = summary["metrics"][name]["values"]["count"]
+        except (KeyError, TypeError) as error:
+            raise ValueError(f"missing required client metric {name}.count; use current load.js") from error
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0 or value != int(value):
+            raise ValueError(f"invalid client metric {name}.count: {value!r}")
+        counts[name] = int(value)
+    if len(set(counts.values())) != 1:
+        raise ValueError(f"incomplete k6 iterations: {counts}")
+    return counts["iteration_starts"], counts["iterations"]
+
+
 def workload(key, path, duration, rate, log):
     env = [
         "env",
@@ -284,6 +305,10 @@ def workload(key, path, duration, rate, log):
             retained = command("client", "cat", f"/work/{key}.json", check=False)
             if retained.returncode == 0:
                 retain(OUT / f"{key}.json", retained.stdout)
+            if A.generator == "k6":
+                if retained.returncode:
+                    raise ValueError("missing k6 summary for iteration validation")
+                validate_k6_iterations(json.loads(retained.stdout))
             return int(status.stdout.strip())
         time.sleep(1)
     raise RuntimeError("client completion was not recorded before its deadline")
@@ -553,6 +578,8 @@ try:
                             - before["client"]["throttled_usec"],
                             exit=code,
                         )
+                        if A.generator == "k6":
+                            row["iterations_started"], row["iterations_completed"] = validate_k6_iterations(summary)
                         if A.perf:
                             raw_perf = command(
                                 "server", "cat", f"/work/{key}-perf.csv"

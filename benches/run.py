@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Isolated Linux k6 comparisons. Raw results stay in artifacts/bench; no product deps."""
-import argparse, csv, json, os, pathlib, shlex, subprocess, time
+import argparse, csv, hashlib, json, math, os, pathlib, shlex, subprocess, time
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / 'artifacts/bench'
 K6 = 'grafana/k6:1.6.0'
@@ -22,6 +22,22 @@ def counters(name):
             fields[words[0]] = fields.get(words[0], 0) + int(words[1])
     return fields
 
+def validate_k6_iterations(summary):
+    """This workload starts exactly one HTTP request per completed iteration."""
+    counts = {}
+    for name in ("http_reqs", "iteration_starts", "iterations"):
+        try:
+            value = summary["metrics"][name]["values"]["count"]
+        except (KeyError, TypeError) as error:
+            raise ValueError(f"missing required client metric {name}.count; use current load.js") from error
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0 or value != int(value):
+            raise ValueError(f"invalid client metric {name}.count: {value!r}")
+        counts[name] = int(value)
+    if len(set(counts.values())) != 1:
+        raise ValueError(f"incomplete k6 iterations: {counts}")
+    return counts["iteration_starts"], counts["iterations"]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--engines', default='maximus,epoll,hyper,axum,actix')
@@ -40,6 +56,7 @@ def main():
     environment = {'date_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'args': vars(args),
         'source_commit': capture('git', '-C', str(ROOT), 'rev-parse', 'HEAD'),
         'source_dirty': bool(capture('git', '-C', str(ROOT), 'status', '--porcelain')),
+        'workload_sha256': hashlib.sha256((ROOT / 'benches/load.js').read_bytes()).hexdigest(),
         'running_containers': capture('docker', 'ps', '--format', '{{.Names}} {{.Image}}'),
         'docker': capture('docker', 'version', '--format', '{{.Server.Version}}'),
         'kernel': capture('docker', 'run', '--rm', RUST, 'uname', '-a'),
@@ -78,7 +95,8 @@ def main():
                 if args.protocol != 'plain':
                     base += ['-v', f'{OUT}/cert.pem:/cert.pem:ro', '-e', 'SSL_CERT_FILE=/cert.pem', '-e', 'URL=https://localhost:8080', '-e', f'PROTOCOL={args.protocol}']
                 with (OUT / f'{key}.log').open('w') as log:
-                    run(*base, '-e', 'DURATION=3s', '-e', 'RESULT=/results/warmup.json', K6, 'run', '--quiet', '/load.js', stdout=log, stderr=subprocess.STDOUT)
+                    run(*base, '-e', 'DURATION=3s', '-e', f'RESULT=/results/{key}-warmup.json', K6, 'run', '--quiet', '/load.js', stdout=log, stderr=subprocess.STDOUT)
+                    validate_k6_iterations(json.loads((OUT / f'{key}-warmup.json').read_text()))
                     before = counters(name)
                     test = base + ['-e', f'DURATION={args.duration}', '-e', f'RESULT=/results/{key}.json']
                     if rate != '0': test += ['-e', f'RATE={rate}']
@@ -96,12 +114,14 @@ def main():
                     if samples:
                         (OUT / f'{key}-memory.json').write_text(json.dumps(samples, indent=2))
                 summary = json.loads((OUT / f'{key}.json').read_text())
+                iterations_started, iterations_completed = validate_k6_iterations(summary)
                 data = summary['metrics']
                 elapsed_us = summary['state']['testRunDurationMs'] * 1000
                 client_cpu = dict(line.split() for line in (OUT / f'{key}-client-cpu.txt').read_text().splitlines())
                 metric = lambda name, field, default=0: data.get(name, {}).get('values', {}).get(field, default)
                 count = metric('http_reqs', 'count')
                 row = dict(engine=engine, path=path, workers=args.workers, protocol=args.protocol, offered_rps=int(rate), repeat=repeat,
+                    requests=count, iterations_started=iterations_started, iterations_completed=iterations_completed,
                     rps=metric('http_reqs', 'rate'), p50_ms=metric('http_req_duration', 'med'), p99_ms=metric('http_req_duration', 'p(99)'), p999_ms=metric('http_req_duration', 'p(99.9)'),
                     failures=metric('http_req_failed', 'passes'), checks_failed=metric('checks', 'fails'), dropped=metric('dropped_iterations', 'count'),
                     cpu_us_per_request=(after['usage_usec'] - before['usage_usec']) / max(count, 1),

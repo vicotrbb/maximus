@@ -21,7 +21,7 @@ python3 benches/run.py --label tls-h1 --engines maximus,hyper,axum --protocol h1
 python3 benches/run.py --label native --engines maximus,nginx --paths /plaintext,/json --repeats 3
 ```
 
-The runner assumes three Linux CPUs: server CPU 0 (0–1 with two workers), client CPU 2. Use a dedicated host for performance claims. Existing background services must be recorded when the host cannot be dedicated. It warms the server for 3 seconds in a separate k6 process, then starts new client connections for measurement. TLS connection establishment therefore contributes to cold-start pressure; request-duration metrics do not include the entire handshake. It rotates server order across repeats, checks every status/body/protocol, records p50/p99/p99.9, achieved requests/sec, failure counts, dropped iterations, server cgroup CPU microseconds/request, server/client CPU utilization, and process-tree RSS. Use `--sample-seconds 5` for periodic server memory samples during a sustained run; short comparisons avoid this sampling overhead. `--client-cpus` can allocate more client cores when available. CPU percentages use one logical CPU as 100%. Cgroup snapshots bracket a slightly wider interval than k6 reports, so percentages are approximate and can exceed the assigned core count briefly. RSS is the sum of process-tree observations, which double-counts shared pages for multi-process servers such as Nginx; it is not unique physical memory. Tables distinguish post-run RSS from the largest observation, which is not a continuous peak. Raw JSON, logs and environment/image digests go to `artifacts/bench/`. Fixed arrival rates are open-loop; zero means a closed-loop constant-VU scenario. [k6 arrival-rate behavior](https://grafana.com/docs/k6/latest/using-k6/scenarios/executors/constant-arrival-rate/) and [threshold semantics](https://grafana.com/docs/k6/latest/using-k6/thresholds/) define the distinction. Dropped iterations are a load-generator shortfall and must not be counted as completed server requests.
+The runner assumes three Linux CPUs: server CPU 0 (0–1 with two workers), client CPU 2. Use a dedicated host for performance claims. Existing background services must be recorded when the host cannot be dedicated. It warms the server for 3 seconds in a separate k6 process, then starts new client connections for measurement. TLS connection establishment therefore contributes to cold-start pressure; request-duration metrics do not include the entire handshake. It rotates server order across repeats, checks every status/body/protocol, records p50/p99/p99.9, achieved requests/sec, failure counts, dropped iterations, server cgroup CPU microseconds/request, server/client CPU accounting ratios, and process-tree RSS. Use `--sample-seconds 5` for periodic server memory samples during a sustained run; short comparisons avoid this sampling overhead. `--client-cpus` can allocate more client cores when available. The Docker runner's CPU percentages divide the server cgroup CPU delta, or the client's entire cgroup CPU usage, by k6's reported test duration, using one CPU as 100%. Those accounting windows include work outside that duration. These duration-normalized ratios can therefore exceed the assigned CPU budget without demonstrating average cores used or quota saturation. RSS is the sum of process-tree observations, which double-counts shared pages for multi-process servers such as Nginx; it is not unique physical memory. Tables distinguish post-run RSS from the largest observation, which is not a continuous peak. Raw JSON, logs and environment/image digests go to `artifacts/bench/`. Fixed arrival rates are open-loop; zero means a closed-loop constant-VU scenario. [k6 arrival-rate behavior](https://grafana.com/docs/k6/latest/using-k6/scenarios/executors/constant-arrival-rate/) and [threshold semantics](https://grafana.com/docs/k6/latest/using-k6/thresholds/) define the distinction. Dropped iterations are a load-generator shortfall and must not be counted as completed server requests.
 
 TLS runs use the same generated RSA certificate, Rustls/Ring configuration, TLS 1.3 range, ALPN selection and response payload. The local CA is trusted by k6; certificate verification stays enabled. H2 flow-control and concurrent-stream settings match. k6 protocol assertions reject silent HTTP/1 fallback. The TLS Hyper branch shares an adapter that clones the Axum router and wraps its response body even when calling the Hyper handler; it is not a minimal raw-Hyper TLS lower bound. Plaintext Hyper uses its direct service path. k6 does not qualify HTTP/3 here; aioquic interoperability is a separate test.
 
@@ -57,7 +57,7 @@ python3 benches/summarize-hardware.py
 
 The checked-in [report](results/README.md), [VM tables](results/tables.md) and [hardware tables](results/hardware-tables.md) retain failed trials and explain the observed limits. Hardware setup and cleanup are documented in [HARDWARE.md](HARDWARE.md). Benchmark infrastructure and generated caches never enter the product dependency graph.
 
-To redraw the scaling chart from the checked-in trial CSV, install Matplotlib in an optional local Python environment and run `python3 benches/plot.py`. Matplotlib is not a product or benchmark-runner dependency.
+To redraw the native throughput and p99 scaling chart from the checked-in trial CSV, install Matplotlib in an optional local Python environment and run `python3 benches/plot.py --native`. Running without `--native` redraws the historical Hyper-backed chart. Matplotlib is not a product or benchmark-runner dependency.
 
 ## Kubernetes archive comparisons and resume
 
@@ -97,6 +97,15 @@ Save this map locally as `artifacts/native-comparison-binaries.json`:
 }
 ```
 
+The current k6 workload counts each iteration before its HTTP call. Both tracked runners require positive integer counts with `iteration_starts == iterations == http_reqs` for warmup and measurement, and record started/completed counts in new k6 rows. This workload makes exactly one HTTP request per iteration. Missing counters fail validation even if k6 exits zero and every completed response passes. The archived `f85abcc` workload predates this instrumentation and cannot satisfy the new gate.
+
+Stage the current checkout's workloads separately from the frozen product source. The extra counter adds client-side work, so every variant in a future comparison must use the same staged workload. Kubernetes metadata records both workload hashes; the Docker runner records its mounted `load.js` hash. Existing historical results are not retroactively validated by the new counter.
+
+```sh
+kubectl --context "$CONTEXT" -n "$NAMESPACE" exec benchmark -c server -- mkdir -p /work/qualification-workloads
+tar -C benches -cf - load.js wrk.lua | kubectl --context "$CONTEXT" -n "$NAMESPACE" exec -i benchmark -c server -- tar -xf - -C /work/qualification-workloads
+```
+
 Run from the checkout containing this runner, after selecting the context, namespace and physical CPU masks as described in the hardware setup:
 
 ```sh
@@ -104,7 +113,7 @@ python3 benches/kubernetes.py --context "$CONTEXT" --namespace "$NAMESPACE" \
   --label native-f85abcc-wrk --out artifacts/native-comparison \
   --source-root /work/native --source-id f85abcc \
   --binary-map artifacts/native-comparison-binaries.json \
-  --workload-root /work/native/benches --engines native,baseline,wouldblock \
+  --workload-root /work/qualification-workloads --engines native,baseline,wouldblock \
   --generator wrk --workers 1,2,4 --server-cpus 0,2,4,6 --client-cpus 8,10,12,14 \
   --paths /plaintext,/echo --vus 128 --duration 30s --repeats 3 --perf
 ```
