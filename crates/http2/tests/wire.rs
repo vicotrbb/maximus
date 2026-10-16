@@ -153,11 +153,37 @@ fn body_ending_at_exact_send_window_completes_without_more_credit() {
         if k == 0 && id == 1 {
             count += p.len();
             if f & 1 != 0 {
+                assert!(!p.is_empty(), "final payload must carry END_STREAM");
                 break;
             }
         }
     }
     assert_eq!(count, 65535);
+}
+#[test]
+fn buffered_response_ends_on_last_payload_after_frame_splitting() {
+    for size in [5, 16385] {
+        let mut s = server_with(
+            move || move |_: Request| async move { "x".repeat(size) },
+            Limits::default(),
+        );
+        handshake(&mut s);
+        s.write_all(&frame(1, 5, 1, &request())).unwrap();
+        let mut count = 0;
+        loop {
+            let (kind, flags, id, payload) = receive(&mut s);
+            if kind == 0 && id == 1 {
+                assert!(!payload.is_empty(), "final payload must carry END_STREAM");
+                assert!(payload.iter().all(|&b| b == b'x'));
+                count += payload.len();
+                assert_eq!(flags & 1 != 0, count == size);
+                if flags & 1 != 0 {
+                    break;
+                }
+            }
+        }
+        assert_eq!(count, size);
+    }
 }
 #[test]
 fn zero_stream_window_does_not_block_headers_or_other_streams() {
@@ -273,6 +299,59 @@ fn invalid_response_length_resets_stream() {
     handshake(&mut s);
     s.write_all(&frame(1, 5, 1, &request())).unwrap();
     assert_eq!(until(&mut s, 3, 1).1, 2u32.to_be_bytes());
+}
+#[test]
+fn mismatched_buffered_response_length_never_completes_successfully() {
+    use maximus_core::{HeaderValue, IntoResponse};
+    for length in ["4", "6"] {
+        let mut s = server_with(
+            move || {
+                move |_: Request| async move {
+                    let mut response = "hello".into_response();
+                    response
+                        .headers_mut()
+                        .insert("content-length", HeaderValue::from_static(length));
+                    response
+                }
+            },
+            Limits::default(),
+        );
+        handshake(&mut s);
+        s.write_all(&frame(1, 5, 1, &request())).unwrap();
+        loop {
+            let (kind, flags, id, payload) = receive(&mut s);
+            if id == 1 {
+                if kind == 3 {
+                    assert_eq!(payload, 2u32.to_be_bytes());
+                    break;
+                }
+                assert_eq!(flags & 1, 0, "mismatched length must not END_STREAM");
+            }
+        }
+    }
+}
+#[test]
+fn streaming_data_keeps_stream_open_for_response_trailers() {
+    use maximus_core::{Body, Bytes, Frame, HeaderMap, HeaderValue};
+    let mut s = server_with(
+        || {
+            |_: Request| async {
+                let mut trailers = HeaderMap::new();
+                trailers.insert("x-end", HeaderValue::from_static("yes"));
+                Body::frames(futures_util::stream::iter([
+                    Ok(Frame::data(Bytes::from_static(b"hello"))),
+                    Ok(Frame::trailers(trailers)),
+                ]))
+            }
+        },
+        Limits::default(),
+    );
+    handshake(&mut s);
+    s.write_all(&frame(1, 5, 1, &request())).unwrap();
+    let (flags, payload) = until(&mut s, 0, 1);
+    assert_eq!(flags & 1, 0);
+    assert_eq!(payload, b"hello");
+    assert_eq!(until(&mut s, 1, 1).0, 5);
 }
 #[test]
 fn forbidden_response_trailers_reset_stream() {

@@ -830,16 +830,22 @@ impl<H: Handler> Connection<H> {
                         .min(self.limits.io_buffer_bytes)
                         .min(s.send as usize)
                         .min(self.send as usize);
-                    if s.response_length
-                        .is_some_and(|total| s.sent + n as u64 > total)
-                    {
+                    let end = s.pending.len() == n
+                        && s.body.as_ref().is_some_and(HttpBody::is_end_stream);
+                    if s.response_length.is_some_and(|total| {
+                        s.sent + n as u64 > total || end && s.sent + n as u64 != total
+                    }) {
                         reset.push((id, INTERNAL));
                     } else {
                         let data = s.pending.split_to(n);
                         s.sent += n as u64;
                         s.send -= n as i64;
                         self.send -= n as i64;
-                        emit(out, 0, 0, id, &data);
+                        emit(out, 0, u8::from(end), id, &data);
+                        if end {
+                            s.local_end = true;
+                            s.body = None;
+                        }
                         s.deadline = Instant::now() + self.limits.request_timeout;
                     }
                 }
