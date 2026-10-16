@@ -1,4 +1,4 @@
-//! HTTP/2 test fixture: consume the complete request before returning nonempty 200.
+//! HTTP/2 fixture: consume requests, holding `/half-closed` responses open.
 use http_body_util::BodyExt;
 use maximus::{Request, Server, TlsConfig};
 
@@ -19,7 +19,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let running = server.start(|| {
         |request: Request| async {
+            let hold_response = request.uri().path() == "/half-closed";
             request.into_body().collect().await?;
+            if hold_response {
+                futures_util::future::pending::<()>().await;
+            }
             Ok::<_, maximus::Error>("Hello, World!")
         }
     })?;

@@ -283,6 +283,39 @@ fn reset_cancels_handler_and_preserves_connection() {
     assert_eq!(until(&mut s, 0, 3).1, b"hello");
 }
 #[test]
+fn half_closed_remote_stream_rejects_data_and_headers_while_handler_is_pending() {
+    use http_body_util::BodyExt;
+    for (kind, payload) in [(0, b"late".to_vec()), (1, request())] {
+        let mut s = server_with(
+            || {
+                |r: Request| async move {
+                    let hold = r.uri().path() == "/half-closed";
+                    r.into_body().collect().await.unwrap();
+                    if hold {
+                        futures_util::future::pending::<()>().await;
+                    }
+                    "hello"
+                }
+            },
+            Limits::default(),
+        );
+        handshake(&mut s);
+        let mut held_request = vec![0x82, 0x86, 0x04, 12];
+        held_request.extend(b"/half-closed");
+        held_request.extend([0x01, 9]);
+        held_request.extend(b"localhost");
+        s.write_all(&frame(1, 5, 1, &held_request)).unwrap();
+        // A PING acknowledgment proves the preceding END_STREAM was processed.
+        s.write_all(&frame(6, 0, 0, b"heldopen")).unwrap();
+        assert_eq!(until(&mut s, 6, 0), (1, b"heldopen".to_vec()));
+        s.write_all(&frame(kind, if kind == 1 { 5 } else { 1 }, 1, &payload))
+            .unwrap();
+        assert_eq!(until(&mut s, 3, 1).1, 5u32.to_be_bytes());
+        s.write_all(&frame(1, 5, 3, &request())).unwrap();
+        assert_eq!(until(&mut s, 0, 3).1, b"hello");
+    }
+}
+#[test]
 fn invalid_response_length_resets_stream() {
     use maximus_core::{HeaderValue, IntoResponse};
     let mut s = server_with(
