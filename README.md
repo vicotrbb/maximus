@@ -2,7 +2,7 @@
 
 A modular Rust HTTP server for Linux, with one local executor per worker, io_uring and epoll, statically dispatched routes, and optional TLS, HTTP/2 and HTTP/3.
 
-Maximus owns worker lifecycle, admission limits, routing and framework policy. Compio supplies completion I/O and local execution; Hyper supplies HTTP/1 and HTTP/2; Rustls and h3/Quinn supply TLS and HTTP/3. There is no Tokio executor in Maximus. Maintaining a second protocol parser or crypto implementation would add risk and code without demonstrated benefit.
+Maximus owns HTTP/1.1 framing, HTTP/2 and HPACK, worker lifecycle, admission limits, routing and framework policy. Compio supplies completion I/O and local execution; Rustls and h3/Quinn supply TLS and HTTP/3. Plain TCP uses Compio's owned buffers directly; TLS and WebSocket transports retain explicit futures I/O integration. Product builds do not depend on Hyper, hyper-util, tokio-util or the h2 engine. The optional h3 dependency still uses Tokio utilities transitively; Maximus does not start a Tokio executor.
 
 ## Run
 
@@ -73,4 +73,4 @@ See [API and operating guide](docs/guide.md) for extraction, state, middleware, 
 
 The twelve crates follow the supplied specification. Benchmark servers and fuzz tooling are separate workspaces. Optional integrations do not enter a minimal build. Unsafe product code is confined to the optional Linux eBPF syscall adapter, with its invariant documented at the call.
 
-Licensed under MIT OR Apache-2.0. The initial API is version 0.1; protocol and lifecycle behavior is covered by executable tests, and API changes must update examples and compatibility tests.
+Licensed under MIT OR Apache-2.0. The API is version 0.2; see the [native HTTP migration](docs/native-http-migration.md) for changes to low-level transport and body integration. Protocol and lifecycle behavior is covered by executable tests, and API changes must update examples and compatibility tests.

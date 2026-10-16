@@ -6,4 +6,10 @@
 /.venv/
 /fuzz/corpus/request/*
 !/fuzz/corpus/request/seed*
+/fuzz/corpus/http1/*
+!/fuzz/corpus/http1/seed*
+/fuzz/corpus/hpack/*
+!/fuzz/corpus/hpack/seed*
+/fuzz/corpus/http2/*
+!/fuzz/corpus/http2/seed*
 /fuzz/artifacts/

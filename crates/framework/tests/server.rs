@@ -223,11 +223,10 @@ fn rejects_ambiguous_framing_and_hosts_before_application() {
         );
         assert!(response.contains("200 OK"), "{host}: {response}");
     }
-    // RFC 9112 permits processing Transfer-Encoding when both are present, but
-    // requires closing afterwards. Hyper removes Content-Length and closes.
+    // Reject ambiguous TE/CL framing before dispatch and never process a pipeline behind it.
     let response = exchange(server.local_addr(), b"POST / HTTP/1.1\r\nHost: a\r\nContent-Length: 1\r\nTransfer-Encoding: chunked\r\n\r\n0\r\n\r\nGET / HTTP/1.1\r\nHost: a\r\n\r\n");
-    assert_eq!(response.matches("200 OK").count(), 1);
-    assert_eq!(response.matches("application").count(), 1);
+    assert!(response.contains("400 Bad Request"));
+    assert!(!response.contains("application"));
     server.shutdown().unwrap();
 }
 

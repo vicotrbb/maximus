@@ -77,3 +77,42 @@ fn admission_reserves_multiplexed_bodies_and_tls_records() {
     assert_eq!(limits.protocol_capacity(true, true), 0);
     assert!(limits.validate().is_err());
 }
+
+#[test]
+fn neutral_incoming_body_is_bounded_and_preserves_trailers() {
+    use maximus_core::Frame;
+    compio::runtime::Runtime::new().unwrap().block_on(async {
+        let mut trailers = http::HeaderMap::new();
+        trailers.insert("x-check", "yes".parse().unwrap());
+        let mut body = Body::incoming(
+            futures_util::stream::iter([
+                Ok(Frame::data("abc".into())),
+                Ok(Frame::trailers(trailers)),
+            ]),
+            3,
+        );
+        assert_eq!(
+            body.frame().await.unwrap().unwrap().into_data().unwrap(),
+            "abc"
+        );
+        assert_eq!(
+            body.frame()
+                .await
+                .unwrap()
+                .unwrap()
+                .into_trailers()
+                .unwrap()["x-check"],
+            "yes"
+        );
+        assert!(body.frame().await.is_none());
+        let stream = futures_util::stream::iter([Ok(Frame::data("four".into()))]);
+        assert_eq!(
+            Body::incoming(stream, 3)
+                .collect()
+                .await
+                .unwrap_err()
+                .status,
+            StatusCode::PAYLOAD_TOO_LARGE
+        );
+    });
+}

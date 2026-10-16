@@ -1,4 +1,5 @@
 #![cfg(feature = "http2")]
+mod support;
 use http_body_util::BodyExt;
 use maximus::{Body, Request, Server};
 #[test]
@@ -18,11 +19,10 @@ fn multiplexed_http2_streams_and_flow_control() {
         let stream = compio::net::TcpStream::connect(server.local_addr())
             .await
             .unwrap();
-        let io = maximus_http1::adapt(compio::io::compat::AsyncStream::new(stream));
-        let (mut client, connection) =
-            hyper::client::conn::http2::handshake(maximus_http1::Executor, io)
-                .await
-                .unwrap();
+        let io = support::adapt(compio::io::compat::AsyncStream::new(stream));
+        let (mut client, connection) = hyper::client::conn::http2::handshake(support::Executor, io)
+            .await
+            .unwrap();
         let connection = compio::runtime::spawn(connection);
         let request = |path| {
             hyper::Request::builder()

@@ -6,21 +6,18 @@ use async_tungstenite::{
         protocol::{Role, WebSocketConfig},
     },
 };
-use hyper_util::rt::TokioIo;
 use maximus_core::{Body, Error, IntoResponse, Request, Response, Result, StatusCode};
 use std::future::Future;
-use tokio_util::compat::{Compat, TokioAsyncReadCompatExt};
-pub type WebSocket = WebSocketStream<Compat<TokioIo<hyper::upgrade::Upgraded>>>;
+pub type WebSocket = WebSocketStream<maximus_http1::Upgraded>;
 
 pub struct WebSocketUpgrade {
     response: Response,
-    upgrade: hyper::upgrade::OnUpgrade,
     slot: maximus_http1::UpgradeSlot,
     config: WebSocketConfig,
     protocols: Vec<String>,
 }
 impl WebSocketUpgrade {
-    pub fn new(mut request: Request) -> Result<Self> {
+    pub fn new(request: Request) -> Result<Self> {
         if request.version() != maximus_core::http::Version::HTTP_11 {
             return Err(Error::bad_request("WebSocket upgrade requires HTTP/1.1"));
         }
@@ -42,7 +39,6 @@ impl WebSocketUpgrade {
             .and_then(|v| v.to_str().ok())
             .map(|v| v.split(',').map(|s| s.trim().to_owned()).collect())
             .unwrap_or_default();
-        let upgrade = hyper::upgrade::on(&mut *request);
         let config = WebSocketConfig::default()
             .read_buffer_size(4096)
             .write_buffer_size(16384)
@@ -51,7 +47,6 @@ impl WebSocketUpgrade {
             .max_frame_size(Some(65536));
         Ok(Self {
             response,
-            upgrade,
             slot,
             config,
             protocols,
@@ -86,18 +81,11 @@ impl WebSocketUpgrade {
         F: FnOnce(WebSocket) -> Fut + 'static,
         Fut: Future<Output = ()> + 'static,
     {
-        let task = async move {
-            if let Ok(upgraded) = self.upgrade.await {
-                let socket = WebSocketStream::from_raw_socket(
-                    TokioIo::new(upgraded).compat(),
-                    Role::Server,
-                    Some(self.config),
-                )
-                .await;
-                handler(socket).await;
-            }
-        };
-        if self.slot.register(task) {
+        if self.slot.register(move |upgraded| async move {
+            let socket =
+                WebSocketStream::from_raw_socket(upgraded, Role::Server, Some(self.config)).await;
+            handler(socket).await;
+        }) {
             self.response
         } else {
             StatusCode::INTERNAL_SERVER_ERROR.into_response()

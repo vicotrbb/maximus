@@ -1,5 +1,7 @@
 # Maximus implementation and qualification
 
+This is the historical qualification record for the original Hyper-backed 0.1 implementation. The 0.2 native-engine work supersedes its architecture; see [the migration](native-http-migration.md) and [the native implementation plan](superpowers/plans/2026-10-16-native-http.md). The counts and benchmark claims below apply only to their recorded revision.
+
 The supplied specification was read in full and retained as `docs/original-spec.md`. The project is named Maximus as requested. The implementation plan is `docs/superpowers/plans/2026-10-15-maximus.md`.
 
 ## Implementation

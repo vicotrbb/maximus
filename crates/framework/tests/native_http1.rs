@@ -1,0 +1,441 @@
+use maximus::{Request, Server};
+use std::{
+    io::{Read, Write},
+    net::TcpStream,
+    time::Duration,
+};
+
+#[test]
+fn ambiguous_transfer_encoding_and_length_never_reaches_handler() {
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| |_: Request| async { "application" })
+        .unwrap();
+    let mut stream = TcpStream::connect(server.local_addr()).unwrap();
+    stream
+        .set_read_timeout(Some(Duration::from_secs(2)))
+        .unwrap();
+    stream.write_all(b"POST / HTTP/1.1\r\nHost: a\r\nContent-Length: 1\r\nTransfer-Encoding: chunked\r\n\r\n0\r\n\r\nGET / HTTP/1.1\r\nHost: a\r\n\r\n").unwrap();
+    let mut wire = String::new();
+    stream.read_to_string(&mut wire).unwrap();
+    assert!(wire.starts_with("HTTP/1.1 400"), "{wire}");
+    assert!(!wire.contains("application"), "{wire}");
+    server.shutdown().unwrap();
+}
+
+fn connect(address: std::net::SocketAddr) -> TcpStream {
+    let stream = TcpStream::connect(address).unwrap();
+    stream
+        .set_read_timeout(Some(Duration::from_secs(3)))
+        .unwrap();
+    stream
+}
+fn read_all(mut stream: TcpStream) -> String {
+    let mut wire = String::new();
+    stream.read_to_string(&mut wire).unwrap();
+    wire
+}
+#[test]
+fn fragmented_chunked_request_trailers_and_ordered_pipeline() {
+    use http_body_util::BodyExt;
+    use maximus::IntoResponse;
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| {
+            |req: Request| async move {
+                match req.into_body().collect().await {
+                    Ok(body) => {
+                        let trailer = body
+                            .trailers()
+                            .and_then(|t| t.get("x-check"))
+                            .map(|v| v.to_str().unwrap().to_owned())
+                            .unwrap_or_default();
+                        format!("{}:{trailer}", String::from_utf8_lossy(&body.to_bytes()))
+                            .into_response()
+                    }
+                    Err(e) => e.into_response(),
+                }
+            }
+        })
+        .unwrap();
+    let mut stream = connect(server.local_addr());
+    for fragment in [
+        b"POST / HT".as_slice(),
+        b"TP/1.1\r\nHost: a\r\nTransfer-Encoding: chunked\r\n\r",
+        b"\n3;name=\"semi;colon\"\r",
+        b"\nabc\r",
+        b"\n2\r\nde\r\n0\r\nX-Check: yes\r\n\r",
+        b"\nGET / HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n",
+    ] {
+        stream.write_all(fragment).unwrap();
+        std::thread::sleep(Duration::from_millis(2));
+    }
+    let wire = read_all(stream);
+    assert_eq!(wire.matches("200 OK").count(), 2, "{wire}");
+    assert!(wire.contains("abcde:yesHTTP/1.1 200"), "{wire}");
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn expect_continue_and_large_demand_driven_echo() {
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| |req: Request| async move { req.into_body() })
+        .unwrap();
+    let mut stream = connect(server.local_addr());
+    stream.write_all(b"POST / HTTP/1.1\r\nHost: a\r\nContent-Length: 50000\r\nExpect: 100-continue\r\nConnection: close\r\n\r\n").unwrap();
+    let mut interim = [0; 25];
+    stream.read_exact(&mut interim).unwrap();
+    assert_eq!(&interim, b"HTTP/1.1 100 Continue\r\n\r\n");
+    stream.write_all(&vec![b'x'; 50000]).unwrap();
+    let wire = read_all(stream);
+    assert!(wire.starts_with("HTTP/1.1 200"), "{wire}");
+    assert_eq!(wire.bytes().filter(|b| *b == b'x').count(), 50000);
+    assert!(wire.ends_with("\r\n0\r\n\r\n"));
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn bodyless_statuses_and_http10_close_delimited_stream() {
+    use maximus::{Body, IntoResponse, StatusCode};
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| {
+            |req: Request| async move {
+                if req.uri().path() == "/205" {
+                    (StatusCode::RESET_CONTENT, "forbidden").into_response()
+                } else {
+                    Body::stream(futures_util::stream::iter([Ok("a".into()), Ok("b".into())]))
+                        .into_response()
+                }
+            }
+        })
+        .unwrap();
+    let mut stream = connect(server.local_addr());
+    stream
+        .write_all(b"GET /205 HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n")
+        .unwrap();
+    let wire = read_all(stream);
+    assert!(wire.ends_with("\r\n\r\n"), "{wire}");
+    let mut stream = connect(server.local_addr());
+    stream
+        .write_all(b"GET / HTTP/1.0\r\nConnection: keep-alive\r\n\r\n")
+        .unwrap();
+    let wire = read_all(stream);
+    assert!(wire.starts_with("HTTP/1.0 200"), "{wire}");
+    assert!(wire.ends_with("ab"), "{wire}");
+    assert!(wire.contains("connection: close"), "{wire}");
+    assert!(!wire.contains("transfer-encoding"), "{wire}");
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn bare_newline_and_invalid_extensions_are_rejected() {
+    use http_body_util::BodyExt;
+    use maximus::IntoResponse;
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| {
+            |req: Request| async move {
+                match req.into_body().collect().await {
+                    Ok(_) => "application".into_response(),
+                    Err(e) => e.into_response(),
+                }
+            }
+        })
+        .unwrap();
+    for request in [
+        b"GET / HTTP/1.1\r\nHost: a\r\n\nConnection: close\r\n\r\n".as_slice(),
+        b"POST / HTTP/1.1\r\nHost: a\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n1;foo=bar\x0b\r\nx\r\n0\r\n\r\n",
+        b"POST / HTTP/1.1\r\nHost: a\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n1;=bad\r\nx\r\n0\r\n\r\n",
+    ] {
+        let mut stream=connect(server.local_addr());stream.write_all(request).unwrap();
+        let wire=read_all(stream);assert!(wire.contains("400 Bad Request"),"{wire}");assert!(!wire.contains("application"));
+    }
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn malformed_and_truncated_bodies_close_without_reusing_pipeline_bytes() {
+    use http_body_util::BodyExt;
+    use maximus::IntoResponse;
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| {
+            |req: Request| async move {
+                match req.into_body().collect().await {
+                    Ok(_) => "application".into_response(),
+                    Err(e) => e.into_response(),
+                }
+            }
+        })
+        .unwrap();
+    for body in [
+        "3\r\nab",
+        "3\r\nabc",
+        "3\r\nabc\r",
+        "3\r\nabcX\r\n",
+        "0\r\nX: value",
+        "0\r\nHost: evil\r\n\r\n",
+        "FFFFFFFFFFFFFFFFFFFFFFFF\r\n",
+    ] {
+        let mut stream = connect(server.local_addr());
+        stream
+            .write_all(
+                format!("POST / HTTP/1.1\r\nHost: a\r\nTransfer-Encoding: chunked\r\n\r\n{body}")
+                    .as_bytes(),
+            )
+            .unwrap();
+        stream.shutdown(std::net::Shutdown::Write).unwrap();
+        let wire = read_all(stream);
+        assert!(wire.contains("400 Bad Request"), "{body:?}: {wire}");
+        assert!(!wire.contains("application"));
+    }
+    let mut stream = connect(server.local_addr());
+    stream
+        .write_all(b"POST / HTTP/1.1\r\nHost: a\r\nContent-Length: 5\r\n\r\n123")
+        .unwrap();
+    stream.shutdown(std::net::Shutdown::Write).unwrap();
+    assert!(read_all(stream).contains("400 Bad Request"));
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn failed_response_stream_is_not_terminated_as_success() {
+    use maximus::{Body, Error};
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| {
+            |_: Request| async move {
+                Body::stream(futures_util::stream::iter([
+                    Ok("before".into()),
+                    Err(Error::bad_request("stream failed")),
+                ]))
+            }
+        })
+        .unwrap();
+    let mut stream = connect(server.local_addr());
+    stream
+        .write_all(b"GET / HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n")
+        .unwrap();
+    let wire = read_all(stream);
+    assert!(wire.contains("6\r\nbefore\r\n"), "{wire}");
+    assert!(!wire.ends_with("0\r\n\r\n"), "{wire}");
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn unread_request_body_is_closed_and_never_parsed_as_next_request() {
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| |_: Request| async { "ok" })
+        .unwrap();
+    let mut stream = connect(server.local_addr());
+    stream.write_all(b"POST / HTTP/1.1\r\nHost: a\r\nContent-Length: 50\r\n\r\nGET / HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n").unwrap();
+    let wire = read_all(stream);
+    assert_eq!(wire.matches("200 OK").count(), 1, "{wire}");
+    assert!(wire.ends_with("ok"));
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn stalled_request_body_times_out_and_releases_admission() {
+    use http_body_util::BodyExt;
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .limits(maximus::Limits {
+            connections: 1,
+            request_timeout: Duration::from_millis(40),
+            ..Default::default()
+        })
+        .start(|| {
+            |req: Request| async move {
+                let _ = req.into_body().collect().await;
+                "ok"
+            }
+        })
+        .unwrap();
+    let mut stream = connect(server.local_addr());
+    stream
+        .write_all(b"POST / HTTP/1.1\r\nHost: a\r\nContent-Length: 5\r\n\r\n1")
+        .unwrap();
+    assert!(read_all(stream).contains("408 Request Timeout"));
+    let mut next = connect(server.local_addr());
+    next.write_all(b"GET / HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n")
+        .unwrap();
+    assert!(read_all(next).ends_with("ok"));
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn response_lengths_and_trailers_have_unambiguous_end_markers() {
+    use maximus::{Body, Frame, http};
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| {
+            |req: Request| async move {
+                if req.uri().path() == "/trailers" {
+                    let mut trailers = http::HeaderMap::new();
+                    trailers.insert("x-check", "yes".parse().unwrap());
+                    http::Response::new(Body::frames(futures_util::stream::iter([
+                        Ok(Frame::data("ok".into())),
+                        Ok(Frame::trailers(trailers)),
+                    ])))
+                } else {
+                    http::Response::builder()
+                        .header(
+                            "content-length",
+                            if req.uri().path() == "/short" {
+                                "5"
+                            } else {
+                                "1"
+                            },
+                        )
+                        .body(Body::from("abc"))
+                        .unwrap()
+                }
+            }
+        })
+        .unwrap();
+    for (path, length) in [("/short", "5"), ("/long", "1")] {
+        let mut stream = connect(server.local_addr());
+        stream.write_all(format!("GET {path} HTTP/1.1\r\nHost: a\r\n\r\nGET /trailers HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n").as_bytes()).unwrap();
+        let wire = read_all(stream);
+        assert_eq!(wire.matches("200 OK").count(), 1, "{wire}");
+        assert!(wire.contains(&format!("content-length: {length}")));
+        assert!(!wire.contains("x-check"));
+    }
+    let mut stream = connect(server.local_addr());
+    stream
+        .write_all(b"GET /trailers HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n")
+        .unwrap();
+    let wire = read_all(stream);
+    assert!(
+        wire.ends_with("2\r\nok\r\n0\r\nx-check: yes\r\n\r\n"),
+        "{wire}"
+    );
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn request_target_forms_preserve_method_and_uri() {
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| |req: Request| async move { format!("{} {}", req.method(), req.uri()) })
+        .unwrap();
+    for (request, expected) in [
+        (
+            "OPTIONS * HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n",
+            "OPTIONS *",
+        ),
+        (
+            "GET http://a/path?q=1 HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n",
+            "GET http://a/path?q=1",
+        ),
+    ] {
+        let mut stream = connect(server.local_addr());
+        stream.write_all(request.as_bytes()).unwrap();
+        let wire = read_all(stream);
+        assert!(wire.ends_with(expected), "{wire}");
+    }
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn invalid_target_forms_do_not_reach_handler() {
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| |_: Request| async { "application" })
+        .unwrap();
+    for target in ["GET /path#fragment", "CONNECT /path", "GET *"] {
+        let mut stream = connect(server.local_addr());
+        stream
+            .write_all(
+                format!("{target} HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n").as_bytes(),
+            )
+            .unwrap();
+        let wire = read_all(stream);
+        assert!(wire.contains("400 Bad Request"), "{target}: {wire}");
+        assert!(!wire.contains("application"));
+    }
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn unsupported_tunnel_and_informational_final_responses_are_refused() {
+    use maximus::{IntoResponse, StatusCode};
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| {
+            |req: Request| async move {
+                if req.method() == maximus::Method::CONNECT {
+                    "not a tunnel".into_response()
+                } else {
+                    StatusCode::CONTINUE.into_response()
+                }
+            }
+        })
+        .unwrap();
+    for (request, status) in [
+        ("CONNECT example.com:443", "501 Not Implemented"),
+        ("GET /", "500 Internal Server Error"),
+    ] {
+        let mut stream = connect(server.local_addr());
+        stream
+            .write_all(
+                format!("{request} HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n").as_bytes(),
+            )
+            .unwrap();
+        let wire = read_all(stream);
+        assert!(wire.starts_with(&format!("HTTP/1.1 {status}")), "{wire}");
+    }
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn buffered_batching_preserves_body_limit_and_large_payload() {
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| {
+            |req: Request| async move {
+                if req.uri().path() == "/limited" {
+                    maximus::Body::from("forbidden").limited(2)
+                } else {
+                    maximus::Body::from(vec![b'x'; 100_000])
+                }
+            }
+        })
+        .unwrap();
+    let mut stream = connect(server.local_addr());
+    stream
+        .write_all(b"GET /limited HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n")
+        .unwrap();
+    let wire = read_all(stream);
+    assert!(wire.starts_with("HTTP/1.1 200"));
+    assert!(!wire.contains("forbidden"));
+    let mut stream = connect(server.local_addr());
+    stream
+        .write_all(b"GET /large HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n")
+        .unwrap();
+    let wire = read_all(stream);
+    let (headers, body) = wire.split_once("\r\n\r\n").unwrap();
+    assert!(headers.contains("content-length: 100000"));
+    assert_eq!(body.len(), 100_000);
+    assert!(body.bytes().all(|b| b == b'x'));
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn application_date_header_is_preserved_after_generated_date() {
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| {
+            |req: Request| async move {
+                let mut response = maximus::http::Response::new(maximus::Body::from("ok"));
+                if req.uri().path() == "/explicit" {
+                    response
+                        .headers_mut()
+                        .insert("date", "Thu, 01 Jan 1970 00:00:00 GMT".parse().unwrap());
+                }
+                response
+            }
+        })
+        .unwrap();
+    let mut stream = connect(server.local_addr());
+    stream.write_all(b"GET /generated HTTP/1.1\r\nHost: a\r\n\r\nGET /explicit HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n").unwrap();
+    let wire = read_all(stream);
+    let responses: Vec<_> = wire.split("HTTP/1.1 200 OK").skip(1).collect();
+    assert_eq!(responses.len(), 2, "{wire}");
+    assert_eq!(responses[0].matches("date: ").count(), 1);
+    assert_eq!(responses[1].matches("date: ").count(), 1);
+    assert!(
+        responses[1].contains("date: Thu, 01 Jan 1970 00:00:00 GMT\r\n"),
+        "{wire}"
+    );
+    server.shutdown().unwrap();
+}

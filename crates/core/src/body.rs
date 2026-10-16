@@ -11,7 +11,6 @@ type Frames = Pin<Box<dyn Stream<Item = Result<Frame<Bytes>, Error>>>>;
 enum Kind {
     Empty,
     Full(Bytes),
-    Incoming(hyper::body::Incoming),
     Stream(Frames),
 }
 
@@ -43,11 +42,12 @@ impl Body {
             remaining: usize::MAX,
         }
     }
-    pub fn incoming(body: hyper::body::Incoming, limit: usize) -> Self {
-        Self {
-            kind: Kind::Incoming(body),
-            remaining: limit,
-        }
+    /// Incoming frames are pull-based and must be bounded by the transport producer.
+    pub fn incoming(
+        stream: impl Stream<Item = Result<Frame<Bytes>, Error>> + 'static,
+        limit: usize,
+    ) -> Self {
+        Self::frames(stream).limited(limit)
     }
     pub fn stream(stream: impl Stream<Item = Result<Bytes, Error>> + 'static) -> Self {
         use futures_util::StreamExt;
@@ -109,13 +109,6 @@ impl HttpBody for Body {
                 }
                 Ok(Frame::data(bytes))
             }
-            Kind::Incoming(body) => match ready!(Pin::new(body).poll_frame(cx)) {
-                Some(frame) => frame.map_err(|_| Error::bad_request("invalid request body")),
-                None => {
-                    self.kind = Kind::Empty;
-                    return Poll::Ready(None);
-                }
-            },
             Kind::Stream(stream) => match ready!(stream.as_mut().poll_next(cx)) {
                 Some(frame) => frame,
                 None => {
@@ -143,7 +136,6 @@ impl HttpBody for Body {
         match &self.kind {
             Kind::Empty => true,
             Kind::Full(b) => b.is_empty(),
-            Kind::Incoming(b) => b.is_end_stream(),
             Kind::Stream(_) => false,
         }
     }
@@ -151,7 +143,6 @@ impl HttpBody for Body {
         match &self.kind {
             Kind::Empty => SizeHint::with_exact(0),
             Kind::Full(b) => SizeHint::with_exact(b.len() as u64),
-            Kind::Incoming(b) => b.size_hint(),
             Kind::Stream(_) => SizeHint::default(),
         }
     }

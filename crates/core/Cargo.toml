@@ -14,7 +14,7 @@ http.workspace = true
 http-body.workspace = true
 http-body-util.workspace = true
 futures-util.workspace = true
-hyper.workspace = true
+compio.workspace = true
 
 serde = { version = "1", features = ["derive"], optional = true }
 serde_json = { version = "1", optional = true }
@@ -26,6 +26,3 @@ default = []
 json = ["dep:serde", "dep:serde_json"]
 multipart = ["dep:multer", "dep:send_wrapper"]
 sse = []
-
-[dev-dependencies]
-compio.workspace = true

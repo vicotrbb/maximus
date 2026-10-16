@@ -60,7 +60,7 @@ impl Transport {
             {
                 #[cfg(feature = "http2")]
                 if stream.negotiated_alpn().as_deref() == Some(b"h2".as_slice()) {
-                    let _ = maximus_http2::serve(stream, handler, limits, shutdown).await;
+                    let _ = maximus_http2::serve_futures(stream, handler, limits, shutdown).await;
                     return;
                 }
                 let _ = maximus_http1::serve_futures(stream, handler, limits, shutdown).await;
@@ -69,11 +69,6 @@ impl Transport {
         }
         #[cfg(feature = "http2")]
         if self.http2_prior_knowledge {
-            let stream = compio::io::compat::AsyncStream::with_limits(
-                limits.io_buffer_bytes,
-                limits.io_buffer_bytes,
-                stream,
-            );
             let _ = maximus_http2::serve(stream, handler, limits, shutdown).await;
             return;
         }

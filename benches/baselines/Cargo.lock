@@ -1459,11 +1459,11 @@ name = "maximus-core"
 version = "0.1.0"
 dependencies = [
  "bytes",
+ "compio",
  "futures-util",
  "http 1.5.0",
  "http-body",
  "http-body-util",
- "hyper",
 ]
 
 [[package]]
@@ -1473,24 +1473,20 @@ dependencies = [
  "compio",
  "futures-util",
  "http-body-util",
- "hyper",
- "hyper-util",
+ "httpdate",
  "maximus-core",
- "maximus-router",
  "maximus-runtime",
- "send_wrapper",
- "tokio-util",
 ]
 
 [[package]]
 name = "maximus-http2"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "compio",
  "futures-util",
- "hyper",
+ "httpdate",
  "maximus-core",
- "maximus-http1",
  "maximus-runtime",
 ]
 
@@ -1971,15 +1967,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8a7852d02fc848982e0c167ef163aaff9cd91dc640ba85e263cb1ce46fae51cd"
 
 [[package]]
-name = "send_wrapper"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cd0b0ec5f1c1ca621c432a25813d8d60c88abe6d3e08a3eb9cf37d97a0fe3d73"
-dependencies = [
- "futures-core",
-]
-
-[[package]]
 name = "serde"
 version = "1.0.229"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2337,7 +2324,6 @@ checksum = "e464cf451ba96ebfc6f9b6542f17ee8b8956e33f1e40d9690624e59d7a7f8a4b"
 dependencies = [
  "bytes",
  "futures-core",
- "futures-io",
  "futures-sink",
  "libc",
  "pin-project-lite",

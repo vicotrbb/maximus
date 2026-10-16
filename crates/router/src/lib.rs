@@ -1,6 +1,7 @@
 //! Allocation-free pattern matching and optional bounded dynamic registration.
 #![forbid(unsafe_code)]
-use maximus_core::{Error, Result, decode};
+#[cfg(feature = "dynamic")]
+use maximus_core::{Error, Result};
 
 pub fn matches(pattern: &str, path: &str) -> bool {
     let mut path = path.split('/');
@@ -19,23 +20,7 @@ pub fn matches(pattern: &str, path: &str) -> bool {
     path.next().is_none()
 }
 
-/// Reject ambiguous separators and dot segments before routing or authorization.
-pub fn validate_path(path: &str) -> Result<()> {
-    if !path.starts_with('/') {
-        return Err(Error::bad_request("expected absolute request path"));
-    }
-    for segment in path.split('/') {
-        let decoded = decode(segment, false)?;
-        if decoded == "."
-            || decoded == ".."
-            || decoded.contains(['/', '\\', '\0'])
-            || decoded.chars().any(char::is_control)
-        {
-            return Err(Error::bad_request("ambiguous path segment"));
-        }
-    }
-    Ok(())
-}
+pub use maximus_core::validate_path;
 
 #[cfg(feature = "dynamic")]
 mod dynamic {

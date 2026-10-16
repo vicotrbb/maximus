@@ -9,7 +9,13 @@ workspace = true
 [dependencies]
 maximus-core = { path = "../core" }
 maximus-runtime = { path = "../runtime" }
-maximus-http1 = { path = "../http1" }
 compio.workspace = true
-hyper = { workspace = true, features = ["http2"] }
 futures-util.workspace = true
+bytes.workspace = true
+httpdate = "1"
+
+[dev-dependencies]
+http-body-util.workspace = true
+hyper = { workspace = true, features = ["client", "http2"] }
+hyper-util = { version = "0.1", features = ["tokio"] }
+tokio-util = { version = "0.7", features = ["compat"] }

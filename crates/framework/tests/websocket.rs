@@ -105,3 +105,71 @@ fn upgraded_connection_keeps_its_admission_slot_and_drain_deadline() {
     server.shutdown().unwrap();
     assert!(start.elapsed() < Duration::from_secs(1));
 }
+
+#[test]
+fn first_masked_frame_coalesced_with_handshake_is_preserved() {
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| {
+            |request: Request| async move {
+                WebSocketUpgrade::new(request).map(|upgrade| {
+                    upgrade.on_upgrade(|mut socket| async move {
+                        if let Some(Ok(message)) = socket.next().await {
+                            let _ = socket.send(message).await;
+                        }
+                    })
+                })
+            }
+        })
+        .unwrap();
+    let mut stream = TcpStream::connect(server.local_addr()).unwrap();
+    stream
+        .set_read_timeout(Some(Duration::from_secs(2)))
+        .unwrap();
+    let mut request = b"GET / HTTP/1.1\r\nHost: a\r\nConnection: Upgrade\r\nUpgrade: websocket\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n\r\n".to_vec();
+    // FIN/text, client mask, and 'hi' arrive in the same socket write as the upgrade.
+    request.extend_from_slice(&[0x81, 0x82, 1, 2, 3, 4, b'h' ^ 1, b'i' ^ 2]);
+    stream.write_all(&request).unwrap();
+    let mut wire = Vec::new();
+    stream.read_to_end(&mut wire).unwrap();
+    let end = wire.windows(4).position(|s| s == b"\r\n\r\n").unwrap() + 4;
+    assert!(wire.starts_with(b"HTTP/1.1 101"));
+    assert_eq!(&wire[end..], &[0x81, 2, b'h', b'i']);
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn registered_connect_upgrade_transfers_read_ahead_without_body_framing() {
+    use futures_util::{AsyncReadExt, AsyncWriteExt};
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| {
+            |request: Request| async move {
+                let slot = request
+                    .extensions()
+                    .get::<maximus_http1::UpgradeSlot>()
+                    .unwrap();
+                assert!(slot.register(|mut io| async move {
+                    let mut input = [0; 5];
+                    io.read_exact(&mut input).await.unwrap();
+                    assert_eq!(&input, b"hello");
+                    io.write_all(b"world").await.unwrap();
+                    io.flush().await.unwrap();
+                }));
+                "discarded tunnel response body"
+            }
+        })
+        .unwrap();
+    let mut stream = TcpStream::connect(server.local_addr()).unwrap();
+    stream
+        .set_read_timeout(Some(Duration::from_secs(2)))
+        .unwrap();
+    stream
+        .write_all(b"CONNECT example.com:443 HTTP/1.1\r\nHost: example.com:443\r\n\r\nhello")
+        .unwrap();
+    let mut wire = String::new();
+    stream.read_to_string(&mut wire).unwrap();
+    assert!(wire.starts_with("HTTP/1.1 200 OK"), "{wire}");
+    assert!(!wire.contains("content-length"));
+    assert!(!wire.contains("transfer-encoding"));
+    assert!(wire.ends_with("\r\n\r\nworld"), "{wire}");
+    server.shutdown().unwrap();
+}

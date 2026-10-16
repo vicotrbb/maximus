@@ -25,12 +25,9 @@ maximus-http2 = { path = "../http2", optional = true }
 
 maximus-http3 = { path = "../http3", optional = true }
 
-hyper = { workspace = true, optional = true }
 flate2 = { version = "1", optional = true }
 
 async-tungstenite = { version = "0.35", optional = true }
-hyper-util = { version = "0.1", features = ["tokio"], optional = true }
-tokio-util = { version = "0.7", features = ["compat"], optional = true }
 
 opentelemetry = { version = "0.33", default-features = false, features = ["trace", "metrics"], optional = true }
 
@@ -44,7 +41,7 @@ sse = ["maximus-core/sse"]
 cors = []
 ebpf = ["maximus-net/ebpf"]
 opentelemetry = ["dep:opentelemetry"]
-websocket = ["dep:async-tungstenite", "dep:hyper-util", "dep:tokio-util", "maximus-http1/websocket", "dep:hyper"]
+websocket = ["dep:async-tungstenite", "maximus-http1/websocket"]
 compression = ["dep:flate2"]
 tls = ["dep:maximus-tls"]
 http2 = ["dep:maximus-http2"]
@@ -54,6 +51,8 @@ http3 = ["dep:maximus-http3", "tls", "compio/h3", "compio/ring"]
 serde_json = "1"
 opentelemetry_sdk = { version = "0.33", features = ["testing"] }
 hyper = { workspace = true, features = ["client", "http2"] }
+hyper-util = { version = "0.1", features = ["tokio"] }
+tokio-util = { version = "0.7", features = ["compat"] }
 rcgen = "0.14"
 http-body-util.workspace = true
 
@@ -66,3 +65,8 @@ required-features = ["macros"]
 name = "features"
 path = "../../examples/features.rs"
 required-features = ["macros", "tls", "http2", "http3", "json", "multipart", "sse", "compression", "cors", "websocket"]
+
+[[example]]
+name = "conformance"
+path = "../../examples/conformance.rs"
+required-features = ["tls", "http2"]

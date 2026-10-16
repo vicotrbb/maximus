@@ -1024,7 +1024,7 @@ dependencies = [
 
 [[package]]
 name = "maximus"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "async-tungstenite 0.35.0",
  "compio",
@@ -1052,7 +1052,7 @@ dependencies = [
 
 [[package]]
 name = "maximus-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "bytes",
  "compio",
@@ -1060,7 +1060,6 @@ dependencies = [
  "http",
  "http-body",
  "http-body-util",
- "hyper",
  "multer",
  "send_wrapper",
  "serde",
@@ -1069,42 +1068,42 @@ dependencies = [
 
 [[package]]
 name = "maximus-http1"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "compio",
  "futures-util",
  "http-body-util",
- "hyper",
- "hyper-util",
+ "httpdate",
  "maximus-core",
- "maximus-router",
  "maximus-runtime",
  "send_wrapper",
- "tokio-util",
 ]
 
 [[package]]
 name = "maximus-http2"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
+ "bytes",
  "compio",
  "futures-util",
+ "http-body-util",
+ "httpdate",
  "hyper",
+ "hyper-util",
  "maximus-core",
- "maximus-http1",
  "maximus-runtime",
+ "tokio-util",
 ]
 
 [[package]]
 name = "maximus-http3"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "bytes",
  "compio",
  "futures-util",
  "http-body-util",
  "maximus-core",
- "maximus-http1",
  "maximus-net",
  "maximus-runtime",
  "maximus-tls",
@@ -1113,7 +1112,7 @@ dependencies = [
 
 [[package]]
 name = "maximus-io"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "compio",
  "futures-util",
@@ -1121,7 +1120,7 @@ dependencies = [
 
 [[package]]
 name = "maximus-macros"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1130,11 +1129,11 @@ dependencies = [
 
 [[package]]
 name = "maximus-memory"
-version = "0.1.0"
+version = "0.2.0"
 
 [[package]]
 name = "maximus-net"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "compio",
  "libc",
@@ -1143,7 +1142,7 @@ dependencies = [
 
 [[package]]
 name = "maximus-router"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "compio",
  "http-body-util",
@@ -1152,7 +1151,7 @@ dependencies = [
 
 [[package]]
 name = "maximus-runtime"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "compio",
  "event-listener",
@@ -1162,7 +1161,7 @@ dependencies = [
 
 [[package]]
 name = "maximus-tls"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "compio",
  "rcgen",

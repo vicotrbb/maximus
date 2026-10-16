@@ -141,7 +141,7 @@ async fn serve_connection<H: Handler>(
                         .map_err(io::Error::other)?.map_err(io::Error::other)?;
                     let (send, mut recv) = stream.split();
                     let mut send = ResponseStream { inner: send, finished: false, error: h3::error::Code::H3_INTERNAL_ERROR };
-                    let remaining = match maximus_http1::content_length(request.headers()) {
+                    let remaining = match maximus_core::content_length(request.headers()) {
                         Ok(length) => length,
                         Err(error) => {
                             recv.stop_sending(h3::error::Code::H3_MESSAGE_ERROR);
@@ -176,7 +176,7 @@ async fn serve_connection<H: Handler>(
                     });
                     let request = Request::new(request.map(|()| Body::frames(frames).limited(limits.body_bytes)));
                     let timeout = limits.request_timeout;
-                    let response = maximus_http1::dispatch_request(request, handler, limits).await;
+                    let response = maximus_core::dispatch_request(request, handler, limits).await;
                     if invalid.get() {
                         send.error = h3::error::Code::H3_MESSAGE_ERROR;
                         return Err(io::Error::other("malformed request body"));
@@ -239,7 +239,7 @@ async fn write_response(
     let no_body = head
         || parts.status == http::StatusCode::NO_CONTENT
         || parts.status == http::StatusCode::NOT_MODIFIED;
-    let declared = maximus_http1::content_length(&parts.headers).map_err(io::Error::other)?;
+    let declared = maximus_core::content_length(&parts.headers).map_err(io::Error::other)?;
     let mut remaining = if no_body { None } else { declared };
     compio::time::timeout(
         timeout,

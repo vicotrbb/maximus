@@ -12,14 +12,11 @@ workspace = true
 maximus-core = { path = "../core" }
 maximus-runtime = { path = "../runtime" }
 compio.workspace = true
-hyper.workspace = true
 http-body-util.workspace = true
+httpdate = "1"
 futures-util.workspace = true
-hyper-util = { version = "0.1", features = ["tokio"] }
-tokio-util = { version = "0.7", features = ["compat"] }
-send_wrapper = { version = "0.6", features = ["futures"] }
-maximus-router = { path = "../router" }
+send_wrapper = { version = "0.6", optional = true }
 
 [features]
 default = []
-websocket = []
+websocket = ["dep:send_wrapper"]

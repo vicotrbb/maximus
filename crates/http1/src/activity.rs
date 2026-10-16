@@ -12,6 +12,12 @@ use std::{
 #[derive(Clone)]
 pub struct Activity(Rc<Cell<Instant>>);
 impl Activity {
+    pub(crate) fn new() -> Self {
+        Self(Rc::new(Cell::new(Instant::now())))
+    }
+    pub(crate) fn touch(&self) {
+        self.0.set(Instant::now());
+    }
     pub fn track<S>(stream: S) -> (Tracked<S>, Self) {
         let activity = Self(Rc::new(Cell::new(Instant::now())));
         (

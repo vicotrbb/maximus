@@ -9,7 +9,6 @@ workspace = true
 [dependencies]
 maximus-core = { path = "../core" }
 maximus-runtime = { path = "../runtime" }
-maximus-http1 = { path = "../http1" }
 maximus-tls = { path = "../tls" }
 compio = { workspace = true, features = ["h3", "ring"] }
 bytes.workspace = true

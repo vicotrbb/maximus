@@ -6,3 +6,14 @@ for feature in macros dynamic json multipart sse cors ebpf opentelemetry websock
 done
 cargo check -p maximus --no-default-features --features tls,http2
 cargo check -p maximus --all-features
+
+# Independent clients may use these libraries; product protocol engines may not.
+dependencies=$(cargo tree -p maximus --all-features --edges normal --prefix none --format '{p}')
+for dependency in $dependencies; do
+    case "$dependency" in
+        hyper|hyper-util|tokio-util|h2)
+            echo "unexpected product HTTP dependency: $dependency" >&2
+            exit 1
+            ;;
+    esac
+done
