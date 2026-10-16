@@ -68,6 +68,26 @@ fn multiplexed_http2_streams_and_flow_control() {
                 .to_bytes()
                 .is_empty()
         );
+        let rejected = client
+            .send_request(
+                hyper::Request::builder()
+                    .method("HEAD")
+                    .uri("http://localhost/%ff")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(rejected.status(), 400);
+        assert!(
+            rejected
+                .into_body()
+                .collect()
+                .await
+                .unwrap()
+                .to_bytes()
+                .is_empty()
+        );
         drop(client);
         connection.cancel().await;
     });

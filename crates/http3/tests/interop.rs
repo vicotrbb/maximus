@@ -1,4 +1,5 @@
-use maximus_core::{Limits, Request};
+use http_body_util::BodyExt;
+use maximus_core::{Body, Bytes, Error, Frame, IntoResponse, Limits, Request};
 use maximus_runtime::{Shutdown, WorkerConfig};
 use maximus_tls::TlsConfig;
 use std::{rc::Rc, sync::mpsc};
@@ -24,12 +25,46 @@ fn real_quic_http3_request_response() {
             .build(0)
             .unwrap()
             .block_on(async move {
-                let limits = Rc::new(Limits::default());
+                let limits = Rc::new(Limits {
+                    request_timeout: std::time::Duration::from_millis(200),
+                    ..Limits::default()
+                });
                 let endpoint = maximus_http3::endpoint(socket, &config, &limits).unwrap();
                 tx.send(()).unwrap();
                 maximus_http3::serve(
                     endpoint,
-                    Rc::new(|_req: Request| async { "hello h3" }),
+                    Rc::new(|req: Request| async {
+                        match req.uri().path() {
+                            "/echo" => req
+                                .into_body()
+                                .collect()
+                                .await
+                                .map(|body| body.to_bytes())
+                                .into_response(),
+                            "/broken" => Body::stream(futures_util::stream::iter([
+                                Ok(Bytes::from_static(b"partial")),
+                                Err(Error::bad_request("broken producer")),
+                            ]))
+                            .into_response(),
+                            "/stalled" => {
+                                Body::stream(futures_util::stream::pending()).into_response()
+                            }
+                            "/credit" => Body::stream(futures_util::stream::iter(
+                                (0..2048).map(|_| Ok(Bytes::from_static(&[42; 65536]))),
+                            ))
+                            .into_response(),
+                            "/trailers" => {
+                                let mut trailers = maximus_core::HeaderMap::new();
+                                trailers.insert("x-check", "passed".parse().unwrap());
+                                Body::frames(futures_util::stream::iter([
+                                    Ok(Frame::data(Bytes::from_static(b"data"))),
+                                    Ok(Frame::trailers(trailers)),
+                                ]))
+                                .into_response()
+                            }
+                            _ => "hello h3".into_response(),
+                        }
+                    }),
                     limits,
                     signal,
                 )
@@ -77,6 +112,78 @@ fn real_quic_http3_request_response() {
             output.extend_from_slice(&chunk.copy_to_bytes(chunk.remaining()));
         }
         assert_eq!(output, b"hello h3");
+        drop(stream);
+        // The peer must observe reset, never clean EOF, on producer error or timeout.
+        for path in ["/broken", "/stalled", "/credit"] {
+            let mut stream = sender
+                .send_request(
+                    maximus_core::http::Request::get(format!("https://localhost{path}"))
+                        .body(())
+                        .unwrap(),
+                )
+                .await
+                .unwrap();
+            stream.finish().await.unwrap();
+            if path == "/credit" {
+                compio::time::sleep(std::time::Duration::from_millis(500)).await;
+            }
+            let outcome = compio::time::timeout(std::time::Duration::from_secs(3), async {
+                stream.recv_response().await?;
+                while stream.recv_data().await?.is_some() {}
+                Ok::<_, compio::quic::h3::error::StreamError>(())
+            })
+            .await
+            .expect("response failure must meet its deadline");
+            assert!(
+                outcome.is_err(),
+                "{path} ended as a successful truncated response"
+            );
+        }
+        for lengths in [
+            vec!["1"],
+            vec!["99"],
+            vec!["3", "99"],
+            vec!["+3"],
+            vec!["3, 3"],
+        ] {
+            let mut request = maximus_core::http::Request::post("https://localhost/echo");
+            for length in lengths {
+                request = request.header("content-length", length);
+            }
+            let mut stream = sender
+                .send_request(request.body(()).unwrap())
+                .await
+                .unwrap();
+            let _ = stream.send_data(Bytes::from_static(b"abc")).await;
+            let _ = stream.finish().await;
+            let outcome = compio::time::timeout(std::time::Duration::from_secs(1), async {
+                stream.recv_response().await?;
+                while stream.recv_data().await?.is_some() {}
+                Ok::<_, compio::quic::h3::error::StreamError>(())
+            })
+            .await
+            .unwrap();
+            assert!(
+                outcome.is_err(),
+                "malformed Content-Length reached clean EOF"
+            );
+        }
+        let mut stream = sender
+            .send_request(
+                maximus_core::http::Request::get("https://localhost/trailers")
+                    .body(())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        stream.finish().await.unwrap();
+        assert_eq!(stream.recv_response().await.unwrap().status(), 200);
+        assert_eq!(stream.recv_data().await.unwrap().unwrap().remaining(), 4);
+        assert!(stream.recv_data().await.unwrap().is_none());
+        assert_eq!(
+            stream.recv_trailers().await.unwrap().unwrap()["x-check"],
+            "passed"
+        );
         drop(stream);
         drop(sender);
         driver.cancel().await;

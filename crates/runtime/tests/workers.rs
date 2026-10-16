@@ -79,3 +79,30 @@ fn affinity_pins_to_an_allowed_cpu() {
     .join()
     .unwrap();
 }
+
+#[test]
+fn timeout_completion_and_pending_cancellation() {
+    WorkerConfig::default().build(0).unwrap().block_on(async {
+        assert_eq!(
+            maximus_runtime::timeout(std::time::Duration::from_secs(1), async { 42 })
+                .await
+                .unwrap(),
+            42
+        );
+        let dropped = std::rc::Rc::new(std::cell::Cell::new(false));
+        struct Guard(std::rc::Rc<std::cell::Cell<bool>>);
+        impl Drop for Guard {
+            fn drop(&mut self) {
+                self.0.set(true);
+            }
+        }
+        let signal = dropped.clone();
+        let result = maximus_runtime::timeout(std::time::Duration::from_millis(5), async move {
+            let _guard = Guard(signal);
+            std::future::pending::<()>().await;
+        })
+        .await;
+        assert!(result.is_err());
+        assert!(dropped.get());
+    });
+}

@@ -71,3 +71,53 @@ fn gzip_negotiation_respects_q_zero_and_preserves_content() {
         assert!(!response.headers().contains_key("content-encoding"));
     });
 }
+
+#[cfg(feature = "cors")]
+#[test]
+fn cors_varies_cached_responses_even_without_an_allowed_origin() {
+    use maximus::{Cors, Method};
+    compio::runtime::Runtime::new().unwrap().block_on(async {
+        let app = Cors::new(["https://example.com"], [Method::GET], ["x-token"], false)
+            .unwrap()
+            .wrap(|_: Request| async {
+                maximus::http::Response::builder()
+                    .header("vary", "Accept-Encoding")
+                    .body(Body::from("ok"))
+                    .unwrap()
+            });
+        for origin in [None, Some("https://evil.test"), Some("https://example.com")] {
+            let mut request = maximus::http::Request::builder();
+            if let Some(origin) = origin {
+                request = request.header("origin", origin);
+            }
+            let response = app
+                .handle(Request::new(request.body(Body::empty()).unwrap()))
+                .await;
+            let vary: Vec<_> = response
+                .headers()
+                .get_all("vary")
+                .iter()
+                .map(|v| v.to_str().unwrap())
+                .collect();
+            assert!(vary.contains(&"Origin"));
+            if response.status() == 200 {
+                assert!(vary.contains(&"Accept-Encoding"));
+            }
+        }
+        let response = app
+            .handle(Request::new(
+                maximus::http::Request::builder()
+                    .method("OPTIONS")
+                    .header("origin", "https://evil.test")
+                    .header("access-control-request-method", "DELETE")
+                    .body(Body::empty())
+                    .unwrap(),
+            ))
+            .await;
+        assert!(response.headers().get_all("vary").iter().any(|v| {
+            v.to_str()
+                .unwrap()
+                .contains("Access-Control-Request-Method")
+        }));
+    });
+}

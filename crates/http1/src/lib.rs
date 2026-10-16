@@ -68,6 +68,15 @@ pub async fn dispatch_request<H: Handler>(
     handler: Rc<H>,
     limits: Rc<Limits>,
 ) -> Response {
+    let head = request.method() == hyper::Method::HEAD;
+    suppress_body(dispatch_inner(request, handler, limits).await, head)
+}
+
+async fn dispatch_inner<H: Handler>(
+    request: Request,
+    handler: Rc<H>,
+    limits: Rc<Limits>,
+) -> Response {
     if let Err(error) = maximus_router::validate_path(request.uri().path()) {
         return error.into_response();
     }
@@ -81,26 +90,19 @@ pub async fn dispatch_request<H: Handler>(
             .into_response();
     }
     if request.headers().get("host").is_some_and(|value| {
-        value.to_str().ok().is_none_or(|host| {
-            host.is_empty()
-                || host.contains('@')
-                || host.parse::<maximus_core::http::uri::Authority>().is_err()
-        })
+        value
+            .to_str()
+            .ok()
+            .is_none_or(|host| !valid_authority(host))
     }) {
         return (StatusCode::BAD_REQUEST, "invalid Host authority").into_response();
     }
-    if request
-        .headers()
-        .get("content-length")
-        .is_some_and(|length| {
-            length
-                .to_str()
-                .ok()
-                .and_then(|s| s.parse::<u64>().ok())
-                .is_none_or(|n| n > limits.body_bytes as u64)
-        })
-    {
-        return StatusCode::PAYLOAD_TOO_LARGE.into_response();
+    match content_length(request.headers()) {
+        Err(error) => return error.into_response(),
+        Ok(Some(length)) if length > limits.body_bytes as u64 => {
+            return StatusCode::PAYLOAD_TOO_LARGE.into_response();
+        }
+        _ => {}
     }
     if request.headers().len() > limits.headers
         || request.headers().iter().fold(0usize, |sum, (name, value)| {
@@ -109,35 +111,93 @@ pub async fn dispatch_request<H: Handler>(
     {
         return StatusCode::REQUEST_HEADER_FIELDS_TOO_LARGE.into_response();
     }
-    let head = request.method() == hyper::Method::HEAD;
-    let response =
-        match compio::time::timeout(limits.request_timeout, handler.handle(request)).await {
-            Ok(response) => response.map(|body| {
-                if body.is_buffered() {
-                    return body;
-                }
-                let timeout = limits.request_timeout;
-                Body::frames(futures_util::stream::unfold(
-                    Some(body),
-                    move |state| async move {
-                        let mut body = state?;
-                        match compio::time::timeout(timeout, body.frame()).await {
-                            Ok(Some(frame)) => Some((frame, Some(body))),
-                            Ok(None) => None,
-                            Err(_) => Some((
-                                Err(maximus_core::Error::new(
-                                    StatusCode::REQUEST_TIMEOUT,
-                                    "response stream stalled",
-                                )),
-                                None,
+    match compio::time::timeout(limits.request_timeout, handler.handle(request)).await {
+        Ok(response) => response.map(|body| {
+            if body.is_buffered() {
+                return body;
+            }
+            let timeout = limits.request_timeout;
+            Body::frames(futures_util::stream::unfold(
+                Some(body),
+                move |state| async move {
+                    let mut body = state?;
+                    match compio::time::timeout(timeout, body.frame()).await {
+                        Ok(Some(frame)) => Some((frame, Some(body))),
+                        Ok(None) => None,
+                        Err(_) => Some((
+                            Err(maximus_core::Error::new(
+                                StatusCode::REQUEST_TIMEOUT,
+                                "response stream stalled",
                             )),
-                        }
-                    },
-                ))
-            }),
-            Err(_) => StatusCode::REQUEST_TIMEOUT.into_response(),
+                            None,
+                        )),
+                    }
+                },
+            ))
+        }),
+        Err(_) => StatusCode::REQUEST_TIMEOUT.into_response(),
+    }
+}
+
+/// Strict shared Content-Length validation; wire engines may already have normalized duplicates.
+pub fn content_length(
+    headers: &maximus_core::HeaderMap,
+) -> Result<Option<u64>, maximus_core::Error> {
+    let mut values = headers.get_all("content-length").iter();
+    let Some(value) = values.next() else {
+        return Ok(None);
+    };
+    if values.next().is_some()
+        || value.is_empty()
+        || !value.as_bytes().iter().all(u8::is_ascii_digit)
+    {
+        return Err(maximus_core::Error::bad_request("invalid Content-Length"));
+    }
+    value
+        .to_str()
+        .ok()
+        .and_then(|value| value.parse().ok())
+        .map(Some)
+        .ok_or_else(|| maximus_core::Error::bad_request("invalid Content-Length"))
+}
+
+fn valid_authority(value: &str) -> bool {
+    if value.is_empty()
+        || value.contains('@')
+        || value.parse::<maximus_core::http::uri::Authority>().is_err()
+    {
+        return false;
+    }
+    let port = if let Some(literal) = value.strip_prefix('[') {
+        let Some((address, suffix)) = literal.split_once(']') else {
+            return false;
         };
-    suppress_body(response, head)
+        let future = address
+            .strip_prefix(['v', 'V'])
+            .and_then(|s| s.split_once('.'))
+            .is_some_and(|(version, name)| {
+                !version.is_empty()
+                    && version.bytes().all(|b| b.is_ascii_hexdigit())
+                    && !name.is_empty()
+                    && name
+                        .bytes()
+                        .all(|b| b.is_ascii_alphanumeric() || b"-._~!$&'()*+,;=:".contains(&b))
+            });
+        if address.parse::<std::net::Ipv6Addr>().is_err() && !future {
+            return false;
+        }
+        if suffix.is_empty() {
+            None
+        } else {
+            Some(match suffix.strip_prefix(':') {
+                Some(port) => port,
+                None => return false,
+            })
+        }
+    } else {
+        value.split_once(':').map(|(_, port)| port)
+    };
+    port.is_none_or(|port| port.bytes().all(|b| b.is_ascii_digit()))
 }
 
 /// Apply method/status body semantics consistently across all wire engines.

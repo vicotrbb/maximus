@@ -206,11 +206,22 @@ fn rejects_ambiguous_framing_and_hosts_before_application() {
         "GET / HTTP/1.1\r\nHost: a\r\nHost: b\r\nConnection: close\r\n\r\n",
         "GET / HTTP/1.1\r\nHost: \r\nConnection: close\r\n\r\n",
         "GET / HTTP/1.1\r\nHost: invalid host\r\nConnection: close\r\n\r\n",
+        "GET / HTTP/1.1\r\nHost: localhost:bad\r\nConnection: close\r\n\r\n",
+        "GET / HTTP/1.1\r\nHost: [bad::ip]\r\nConnection: close\r\n\r\n",
+        "GET / HTTP/1.1\r\nHost: [::1]suffix\r\nConnection: close\r\n\r\n",
+        "GET / HTTP/1.1\r\nHost: [v1.address]suffix\r\nConnection: close\r\n\r\n",
         "GET /%2e%2e/secret HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n",
     ] {
         let response = exchange(server.local_addr(), request.as_bytes());
         assert!(!response.contains("application"), "{request:?}: {response}");
         assert!(response.contains("400 Bad Request"), "{response}");
+    }
+    for host in ["localhost:", "[::1]", "[::1]:8080", "[v1.address]"] {
+        let response = exchange(
+            server.local_addr(),
+            format!("GET / HTTP/1.1\r\nHost: {host}\r\nConnection: close\r\n\r\n").as_bytes(),
+        );
+        assert!(response.contains("200 OK"), "{host}: {response}");
     }
     // RFC 9112 permits processing Transfer-Encoding when both are present, but
     // requires closing afterwards. Hyper removes Content-Length and closes.

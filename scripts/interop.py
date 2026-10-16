@@ -6,6 +6,7 @@ from aioquic.asyncio import connect, QuicConnectionProtocol
 from aioquic.h3.connection import H3Connection
 from aioquic.h3.events import HeadersReceived, DataReceived
 from aioquic.quic.configuration import QuicConfiguration
+from aioquic.quic.events import StreamReset
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ART = ROOT / 'artifacts/interop'
 
@@ -15,6 +16,9 @@ class H3Client(QuicConnectionProtocol):
         self.http = H3Connection(self._quic)
         self.pending = {}
     def quic_event_received(self, event):
+        if isinstance(event, StreamReset) and event.stream_id in self.pending:
+            future = self.pending[event.stream_id][0]
+            if not future.done(): future.set_exception(RuntimeError(f'H3 stream reset: {event.error_code}'))
         for event in self.http.handle_event(event):
             if isinstance(event, (HeadersReceived, DataReceived)) and event.stream_id in self.pending:
                 future, headers, body = self.pending[event.stream_id]
@@ -53,6 +57,9 @@ async def exercise(port, secure, cert):
             assert (await client.get('/users/42')).text == '42'
             assert (await client.get('/users/no')).status_code == 400
             assert (await client.head('/plaintext')).content == b''
+            r = await client.head('/%ff')
+            assert r.status_code == 400 and r.content == b''
+            assert 'Origin' in (await client.get('/plaintext')).headers['vary']
             assert (await client.get('/plaintext', headers={'origin':'https://evil.example'})).status_code == 403
             r = await client.options('/plaintext', headers={'origin':'https://example.com', 'access-control-request-method':'POST', 'access-control-request-headers':'content-type'})
             assert r.status_code == 204 and r.headers['access-control-allow-origin'] == 'https://example.com'
@@ -80,6 +87,12 @@ async def exercise(port, secure, cert):
             assert b'data:second\n\n' in body
             headers, body = await client.request('/users/no')
             assert headers[b':status'] == b'400'
+            for lengths in [(b'1',), (b'99',), (b'3', b'99'), (b'+3',)]:
+                try:
+                    await client.request('/echo', 'POST', b'abc', [(b'content-length', value) for value in lengths])
+                    raise AssertionError('malformed length received clean success')
+                except RuntimeError as error:
+                    assert str(error) == 'H3 stream reset: 270', error  # H3_MESSAGE_ERROR
         print('HTTP/3 verified QUIC: 16 concurrent uploads, flow control, JSON, HEAD, SSE, errors PASS', flush=True)
 
 async def main():

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Isolated Linux k6 comparisons. Raw results stay in artifacts/bench; no product deps."""
-import argparse, csv, json, os, pathlib, subprocess, time
+import argparse, csv, json, os, pathlib, shlex, subprocess, time
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / 'artifacts/bench'
 K6 = 'grafana/k6:1.6.0'
@@ -32,10 +32,15 @@ def main():
     parser.add_argument('--repeats', type=int, default=3)
     parser.add_argument('--vus', type=int, default=64)
     parser.add_argument('--label', default='run')
+    parser.add_argument('--client-cpus', default='2')
+    parser.add_argument('--sample-seconds', type=float, default=0, help='optional server memory sampling interval')
     parser.add_argument('--protocol', choices=['plain', 'h1', 'h2'], default='plain')
     args = parser.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     environment = {'date_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'args': vars(args),
+        'source_commit': capture('git', '-C', str(ROOT), 'rev-parse', 'HEAD'),
+        'source_dirty': bool(capture('git', '-C', str(ROOT), 'status', '--porcelain')),
+        'running_containers': capture('docker', 'ps', '--format', '{{.Names}} {{.Image}}'),
         'docker': capture('docker', 'version', '--format', '{{.Server.Version}}'),
         'kernel': capture('docker', 'run', '--rm', RUST, 'uname', '-a'),
         'cpus': capture('docker', 'info', '--format', '{{.NCPU}}'),
@@ -69,7 +74,7 @@ def main():
                     log = subprocess.check_output(['docker', 'logs', name], text=True, stderr=subprocess.STDOUT)
                     if 'ready' in log or engine == 'nginx': break
                     time.sleep(.1)
-                base = ['docker', 'run', '--rm', '--network', 'host', '--cpuset-cpus', '2', '-u', '0', '-v', f'{ROOT / "benches/load.js"}:/load.js:ro', '-v', f'{OUT}:/results', '-e', f'PATHNAME={path}', '-e', f'VUS={args.vus}']
+                base = ['docker', 'run', '--rm', '--network', 'host', '--cpuset-cpus', args.client_cpus, '-u', '0', '-v', f'{ROOT / "benches/load.js"}:/load.js:ro', '-v', f'{OUT}:/results', '-e', f'PATHNAME={path}', '-e', f'VUS={args.vus}']
                 if args.protocol != 'plain':
                     base += ['-v', f'{OUT}/cert.pem:/cert.pem:ro', '-e', 'SSL_CERT_FILE=/cert.pem', '-e', 'URL=https://localhost:8080', '-e', f'PROTOCOL={args.protocol}']
                 with (OUT / f'{key}.log').open('w') as log:
@@ -77,15 +82,32 @@ def main():
                     before = counters(name)
                     test = base + ['-e', f'DURATION={args.duration}', '-e', f'RESULT=/results/{key}.json']
                     if rate != '0': test += ['-e', f'RATE={rate}']
-                    result = subprocess.run(test + [K6, 'run', '--quiet', '/load.js'], stdout=log, stderr=subprocess.STDOUT)
+                    cpu_path = f'/results/{key}-client-cpu.txt'
+                    command = 'k6 run --quiet /load.js; status=$?; cat /sys/fs/cgroup/cpu.stat > ' + shlex.quote(cpu_path) + '; exit "$status"'
+                    result = subprocess.Popen(test + ['--entrypoint', '/bin/sh', K6, '-c', command], stdout=log, stderr=subprocess.STDOUT)
+                    samples = []
+                    while True:
+                        try:
+                            result.wait(timeout=args.sample_seconds or None)
+                            break
+                        except subprocess.TimeoutExpired:
+                            samples.append(dict(seconds=time.monotonic(), **counters(name)))
                     after = counters(name)
-                data = json.loads((OUT / f'{key}.json').read_text())['metrics']
+                    if samples:
+                        (OUT / f'{key}-memory.json').write_text(json.dumps(samples, indent=2))
+                summary = json.loads((OUT / f'{key}.json').read_text())
+                data = summary['metrics']
+                elapsed_us = summary['state']['testRunDurationMs'] * 1000
+                client_cpu = dict(line.split() for line in (OUT / f'{key}-client-cpu.txt').read_text().splitlines())
                 metric = lambda name, field, default=0: data.get(name, {}).get('values', {}).get(field, default)
                 count = metric('http_reqs', 'count')
                 row = dict(engine=engine, path=path, workers=args.workers, protocol=args.protocol, offered_rps=int(rate), repeat=repeat,
                     rps=metric('http_reqs', 'rate'), p50_ms=metric('http_req_duration', 'med'), p99_ms=metric('http_req_duration', 'p(99)'), p999_ms=metric('http_req_duration', 'p(99.9)'),
                     failures=metric('http_req_failed', 'passes'), checks_failed=metric('checks', 'fails'), dropped=metric('dropped_iterations', 'count'),
-                    cpu_us_per_request=(after['usage_usec'] - before['usage_usec']) / max(count, 1), rss_kib=after['VmRSS'], exit=result.returncode)
+                    cpu_us_per_request=(after['usage_usec'] - before['usage_usec']) / max(count, 1),
+                    server_cpu_percent=100 * (after['usage_usec'] - before['usage_usec']) / elapsed_us,
+                    client_cpu_percent=100 * int(client_cpu['usage_usec']) / elapsed_us,
+                    rss_kib=after['VmRSS'], peak_rss_kib=max(s['VmRSS'] for s in [before, after, *samples]), exit=result.returncode)
                 rows.append(row)
                 with (OUT / f'{args.label}.csv').open('w') as file:
                     writer = csv.DictWriter(file, fieldnames=list(row)); writer.writeheader(); writer.writerows(rows)

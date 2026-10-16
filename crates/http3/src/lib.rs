@@ -11,7 +11,7 @@ use http_body_util::BodyExt;
 use maximus_core::{Body, Error, Handler, Limits, Request, http};
 use maximus_runtime::Shutdown;
 use maximus_tls::TlsConfig;
-use std::{io, rc::Rc, sync::Arc};
+use std::{cell::Cell, io, rc::Rc, sync::Arc};
 
 pub fn endpoint(
     socket: std::net::UdpSocket,
@@ -107,10 +107,11 @@ async fn serve_connection<H: Handler>(
 ) -> io::Result<()> {
     let mut builder = h3::server::builder();
     builder.max_field_section_size(limits.header_bytes as u64);
-    let mut connection = builder
-        .build::<_, Bytes>(connection)
-        .await
-        .map_err(io::Error::other)?;
+    let mut connection =
+        compio::time::timeout(limits.header_timeout, builder.build::<_, Bytes>(connection))
+            .await
+            .map_err(io::Error::other)?
+            .map_err(io::Error::other)?;
     let mut requests = FuturesUnordered::new();
     let mut count = 0;
     loop {
@@ -138,43 +139,52 @@ async fn serve_connection<H: Handler>(
                 requests.push(async move {
                     let (request, stream) = compio::time::timeout(limits.header_timeout, resolver.resolve_request()).await
                         .map_err(io::Error::other)?.map_err(io::Error::other)?;
+                    let (send, mut recv) = stream.split();
+                    let mut send = ResponseStream { inner: send, finished: false, error: h3::error::Code::H3_INTERNAL_ERROR };
+                    let remaining = match maximus_http1::content_length(request.headers()) {
+                        Ok(length) => length,
+                        Err(error) => {
+                            recv.stop_sending(h3::error::Code::H3_MESSAGE_ERROR);
+                            send.error = h3::error::Code::H3_MESSAGE_ERROR;
+                            return Err(io::Error::other(error));
+                        }
+                    };
+                    let invalid = Rc::new(Cell::new(false));
+                    let body_invalid = invalid.clone();
                     let head = request.method() == http::Method::HEAD;
-                    let (mut send, recv) = stream.split();
-                    let frames = futures_util::stream::unfold(Some(recv), |state| async move {
-                        let mut recv = state?;
-                        match recv.recv_data().await {
-                            Ok(Some(mut data)) => {
-                                let size = data.remaining();
-                                Some((Ok(maximus_core::Frame::data(data.copy_to_bytes(size))), Some(recv)))
-                            },
-                            Ok(None) => match recv.recv_trailers().await {
-                                Ok(Some(trailers)) => Some((Ok(maximus_core::Frame::trailers(trailers)), None)),
-                                Ok(None) => None,
-                                Err(_) => Some((Err(Error::bad_request("invalid request trailers")), None)),
-                            },
-                            Err(_) => Some((Err(Error::bad_request("invalid request body")), None)),
+                    let frames = futures_util::stream::unfold(Some((recv, remaining)), move |state| {
+                        let invalid = body_invalid.clone();
+                        async move {
+                            let (mut recv, mut remaining) = state?;
+                            let result = match recv.recv_data().await {
+                                Ok(Some(mut data)) if remaining.is_none_or(|left| data.remaining() as u64 <= left) => {
+                                    let size = data.remaining();
+                                    if let Some(left) = &mut remaining { *left -= size as u64; }
+                                    return Some((Ok(maximus_core::Frame::data(data.copy_to_bytes(size))), Some((recv, remaining))));
+                                },
+                                Ok(None) if remaining.is_none_or(|left| left == 0) => match recv.recv_trailers().await {
+                                    Ok(Some(trailers)) => return Some((Ok(maximus_core::Frame::trailers(trailers)), None)),
+                                    Ok(None) => return None,
+                                    Err(_) => Error::bad_request("invalid request trailers"),
+                                },
+                                _ => Error::bad_request("invalid request body or Content-Length"),
+                            };
+                            invalid.set(true);
+                            recv.stop_sending(h3::error::Code::H3_MESSAGE_ERROR);
+                            Some((Err(result), None))
                         }
                     });
                     let request = Request::new(request.map(|()| Body::frames(frames).limited(limits.body_bytes)));
                     let timeout = limits.request_timeout;
                     let response = maximus_http1::dispatch_request(request, handler, limits).await;
-                    let (mut parts, mut body) = response.into_parts();
-                    for name in ["connection", "transfer-encoding", "keep-alive", "upgrade", "proxy-connection"] { parts.headers.remove(name); }
-                    // Content-Length on HEAD is optional. Omitting it also interoperates
-                    // with H3 clients that validate length without retaining the request method.
-                    if head { parts.headers.remove("content-length"); }
-                    let no_body = head || parts.status == http::StatusCode::NO_CONTENT || parts.status == http::StatusCode::NOT_MODIFIED;
-                    send.send_response(http::Response::from_parts(parts, ())).await.map_err(io::Error::other)?;
-                    if !no_body {
-                        while let Some(frame) = body.frame().await {
-                            let frame = frame.map_err(io::Error::other)?;
-                            match frame.into_data() {
-                                Ok(data) => compio::time::timeout(timeout, send.send_data(data)).await.map_err(io::Error::other)?.map_err(io::Error::other)?,
-                                Err(frame) => if let Ok(trailers) = frame.into_trailers() { send.send_trailers(trailers).await.map_err(io::Error::other)?; return Ok::<_, io::Error>(()); },
-                            }
-                        }
+                    if invalid.get() {
+                        send.error = h3::error::Code::H3_MESSAGE_ERROR;
+                        return Err(io::Error::other("malformed request body"));
                     }
-                    send.finish().await.map_err(io::Error::other)
+                    let result = write_response(&mut send.inner, response, head, timeout, &invalid).await;
+                    if invalid.get() { send.error = h3::error::Code::H3_MESSAGE_ERROR; }
+                    send.finished = result.is_ok();
+                    result
                 });
                 count += 1;
                 if count >= maximum_requests { break; }
@@ -187,4 +197,79 @@ async fn serve_connection<H: Handler>(
     })
     .await;
     Ok(())
+}
+
+// QUIC's sender finishes on drop. An unfinished HTTP response must instead reset,
+// including when a deadline or server drain cancels this future.
+struct ResponseStream {
+    inner: h3::server::RequestStream<h3::SendStream<Bytes>, Bytes>,
+    finished: bool,
+    error: h3::error::Code,
+}
+impl Drop for ResponseStream {
+    fn drop(&mut self) {
+        if !self.finished {
+            self.inner.stop_stream(self.error);
+        }
+    }
+}
+
+async fn write_response(
+    send: &mut h3::server::RequestStream<h3::SendStream<Bytes>, Bytes>,
+    response: maximus_core::Response,
+    head: bool,
+    timeout: std::time::Duration,
+    invalid: &Cell<bool>,
+) -> io::Result<()> {
+    let (mut parts, mut body) = response.into_parts();
+    for name in [
+        "connection",
+        "transfer-encoding",
+        "keep-alive",
+        "upgrade",
+        "proxy-connection",
+    ] {
+        parts.headers.remove(name);
+    }
+    // HEAD Content-Length is optional; some H3 clients validate it without tracking the method.
+    if head {
+        parts.headers.remove("content-length");
+    }
+    let no_body = head
+        || parts.status == http::StatusCode::NO_CONTENT
+        || parts.status == http::StatusCode::NOT_MODIFIED;
+    compio::time::timeout(
+        timeout,
+        send.send_response(http::Response::from_parts(parts, ())),
+    )
+    .await
+    .map_err(io::Error::other)?
+    .map_err(io::Error::other)?;
+    if !no_body {
+        while let Some(frame) = body.frame().await {
+            let frame = frame.map_err(io::Error::other)?;
+            match frame.into_data() {
+                Ok(data) => compio::time::timeout(timeout, send.send_data(data))
+                    .await
+                    .map_err(io::Error::other)?
+                    .map_err(io::Error::other)?,
+                Err(frame) => {
+                    if let Ok(trailers) = frame.into_trailers() {
+                        compio::time::timeout(timeout, send.send_trailers(trailers))
+                            .await
+                            .map_err(io::Error::other)?
+                            .map_err(io::Error::other)?;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    if invalid.get() {
+        return Err(io::Error::other("malformed request body"));
+    }
+    compio::time::timeout(timeout, send.finish())
+        .await
+        .map_err(io::Error::other)?
+        .map_err(io::Error::other)
 }

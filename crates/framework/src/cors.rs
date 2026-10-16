@@ -50,6 +50,24 @@ struct CorsHandler<H> {
 }
 impl<H: Handler> Handler for CorsHandler<H> {
     async fn handle(&self, request: Request) -> Response {
+        let options = request.method() == Method::OPTIONS;
+        let mut response = self.respond(request).await;
+        response
+            .headers_mut()
+            .append("vary", HeaderValue::from_static("Origin"));
+        if options {
+            response.headers_mut().append(
+                "vary",
+                HeaderValue::from_static(
+                    "Access-Control-Request-Method, Access-Control-Request-Headers",
+                ),
+            );
+        }
+        response
+    }
+}
+impl<H: Handler> CorsHandler<H> {
+    async fn respond(&self, request: Request) -> Response {
         let mut origins = request.headers().get_all("origin").iter();
         let Some(origin) = origins.next() else {
             return self.handler.handle(request).await;
@@ -110,12 +128,6 @@ impl<H: Handler> Handler for CorsHandler<H> {
             response
                 .headers_mut()
                 .insert("access-control-max-age", HeaderValue::from_static("600"));
-            response.headers_mut().append(
-                "vary",
-                HeaderValue::from_static(
-                    "Access-Control-Request-Method, Access-Control-Request-Headers",
-                ),
-            );
             response
         } else {
             self.handler.handle(request).await
@@ -128,9 +140,6 @@ impl<H: Handler> Handler for CorsHandler<H> {
                 origin
             },
         );
-        response
-            .headers_mut()
-            .append("vary", HeaderValue::from_static("Origin"));
         if self.config.credentials {
             response.headers_mut().insert(
                 "access-control-allow-credentials",
