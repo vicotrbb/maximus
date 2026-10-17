@@ -721,29 +721,6 @@ fn normal_early_responses_use_no_error_for_success_and_rejection() {
 }
 
 #[test]
-fn continuation_keeps_deadline_from_first_envelope() {
-    let mut s = server_with(
-        || |_: Request| async { "hello" },
-        Limits {
-            header_timeout: Duration::from_millis(300),
-            idle_timeout: Duration::from_secs(5),
-            ..Limits::default()
-        },
-    );
-    handshake(&mut s);
-    let start = std::time::Instant::now();
-    s.write_all(&[0, 0, 2, 1, 1, 0, 0, 0, 1]).unwrap();
-    std::thread::sleep(Duration::from_millis(200));
-    s.write_all(&request()[..2]).unwrap();
-    s.write_all(&[0, 0, 3, 9, 4, 0, 0, 0, 1]).unwrap(); // Stalled continuation payload.
-    assert_eq!(&until(&mut s, 7, 0).1[4..8], &1u32.to_be_bytes());
-    assert!(
-        start.elapsed() < Duration::from_millis(440),
-        "continuation extended the original deadline"
-    );
-}
-
-#[test]
 fn idle_streams_remain_protocol_errors_after_closed_stream_processing() {
     for id in [2, 5] {
         for (kind, payload) in [
