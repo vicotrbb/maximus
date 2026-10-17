@@ -138,7 +138,7 @@ fn expand(routes: Routes) -> syn::Result<proc_macro2::TokenStream> {
             quote!(::maximus::__private::matches(#pattern, request.uri().path()))
         };
         branches.push(quote! {
-            if (selected == usize::MAX || selected == #group) && #condition {
+            if match selected { usize::MAX => #condition, _ => selected == #group } {
                 selected = #group;
                 if request.method().as_str() == #method || (request.method() == ::maximus::Method::HEAD && #method == "GET") {
                     request.set_route(#pattern);
