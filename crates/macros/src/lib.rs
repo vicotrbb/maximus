@@ -54,6 +54,7 @@ fn expand(routes: Routes) -> syn::Result<proc_macro2::TokenStream> {
     });
     let mut groups = std::collections::HashMap::new();
     let mut seen = std::collections::HashSet::new();
+    let mut allowed = Vec::<String>::new();
     // ponytail: direct branches suit small route sets; add a trie only after large-route measurements.
     let mut branches = Vec::new();
     for route in routes {
@@ -118,6 +119,17 @@ fn expand(routes: Routes) -> syn::Result<proc_macro2::TokenStream> {
         }
         let next_group = groups.len();
         let group = *groups.entry(shape.join("/")).or_insert(next_group);
+        if group == allowed.len() {
+            allowed.push(String::new());
+        }
+        if !allowed[group].is_empty() {
+            allowed[group].push_str(", ");
+        }
+        allowed[group].push_str(if method == "GET" {
+            "GET, HEAD"
+        } else {
+            &method
+        });
         let pattern = parts.join("/");
         let handler = route.handler;
         let condition = if names.is_empty() {
@@ -133,22 +145,19 @@ fn expand(routes: Routes) -> syn::Result<proc_macro2::TokenStream> {
                     #(#extracts)*
                     return ::maximus::IntoResponse::into_response(#handler(request, #(#args),*).await);
                 }
-                if !allowed.is_empty() { allowed.push_str(", "); }
-                allowed.push_str(if #method == "GET" { "GET, HEAD" } else { #method });
             }
         });
     }
     Ok(quote! {
         |mut request: ::maximus::Request| async move {
             if let Err(error) = ::maximus::__private::validate_path(request.uri().path()) { return ::maximus::IntoResponse::into_response(error); }
-            let mut allowed = ::std::string::String::new();
+            let allowed: &[&str] = &[#(#allowed),*];
             let mut selected = usize::MAX;
             #(#branches)*
-            let _ = selected;
-            if allowed.is_empty() { ::maximus::IntoResponse::into_response(::maximus::StatusCode::NOT_FOUND) }
+            if selected == usize::MAX { ::maximus::IntoResponse::into_response(::maximus::StatusCode::NOT_FOUND) }
             else {
                 let mut response = ::maximus::IntoResponse::into_response(::maximus::StatusCode::METHOD_NOT_ALLOWED);
-                response.headers_mut().insert("allow", allowed.parse().expect("compiled HTTP methods"));
+                response.headers_mut().insert("allow", ::maximus::http::HeaderValue::from_static(allowed[selected]));
                 response
             }
         }
