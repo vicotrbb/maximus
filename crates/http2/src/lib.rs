@@ -29,7 +29,6 @@ const COMPRESSION: u32 = 9;
 const MAX_FRAME: usize = 16384;
 
 trait ReadWire {
-    async fn fixed<const N: usize>(&mut self) -> io::Result<[u8; N]>;
     async fn exact(&mut self, size: usize) -> io::Result<Vec<u8>>;
 }
 trait WriteWire {
@@ -37,12 +36,6 @@ trait WriteWire {
 }
 struct Native<T>(T);
 impl<T: compio::io::AsyncRead> ReadWire for Native<T> {
-    async fn fixed<const N: usize>(&mut self) -> io::Result<[u8; N]> {
-        use compio::io::AsyncReadExt;
-        let (result, buffer) = self.0.read_exact([0; N]).await.into_parts();
-        result?;
-        Ok(buffer)
-    }
     async fn exact(&mut self, size: usize) -> io::Result<Vec<u8>> {
         use compio::io::AsyncReadExt;
         let (r, b) = self
@@ -65,12 +58,6 @@ impl<T: compio::io::AsyncWrite> WriteWire for Native<T> {
 }
 struct Compat<T>(T);
 impl<T: futures_util::AsyncRead + Unpin> ReadWire for Compat<T> {
-    async fn fixed<const N: usize>(&mut self) -> io::Result<[u8; N]> {
-        use futures_util::AsyncReadExt;
-        let mut buffer = [0; N];
-        self.0.read_exact(&mut buffer).await?;
-        Ok(buffer)
-    }
     async fn exact(&mut self, size: usize) -> io::Result<Vec<u8>> {
         use futures_util::AsyncReadExt;
         let mut b = vec![0; size];
@@ -156,14 +143,15 @@ async fn read_frame<R: ReadWire>(
     mut header_deadline: Option<Instant>,
 ) -> (R, Result<ReceivedFrame, ReadError>) {
     let result = async {
-        let h = read_before(reader.fixed(), header_deadline).await?;
-        let header = Header::decode(h, MAX_FRAME).map_err(ReadError::Protocol)?;
+        let h = read_before(&mut reader, 9, header_deadline).await?;
+        let header =
+            Header::decode(h.try_into().unwrap(), MAX_FRAME).map_err(ReadError::Protocol)?;
         // The deadline starts at the first HEADERS envelope, not after its payload.
         // A continuation retains the same absolute deadline, including its envelope read.
         if header.kind == 1 && header_deadline.is_none() {
             header_deadline = Some(Instant::now() + header_timeout);
         }
-        let payload = read_before(reader.exact(header.len), header_deadline).await?;
+        let payload = read_before(&mut reader, header.len, header_deadline).await?;
         Ok(ReceivedFrame {
             header,
             payload,
@@ -173,20 +161,24 @@ async fn read_frame<R: ReadWire>(
     .await;
     (reader, result)
 }
-async fn read_before<T>(
-    read: impl std::future::Future<Output = io::Result<T>>,
+async fn read_before<R: ReadWire>(
+    reader: &mut R,
+    size: usize,
     deadline: Option<Instant>,
-) -> Result<T, ReadError> {
+) -> Result<Vec<u8>, ReadError> {
     if let Some(deadline) = deadline {
         if Instant::now() >= deadline {
             return Err(ReadError::Protocol(PROTOCOL));
         }
-        compio::time::timeout(deadline.saturating_duration_since(Instant::now()), read)
-            .await
-            .map_err(|_| ReadError::Protocol(PROTOCOL))?
-            .map_err(ReadError::Io)
+        compio::time::timeout(
+            deadline.saturating_duration_since(Instant::now()),
+            reader.exact(size),
+        )
+        .await
+        .map_err(|_| ReadError::Protocol(PROTOCOL))?
+        .map_err(ReadError::Io)
     } else {
-        read.await.map_err(ReadError::Io)
+        reader.exact(size).await.map_err(ReadError::Io)
     }
 }
 enum ReadError {
@@ -1081,7 +1073,7 @@ async fn run<R: ReadWire + 'static, W: WriteWire, H: Handler>(
     shutdown: Shutdown,
 ) -> io::Result<()> {
     let preface = {
-        let read = compio::time::timeout(limits.header_timeout, reader.fixed::<24>()).fuse();
+        let read = compio::time::timeout(limits.header_timeout, reader.exact(24)).fuse();
         let stop = shutdown.cancelled().fuse();
         futures_util::pin_mut!(read, stop);
         futures_util::select_biased! {_=stop=>return Ok(()), result=read=>result.map_err(|_|io::Error::new(io::ErrorKind::TimedOut,"HTTP/2 preface timeout"))??}
@@ -1219,59 +1211,6 @@ async fn run<R: ReadWire + 'static, W: WriteWire, H: Handler>(
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    struct OneByte<'a>(&'a [u8]);
-    impl compio::io::AsyncRead for OneByte<'_> {
-        async fn read<B: compio::buf::IoBufMut>(
-            &mut self,
-            buffer: B,
-        ) -> compio::BufResult<usize, B> {
-            use compio::buf::IntoInner;
-            self.0
-                .read(buffer.slice(..1))
-                .await
-                .map_buffer(IntoInner::into_inner)
-        }
-    }
-    impl futures_util::AsyncRead for OneByte<'_> {
-        fn poll_read(
-            mut self: Pin<&mut Self>,
-            _: &mut Context<'_>,
-            buffer: &mut [u8],
-        ) -> Poll<io::Result<usize>> {
-            let size = buffer.len().min(1);
-            Poll::Ready(std::io::Read::read(&mut self.0, &mut buffer[..size]))
-        }
-    }
-
-    async fn check_fixed_reads(mut reader: impl ReadWire) {
-        assert_eq!(
-            reader.fixed::<9>().await.unwrap(),
-            [0, 1, 2, 3, 4, 5, 6, 7, 8]
-        );
-        assert!(reader.exact(0).await.unwrap().is_empty());
-        assert_eq!(
-            reader.exact(1024).await.unwrap(),
-            (9..1033).map(|i| i as u8).collect::<Vec<_>>()
-        );
-        assert_eq!(
-            reader.fixed::<9>().await.unwrap(),
-            [9, 10, 11, 12, 13, 14, 15, 16, 17]
-        );
-        assert_eq!(
-            reader.fixed::<9>().await.unwrap_err().kind(),
-            io::ErrorKind::UnexpectedEof
-        );
-    }
-
-    #[test]
-    fn fixed_reads_preserve_fragmented_frame_boundaries_and_eof() {
-        compio::runtime::Runtime::new().unwrap().block_on(async {
-            let input: Vec<_> = (0..1042).map(|i| i as u8).collect();
-            check_fixed_reads(Native(OneByte(&input))).await;
-            check_fixed_reads(Compat(OneByte(&input))).await;
-        });
-    }
 
     struct PartialWriter {
         bytes: Vec<u8>,
