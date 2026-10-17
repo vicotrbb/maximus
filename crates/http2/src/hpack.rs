@@ -169,23 +169,19 @@ pub fn encode<'a>(headers: impl IntoIterator<Item = (&'a [u8], &'a [u8])>, outpu
     // Explicitly disable the dynamic table, including after a peer lowers its
     // SETTINGS_HEADER_TABLE_SIZE. A size update may precede every block.
     output.push(0x20);
-    for (name, value) in headers {
-        let mut index = 0;
-        let exact = STATIC.iter().enumerate().find(|&(i, &(n, v))| {
-            if n != name {
-                return false;
+    'fields: for (name, value) in headers {
+        let mut index = None;
+        for (i, &(n, v)) in STATIC.iter().enumerate() {
+            if n == name {
+                if v == value {
+                    write_integer(i + 1, 7, 0x80, output);
+                    continue 'fields;
+                }
+                index.get_or_insert(i + 1);
             }
-            if index == 0 {
-                index = i + 1;
-            }
-            v == value
-        });
-        if let Some((i, _)) = exact {
-            write_integer(i + 1, 7, 0x80, output);
-            continue;
         }
-        write_integer(index, 4, 0x10, output);
-        if index == 0 {
+        write_integer(index.unwrap_or(0), 4, 0x10, output);
+        if index.is_none() {
             write_integer(name.len(), 7, 0, output);
             output.extend_from_slice(name);
         }

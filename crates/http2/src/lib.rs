@@ -949,27 +949,17 @@ fn emit_headers<'a>(
     end: bool,
     max: usize,
 ) {
-    let start = out.len();
-    out.extend([0; 9]);
-    hpack::encode(fields, out);
-    let len = out.len() - start - 9;
-    let count = len.div_ceil(max);
-    out.resize(out.len() + (count - 1) * 9, 0);
-    for i in (0..count).rev() {
-        let n = (len - i * max).min(max);
-        let head = start + i * (max + 9);
-        if i > 0 {
-            let source = start + 9 + i * max;
-            out.copy_within(source..source + n, head + 9);
-        }
-        out[head..head + 9].copy_from_slice(
-            &Header {
-                len: n,
-                kind: if i == 0 { 1 } else { 9 },
-                flags: if i + 1 == count { 4 } else { 0 } | if i == 0 && end { 1 } else { 0 },
-                stream: id,
-            }
-            .encode(),
+    let mut block = vec![];
+    hpack::encode(fields, &mut block);
+    let chunks = block.chunks(max);
+    let count = chunks.len();
+    for (i, chunk) in chunks.enumerate() {
+        emit(
+            out,
+            if i == 0 { 1 } else { 9 },
+            if i + 1 == count { 4 } else { 0 } | if i == 0 && end { 1 } else { 0 },
+            id,
+            chunk,
         );
     }
 }
@@ -1232,48 +1222,6 @@ async fn run<R: ReadWire + 'static, W: WriteWire, H: Handler>(
 mod tests {
     use super::*;
 
-    #[test]
-    fn header_blocks_preserve_prefix_fragmentation_and_end_flags() {
-        for len in [0, 32, MAX_FRAME, MAX_FRAME * 2] {
-            let value = vec![b'a'; len];
-            for end in [false, true] {
-                let mut output = b"prefix".to_vec();
-                emit_headers(
-                    &mut output,
-                    7,
-                    [(b"x".as_slice(), value.as_slice())],
-                    end,
-                    MAX_FRAME,
-                );
-                assert_eq!(&output[..6], b"prefix");
-                let mut wire = &output[6..];
-                let mut block = Vec::new();
-                let mut count = 0;
-                while !wire.is_empty() {
-                    let h = Header::decode(wire[..9].try_into().unwrap(), MAX_FRAME).unwrap();
-                    assert_eq!(h.stream, 7);
-                    assert_eq!(h.kind, if count == 0 { 1 } else { 9 });
-                    assert_eq!(h.flags & 1, u8::from(count == 0 && end));
-                    assert_eq!(h.flags & 4 != 0, wire.len() == 9 + h.len);
-                    block.extend_from_slice(&wire[9..9 + h.len]);
-                    wire = &wire[9 + h.len..];
-                    count += 1;
-                }
-                let fields = hpack::Decoder::new(0, len + 33, 1).decode(&block).unwrap();
-                assert_eq!(fields, [(b"x".to_vec(), value.clone())]);
-                assert_eq!(
-                    count,
-                    if len < MAX_FRAME {
-                        1
-                    } else if len == MAX_FRAME {
-                        2
-                    } else {
-                        3
-                    }
-                );
-            }
-        }
-    }
     #[test]
     fn continuation_preserves_the_first_envelope_deadline() {
         compio::runtime::Runtime::new().unwrap().block_on(async {

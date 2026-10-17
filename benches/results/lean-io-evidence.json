@@ -1,2468 +1,2007 @@
 {
   "baseline_commit": "fe4129c95fc8a728f9b970087f43286b60a209fb",
-  "selected_variant": "encoding",
-  "acceptance": {
-    "status": "draft; no-regression gate not met",
-    "reason": "Mixed small-body socket results and increased comparison executable size require resolution before merge."
+  "variant": "option: single-pass lookup using Option<usize>",
+  "prior_rejected_evidence": "https://github.com/vicotrbb/maximus/tree/25589aee52d8eeba86354dd2dd16a0a6c5513aa7/benches/results",
+  "source_sha256": {
+    "crates/http2/src/hpack.rs": "2dc7e69bdc41ca7c7120b51fea9ff3cd23d2c7b719fe6b631689d98f6700affa",
+    "crates/http2/src/lib.rs": "aae4eed0a5039a62490960bbb0057ebbcf24d0838e948635d10cc75bf9a4f95a"
   },
-  "comparison_executables": {
-    "linux-final": {
-      "bytes": 9594144,
-      "sha256": "442928c24604425ddb17b7502b17ecdd67dae96a09928ac9a96d77b84e5bfe9c"
-    },
-    "linux-combined": {
-      "bytes": 9588320,
-      "sha256": "d7de52feb8fcc05b089ccc40ee8ebbe6a6ff070a5b21e10c1ef8b831fc216f47"
-    },
-    "linux-pgo-use": {
-      "bytes": 8920848,
-      "sha256": "5289614e399c53b82956f229bdbc97b26663e7c304f6f5cf056583d1009e0752"
-    },
-    "linux-headers": {
-      "bytes": 9527408,
-      "sha256": "462bde2cbedd4dffec26215f9ea831fb8e31d568ca2bd7412f6709dffc0d3fc3"
-    },
-    "linux-batch": {
-      "bytes": 9593424,
-      "sha256": "78534a6dfc4342a9b55cf1e366619c967b89c10ed814e20aea5e3247dd96327a"
-    },
-    "linux-pgo-generate": {
-      "bytes": 27041712,
-      "sha256": "397b054f65e11d2756a79504795f5c32595266d605480fb8eb329c8a821cf677"
-    },
-    "linux-before": {
+  "binaries": {
+    "arm64-before": {
       "bytes": 9528072,
       "sha256": "d64af794136ce1bdcaad3842545e37be337394efa0f63bcd79cb73749e022e03"
     },
-    "linux-traversal": {
-      "bytes": 9593336,
-      "sha256": "81ad7e83da1a27d13379826816c4db0256a329fed8f2b97a0b970d9f363b4f41"
+    "arm64-option": {
+      "bytes": 9528072,
+      "sha256": "bb61582055efa321493e18e8a243c8037e596c4463ebbe8678fbd49228a1238e"
     },
-    "linux-slice": {
-      "bytes": 9593720,
-      "sha256": "bea06b74c1a65a3de202485fe6b1d6ec886d17b3650ef98870df2de3e553d0ad"
+    "arm64-final-gains": {
+      "bytes": 9528072,
+      "sha256": "bb61582055efa321493e18e8a243c8037e596c4463ebbe8678fbd49228a1238e"
     },
-    "linux-pgo-control": {
-      "bytes": 9594248,
-      "sha256": "cecb96ac241b8fb9632d9f1b871b0fbfb820c88b3b3ccdcd472bf2a97e072ad4"
+    "amd64-before": {
+      "bytes": 9884456,
+      "sha256": "eea2eff38cf4c267614354599c06ac93bbc6e8e88f31fbab5ca4550d0d437cfa"
     },
-    "linux-encoding": {
-      "bytes": 9594144,
-      "sha256": "442928c24604425ddb17b7502b17ecdd67dae96a09928ac9a96d77b84e5bfe9c"
-    },
-    "linux-scheduled": {
-      "bytes": 9594336,
-      "sha256": "e8dcc88ef754eb64ba97bc25030568daae08c000bc5fed434c4b4b4b691e80cc"
+    "amd64-option": {
+      "bytes": 9884328,
+      "sha256": "c41ae958230395cfd9b2531ca213f6430a5cd177e18d4149e08f1627f960c0ab"
     }
   },
-  "compiler": "rustc 1.96.1 (31fca3adb 2026-06-26)\nbinary: rustc\ncommit-hash: 31fca3adb283cc9dfd56b49cdee9a96eb9c96ffd\ncommit-date: 2026-06-26\nhost: aarch64-unknown-linux-gnu\nrelease: 1.96.1\nLLVM version: 22.1.2",
-  "runtime_prefix_sha256": {
-    "crates/http2/src/lib.rs": "2ad8138d8bc7ed500d292dce3d3029b3c41997bd5963c1310615066cd267bea8",
-    "crates/http2/src/hpack.rs": "22b248376c18d1f171c110e66e01ad5135a855f83459bb37c65d5b34aebf1bf2"
+  "arm64_final_matches_measured": true,
+  "environment": {
+    "image_ids": [
+      "client docker.io/grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532",
+      "server docker.io/library/rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663"
+    ],
+    "cpu": "AMD Ryzen 7 5825U, 8 cores / 16 threads",
+    "kernel": "Linux 6.6.68",
+    "compiler": "rustc 1.96.1 (31fca3adb 2026-06-26), LLVM 22.1.2",
+    "profile": "thin LTO, one codegen unit, locked dependencies",
+    "server_cpu": [
+      2
+    ],
+    "client_cpus": [
+      4,
+      6
+    ],
+    "container_cpu_limits": 2,
+    "client": "k6 1.6.0",
+    "protocol": "TLS 1.3 / HTTP/2",
+    "scope": "Temporary Kubernetes pod on shared homelab worker. Different physical cores for server and client; not exclusive core ownership."
   },
-  "final_binary_equals_measured_candidate": true,
-  "final_source_sha256": {
-    "crates/http2/src/lib.rs": "40e28faf943ee5288be0d7980ce1931dc7a47fedb9a16357d5dc6c33168ef379",
-    "crates/http2/src/hpack.rs": "b5ca0b43cf48d0f2d1daedc3fab0ccdf2f1887b6afb125a9a3da19104e4631fb"
+  "measurement": {
+    "repeats": 5,
+    "order": "Alternates baseline/candidate order for each pair",
+    "duration_seconds": 25,
+    "warmup_seconds": 5,
+    "cpu": "Process user+system ticks divided by all completed requests, 100 Hz clock. Includes warmup.",
+    "latency": "Custom k6 trend records responses completing after five seconds.",
+    "rss": "Process RSS after run, not peak.",
+    "rps": "Whole-run rate includes the fixed-rate ramp. steady_requests covers the final 20 seconds.",
+    "pilot": "10s, no ramp, 64 VUs. Failed thresholds retained.",
+    "fixed": "Five-second ramp from 100/s to 5000/s, followed by 20s at 5000/s. First phase 64 VUs; admitted follow-up 96 VUs. The 256-VU diagnostic exceeded admission and was aborted."
   },
-  "trial_csv_sha256": "4c17638c2dcfc7616d2491a90df7537da9dd4d5342edc81779af03b8daf49634",
-  "trial_totals": {
-    "trials": 87,
-    "requests": 22164685,
+  "totals": {
+    "trials": 42,
+    "requests": 8834687,
     "http_failures": 0,
     "check_failures": 0,
-    "dropped_arrivals": 3661,
-    "threshold_failures": 17
+    "dropped_arrivals": 515,
+    "failed_threshold_trials": 8
   },
-  "complete_iterations": true,
-  "environment": {
-    "docker": "29.4.0",
-    "kernel": "Linux c79e30e594e7 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
-    "cpus": "3",
-    "images": {
-      "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
-      "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
-    },
-    "workload_sha256": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376"
+  "admission_diagnostic": {
+    "variant": "before",
+    "vus": 256,
+    "configured_connection_allowance": 117,
+    "started": 112739,
+    "completed": 112600,
+    "incomplete": 139,
+    "dropped": 0,
+    "http_failures": 0,
+    "check_failures": 0,
+    "accepted": false,
+    "reason": "Pool exceeds configured connection allowance. Count equality failed; stopped before running the candidate. Not a performance comparison."
   },
-  "phase_arguments": {
-    "h1-large-environment": {
-      "engines": "before,combined",
-      "paths": "/echo",
-      "rates": "1000",
-      "body_bytes": 131072,
-      "workers": 1,
-      "duration": "20s",
-      "repeats": 3,
-      "vus": 32,
-      "label": "h1-large",
-      "client_cpus": "1,2",
-      "sample_seconds": 0,
-      "protocol": "plain"
+  "sections": {
+    "arm64_before": {
+      "text": 6972789,
+      "data": 371392,
+      "bss": 3136
     },
-    "final-large-environment": {
-      "engines": "before,encoding",
-      "paths": "/echo",
-      "rates": "0",
-      "body_bytes": 131072,
-      "workers": 1,
-      "duration": "20s",
-      "repeats": 3,
-      "vus": 64,
-      "label": "final-large",
-      "client_cpus": "1,2",
-      "sample_seconds": 0,
-      "protocol": "h2"
+    "arm64_option": {
+      "text": 6972593,
+      "data": 371392,
+      "bss": 3136
     },
-    "encoding-ablation-environment": {
-      "engines": "before,slice,encoding",
-      "paths": "/echo",
-      "rates": "0",
-      "body_bytes": 1024,
-      "workers": 1,
-      "duration": "20s",
-      "repeats": 3,
-      "vus": 64,
-      "label": "encoding-ablation",
-      "client_cpus": "1,2",
-      "sample_seconds": 0,
-      "protocol": "h2"
+    "amd64_before": {
+      "text": 7867135,
+      "data": 384784,
+      "bss": 6249
     },
-    "qualified-h2-small-steady-environment": {
-      "engines": "before,batch",
-      "paths": "/echo",
-      "rates": "0",
-      "body_bytes": 1024,
-      "workers": 1,
-      "duration": "30s",
-      "repeats": 3,
-      "vus": 64,
-      "label": "qualified-h2-small-steady",
-      "client_cpus": "1,2",
-      "sample_seconds": 0,
-      "protocol": "h2"
-    },
-    "h2-large-environment": {
-      "engines": "before,combined",
-      "paths": "/echo",
-      "rates": "1000",
-      "body_bytes": 131072,
-      "workers": 1,
-      "duration": "20s",
-      "repeats": 3,
-      "vus": 32,
-      "label": "h2-large",
-      "client_cpus": "1,2",
-      "sample_seconds": 0,
-      "protocol": "h2"
-    },
-    "qualified-h2-small-environment": {
-      "engines": "before,batch",
-      "paths": "/plaintext,/echo",
-      "rates": "500",
-      "body_bytes": 1024,
-      "workers": 1,
-      "duration": "15s",
-      "repeats": 3,
-      "vus": 64,
-      "label": "qualified-h2-small",
-      "client_cpus": "1,2",
-      "sample_seconds": 0,
-      "protocol": "h2"
-    },
-    "final-small-headroom-environment": {
-      "engines": "before,encoding",
-      "paths": "/echo",
-      "rates": "5000",
-      "body_bytes": 1024,
-      "workers": 1,
-      "duration": "20s",
-      "repeats": 3,
-      "vus": 64,
-      "label": "final-small-headroom",
-      "client_cpus": "1,2",
-      "sample_seconds": 0,
-      "protocol": "h2"
-    },
-    "pgo-h1-route-environment": {
-      "engines": "pgo-control,pgo-use",
-      "paths": "/users/42",
-      "rates": "500",
-      "body_bytes": 1024,
-      "workers": 1,
-      "duration": "10s",
-      "repeats": 3,
-      "vus": 64,
-      "label": "pgo-h1-route",
-      "client_cpus": "1,2",
-      "sample_seconds": 0,
-      "protocol": "plain"
-    },
-    "pgo-h2-large-environment": {
-      "engines": "pgo-control,pgo-use",
-      "paths": "/echo",
-      "rates": "0",
-      "body_bytes": 131072,
-      "workers": 1,
-      "duration": "20s",
-      "repeats": 3,
-      "vus": 64,
-      "label": "pgo-h2-large",
-      "client_cpus": "1,2",
-      "sample_seconds": 0,
-      "protocol": "h2"
-    },
-    "h2-small-environment": {
-      "engines": "before,combined",
-      "paths": "/plaintext,/echo",
-      "rates": "1000",
-      "body_bytes": 1024,
-      "workers": 1,
-      "duration": "20s",
-      "repeats": 3,
-      "vus": 32,
-      "label": "h2-small",
-      "client_cpus": "1,2",
-      "sample_seconds": 0,
-      "protocol": "h2"
-    },
-    "qualified-h1-control-environment": {
-      "engines": "before,batch",
-      "paths": "/plaintext",
-      "rates": "500",
-      "body_bytes": 1024,
-      "workers": 1,
-      "duration": "10s",
-      "repeats": 3,
-      "vus": 64,
-      "label": "qualified-h1-control",
-      "client_cpus": "1,2",
-      "sample_seconds": 0,
-      "protocol": "plain"
-    },
-    "qualified-h2-large-environment": {
-      "engines": "before,batch",
-      "paths": "/echo",
-      "rates": "0",
-      "body_bytes": 131072,
-      "workers": 1,
-      "duration": "20s",
-      "repeats": 3,
-      "vus": 64,
-      "label": "qualified-h2-large",
-      "client_cpus": "1,2",
-      "sample_seconds": 0,
-      "protocol": "h2"
+    "amd64_option": {
+      "text": 7867007,
+      "data": 384784,
+      "bss": 6377
     }
   },
-  "phase_started_utc": {
-    "h1-large-environment": "2026-10-17T05:26:30Z",
-    "final-large-environment": "2026-10-17T06:25:09Z",
-    "encoding-ablation-environment": "2026-10-17T06:16:17Z",
-    "qualified-h2-small-steady-environment": "2026-10-17T06:09:27Z",
-    "h2-large-environment": "2026-10-17T05:29:00Z",
-    "qualified-h2-small-environment": "2026-10-17T05:56:04Z",
-    "final-small-headroom-environment": "2026-10-17T06:22:39Z",
-    "pgo-h1-route-environment": "2026-10-17T06:06:35Z",
-    "pgo-h2-large-environment": "2026-10-17T06:04:04Z",
-    "h2-small-environment": "2026-10-17T05:31:30Z",
-    "qualified-h1-control-environment": "2026-10-17T06:02:35Z",
-    "qualified-h2-large-environment": "2026-10-17T06:00:04Z"
-  },
-  "environment_log_sha256": {
-    "h1-large-environment.json": "629ca470d997de04401052872ec87db443145f67008676c06fafb177cf1f20df",
-    "final-large-environment.json": "7328e0fc3abd8adf70d3683242b6dccb109865d3443525093b9bee4dd483c776",
-    "encoding-ablation-environment.json": "18c9523c0da73d8e1efcdae5a9db694801d44b776442451fa044a021b3a827ae",
-    "qualified-h2-small-steady-environment.json": "2c2670e9e3480f060bbba9fb403ff56af4409d24e4eb49b5c1dc2bab8f8cbf26",
-    "h2-large-environment.json": "b342fad6622bdbbd708bf3883c03e6bfb80a495cd96c53a9631ccd581a52c490",
-    "qualified-h2-small-environment.json": "13c91f0d1d9247976daf3318d0b9f3c8030227e7bd4c6178d21f0ffc06365641",
-    "final-small-headroom-environment.json": "d0f136d34256b81236a2097662ac16bc24ddc4fb248c6a2cbbae10a00c4b081f",
-    "pgo-h1-route-environment.json": "c198e5f374935ed02f6367133257cd873f56de36e3c024e045b5865576645bda",
-    "pgo-h2-large-environment.json": "aef167b3fd85c4857454659ba52a99937993be28fb938fa066dc4c1a9598032d",
-    "h2-small-environment.json": "e4c7f34f2f7e0442fb8a7451860b76c664bb38a71bb913be179302f07f917fe5",
-    "qualified-h1-control-environment.json": "e0d6f999268aa63f115f3f496117b51ed3a324821a689ec41633d6143792bf86",
-    "qualified-h2-large-environment.json": "f46732df995893fc4b056c51b2455ba79e1649326fb53332b005d0711d8adc22"
-  },
-  "multiplex_probe": [
-    {
-      "log": "multiplex-batch-0.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 795.43
-    },
-    {
-      "log": "multiplex-batch-0.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 739.48
-    },
-    {
-      "log": "multiplex-batch-0.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 713.9
-    },
-    {
-      "log": "multiplex-batch-0.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 755.05
-    },
-    {
-      "log": "multiplex-batch-0.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 32.27
-    },
-    {
-      "log": "multiplex-batch-0.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 33.45
-    },
-    {
-      "log": "multiplex-batch-0.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 40.71
-    },
-    {
-      "log": "multiplex-batch-0.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 55.72
-    },
-    {
-      "log": "multiplex-batch-1.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 806.2
-    },
-    {
-      "log": "multiplex-batch-1.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 737.89
-    },
-    {
-      "log": "multiplex-batch-1.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 741.34
-    },
-    {
-      "log": "multiplex-batch-1.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 835.33
-    },
-    {
-      "log": "multiplex-batch-1.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 38.97
-    },
-    {
-      "log": "multiplex-batch-1.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 32.93
-    },
-    {
-      "log": "multiplex-batch-1.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 40.99
-    },
-    {
-      "log": "multiplex-batch-1.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 55.53
-    },
-    {
-      "log": "multiplex-batch-2.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 738.95
-    },
-    {
-      "log": "multiplex-batch-2.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 723.31
-    },
-    {
-      "log": "multiplex-batch-2.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 759.59
-    },
-    {
-      "log": "multiplex-batch-2.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 694.01
-    },
-    {
-      "log": "multiplex-batch-2.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 32.85
-    },
-    {
-      "log": "multiplex-batch-2.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 33.02
-    },
-    {
-      "log": "multiplex-batch-2.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 40.2
-    },
-    {
-      "log": "multiplex-batch-2.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 54.85
-    },
-    {
-      "log": "multiplex-batch-3.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 753.21
-    },
-    {
-      "log": "multiplex-batch-3.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 754.98
-    },
-    {
-      "log": "multiplex-batch-3.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 697.61
-    },
-    {
-      "log": "multiplex-batch-3.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 692.9
-    },
-    {
-      "log": "multiplex-batch-3.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 31.89
-    },
-    {
-      "log": "multiplex-batch-3.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 32.67
-    },
-    {
-      "log": "multiplex-batch-3.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 40.74
-    },
-    {
-      "log": "multiplex-batch-3.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 56.33
-    },
-    {
-      "log": "multiplex-batch-4.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 839.43
-    },
-    {
-      "log": "multiplex-batch-4.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 737.74
-    },
-    {
-      "log": "multiplex-batch-4.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 705.75
-    },
-    {
-      "log": "multiplex-batch-4.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 717.24
-    },
-    {
-      "log": "multiplex-batch-4.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 31.85
-    },
-    {
-      "log": "multiplex-batch-4.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 32.71
-    },
-    {
-      "log": "multiplex-batch-4.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 40.24
-    },
-    {
-      "log": "multiplex-batch-4.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 55.83
-    },
-    {
-      "log": "multiplex-before-0.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 807.76
-    },
-    {
-      "log": "multiplex-before-0.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 859.46
-    },
-    {
-      "log": "multiplex-before-0.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 852.78
-    },
-    {
-      "log": "multiplex-before-0.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 801.5
-    },
-    {
-      "log": "multiplex-before-0.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 33.97
-    },
-    {
-      "log": "multiplex-before-0.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 36.83
-    },
-    {
-      "log": "multiplex-before-0.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 43.51
-    },
-    {
-      "log": "multiplex-before-0.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 60.52
-    },
-    {
-      "log": "multiplex-before-1.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 856.23
-    },
-    {
-      "log": "multiplex-before-1.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 834.76
-    },
-    {
-      "log": "multiplex-before-1.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 875.04
-    },
-    {
-      "log": "multiplex-before-1.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 812.42
-    },
-    {
-      "log": "multiplex-before-1.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 34.16
-    },
-    {
-      "log": "multiplex-before-1.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 36.89
-    },
-    {
-      "log": "multiplex-before-1.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 42.81
-    },
-    {
-      "log": "multiplex-before-1.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 60.03
-    },
-    {
-      "log": "multiplex-before-2.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 904.21
-    },
-    {
-      "log": "multiplex-before-2.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 849.27
-    },
-    {
-      "log": "multiplex-before-2.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 805.46
-    },
-    {
-      "log": "multiplex-before-2.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 803.37
-    },
-    {
-      "log": "multiplex-before-2.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 33.29
-    },
-    {
-      "log": "multiplex-before-2.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 37.05
-    },
-    {
-      "log": "multiplex-before-2.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 44.14
-    },
-    {
-      "log": "multiplex-before-2.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 60.75
-    },
-    {
-      "log": "multiplex-before-3.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 985.29
-    },
-    {
-      "log": "multiplex-before-3.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 1067.01
-    },
-    {
-      "log": "multiplex-before-3.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 976.58
-    },
-    {
-      "log": "multiplex-before-3.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 867.03
-    },
-    {
-      "log": "multiplex-before-3.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 34.74
-    },
-    {
-      "log": "multiplex-before-3.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 36.97
-    },
-    {
-      "log": "multiplex-before-3.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 49.04
-    },
-    {
-      "log": "multiplex-before-3.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 67.56
-    },
-    {
-      "log": "multiplex-before-4.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 835.54
-    },
-    {
-      "log": "multiplex-before-4.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 865.85
-    },
-    {
-      "log": "multiplex-before-4.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 858.31
-    },
-    {
-      "log": "multiplex-before-4.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 817.58
-    },
-    {
-      "log": "multiplex-before-4.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 34.88
-    },
-    {
-      "log": "multiplex-before-4.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 37.1
-    },
-    {
-      "log": "multiplex-before-4.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 43.82
-    },
-    {
-      "log": "multiplex-before-4.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 61.32
-    },
-    {
-      "log": "multiplex-headers-0.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 779.04
-    },
-    {
-      "log": "multiplex-headers-0.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 731.18
-    },
-    {
-      "log": "multiplex-headers-0.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 695.68
-    },
-    {
-      "log": "multiplex-headers-0.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 710.85
-    },
-    {
-      "log": "multiplex-headers-0.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 25.3
-    },
-    {
-      "log": "multiplex-headers-0.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 39.85
-    },
-    {
-      "log": "multiplex-headers-0.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 48.99
-    },
-    {
-      "log": "multiplex-headers-0.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 63.77
-    },
-    {
-      "log": "multiplex-headers-1.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 764.92
-    },
-    {
-      "log": "multiplex-headers-1.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 736.4
-    },
-    {
-      "log": "multiplex-headers-1.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 731.48
-    },
-    {
-      "log": "multiplex-headers-1.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 720.62
-    },
-    {
-      "log": "multiplex-headers-1.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 24.57
-    },
-    {
-      "log": "multiplex-headers-1.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 38.46
-    },
-    {
-      "log": "multiplex-headers-1.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 49.48
-    },
-    {
-      "log": "multiplex-headers-1.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 66.5
-    },
-    {
-      "log": "multiplex-headers-2.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 764.67
-    },
-    {
-      "log": "multiplex-headers-2.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 746.78
-    },
-    {
-      "log": "multiplex-headers-2.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 679.76
-    },
-    {
-      "log": "multiplex-headers-2.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 716.46
-    },
-    {
-      "log": "multiplex-headers-2.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 25.05
-    },
-    {
-      "log": "multiplex-headers-2.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 39.35
-    },
-    {
-      "log": "multiplex-headers-2.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 49.13
-    },
-    {
-      "log": "multiplex-headers-2.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 65.06
-    },
-    {
-      "log": "multiplex-headers-3.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 750.5
-    },
-    {
-      "log": "multiplex-headers-3.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 731.7
-    },
-    {
-      "log": "multiplex-headers-3.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 728.15
-    },
-    {
-      "log": "multiplex-headers-3.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 687.92
-    },
-    {
-      "log": "multiplex-headers-3.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 24.31
-    },
-    {
-      "log": "multiplex-headers-3.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 39.14
-    },
-    {
-      "log": "multiplex-headers-3.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 50.63
-    },
-    {
-      "log": "multiplex-headers-3.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 70.84
-    },
-    {
-      "log": "multiplex-headers-4.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 746.32
-    },
-    {
-      "log": "multiplex-headers-4.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 712.34
-    },
-    {
-      "log": "multiplex-headers-4.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 729.07
-    },
-    {
-      "log": "multiplex-headers-4.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 760.99
-    },
-    {
-      "log": "multiplex-headers-4.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 24.8
-    },
-    {
-      "log": "multiplex-headers-4.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 38.66
-    },
-    {
-      "log": "multiplex-headers-4.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 48.34
-    },
-    {
-      "log": "multiplex-headers-4.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 64.2
-    },
-    {
-      "log": "native-multiplex-batch-0.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 786.07
-    },
-    {
-      "log": "native-multiplex-batch-0.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 761.5
-    },
-    {
-      "log": "native-multiplex-batch-0.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 711.44
-    },
-    {
-      "log": "native-multiplex-batch-0.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 757.21
-    },
-    {
-      "log": "native-multiplex-batch-0.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 33.1
-    },
-    {
-      "log": "native-multiplex-batch-0.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 33.27
-    },
-    {
-      "log": "native-multiplex-batch-0.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 42.15
-    },
-    {
-      "log": "native-multiplex-batch-0.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 54.04
-    },
-    {
-      "log": "native-multiplex-batch-1.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 723.3
-    },
-    {
-      "log": "native-multiplex-batch-1.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 662.15
-    },
-    {
-      "log": "native-multiplex-batch-1.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 677.59
-    },
-    {
-      "log": "native-multiplex-batch-1.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 683.98
-    },
-    {
-      "log": "native-multiplex-batch-1.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 32.23
-    },
-    {
-      "log": "native-multiplex-batch-1.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 31.84
-    },
-    {
-      "log": "native-multiplex-batch-1.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 39.8
-    },
-    {
-      "log": "native-multiplex-batch-1.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 53.31
-    },
-    {
-      "log": "native-multiplex-batch-2.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 717.19
-    },
-    {
-      "log": "native-multiplex-batch-2.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 677.08
-    },
-    {
-      "log": "native-multiplex-batch-2.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 639.06
-    },
-    {
-      "log": "native-multiplex-batch-2.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 728.25
-    },
-    {
-      "log": "native-multiplex-batch-2.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 31.62
-    },
-    {
-      "log": "native-multiplex-batch-2.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 31.75
-    },
-    {
-      "log": "native-multiplex-batch-2.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 39.12
-    },
-    {
-      "log": "native-multiplex-batch-2.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 53.97
-    },
-    {
-      "log": "native-multiplex-batch-3.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 733.03
-    },
-    {
-      "log": "native-multiplex-batch-3.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 645.31
-    },
-    {
-      "log": "native-multiplex-batch-3.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 655.63
-    },
-    {
-      "log": "native-multiplex-batch-3.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 692.76
-    },
-    {
-      "log": "native-multiplex-batch-3.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 31.84
-    },
-    {
-      "log": "native-multiplex-batch-3.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 31.84
-    },
-    {
-      "log": "native-multiplex-batch-3.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 39.97
-    },
-    {
-      "log": "native-multiplex-batch-3.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 53.9
-    },
-    {
-      "log": "native-multiplex-batch-4.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 865.73
-    },
-    {
-      "log": "native-multiplex-batch-4.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 703.59
-    },
-    {
-      "log": "native-multiplex-batch-4.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 710.8
-    },
-    {
-      "log": "native-multiplex-batch-4.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 772.89
-    },
-    {
-      "log": "native-multiplex-batch-4.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 33.23
-    },
-    {
-      "log": "native-multiplex-batch-4.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 33.31
-    },
-    {
-      "log": "native-multiplex-batch-4.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 40.73
-    },
-    {
-      "log": "native-multiplex-batch-4.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 56.76
-    },
-    {
-      "log": "native-multiplex-before-0.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 872.58
-    },
-    {
-      "log": "native-multiplex-before-0.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 822.21
-    },
-    {
-      "log": "native-multiplex-before-0.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 826.89
-    },
-    {
-      "log": "native-multiplex-before-0.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 816.55
-    },
-    {
-      "log": "native-multiplex-before-0.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 34.14
-    },
-    {
-      "log": "native-multiplex-before-0.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 37.32
-    },
-    {
-      "log": "native-multiplex-before-0.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 47.51
-    },
-    {
-      "log": "native-multiplex-before-0.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 55.45
-    },
-    {
-      "log": "native-multiplex-before-1.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 868.71
-    },
-    {
-      "log": "native-multiplex-before-1.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 884.55
-    },
-    {
-      "log": "native-multiplex-before-1.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 961.84
-    },
-    {
-      "log": "native-multiplex-before-1.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 846.33
-    },
-    {
-      "log": "native-multiplex-before-1.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 34.01
-    },
-    {
-      "log": "native-multiplex-before-1.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 34.62
-    },
-    {
-      "log": "native-multiplex-before-1.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 40.66
-    },
-    {
-      "log": "native-multiplex-before-1.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 53.87
-    },
-    {
-      "log": "native-multiplex-before-2.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 805.7
-    },
-    {
-      "log": "native-multiplex-before-2.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 838.09
-    },
-    {
-      "log": "native-multiplex-before-2.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 824.97
-    },
-    {
-      "log": "native-multiplex-before-2.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 777.49
-    },
-    {
-      "log": "native-multiplex-before-2.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 32.12
-    },
-    {
-      "log": "native-multiplex-before-2.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 34.6
-    },
-    {
-      "log": "native-multiplex-before-2.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 40.41
-    },
-    {
-      "log": "native-multiplex-before-2.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 53.14
-    },
-    {
-      "log": "native-multiplex-before-3.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 1253.63
-    },
-    {
-      "log": "native-multiplex-before-3.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 1421.22
-    },
-    {
-      "log": "native-multiplex-before-3.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 1242.23
-    },
-    {
-      "log": "native-multiplex-before-3.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 788.34
-    },
-    {
-      "log": "native-multiplex-before-3.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 32.19
-    },
-    {
-      "log": "native-multiplex-before-3.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 34.16
-    },
-    {
-      "log": "native-multiplex-before-3.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 40.33
-    },
-    {
-      "log": "native-multiplex-before-3.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 53.44
-    },
-    {
-      "log": "native-multiplex-before-4.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 791.72
-    },
-    {
-      "log": "native-multiplex-before-4.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 804.78
-    },
-    {
-      "log": "native-multiplex-before-4.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 788.99
-    },
-    {
-      "log": "native-multiplex-before-4.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 807.71
-    },
-    {
-      "log": "native-multiplex-before-4.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 32.56
-    },
-    {
-      "log": "native-multiplex-before-4.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 34.53
-    },
-    {
-      "log": "native-multiplex-before-4.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 40.0
-    },
-    {
-      "log": "native-multiplex-before-4.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 53.36
-    },
-    {
-      "log": "native-multiplex-headers-0.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 817.82
-    },
-    {
-      "log": "native-multiplex-headers-0.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 682.73
-    },
-    {
-      "log": "native-multiplex-headers-0.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 676.5
-    },
-    {
-      "log": "native-multiplex-headers-0.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 720.28
-    },
-    {
-      "log": "native-multiplex-headers-0.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 24.16
-    },
-    {
-      "log": "native-multiplex-headers-0.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 38.72
-    },
-    {
-      "log": "native-multiplex-headers-0.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 52.09
-    },
-    {
-      "log": "native-multiplex-headers-0.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 65.22
-    },
-    {
-      "log": "native-multiplex-headers-1.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 938.09
-    },
-    {
-      "log": "native-multiplex-headers-1.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 660.69
-    },
-    {
-      "log": "native-multiplex-headers-1.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 656.23
-    },
-    {
-      "log": "native-multiplex-headers-1.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 686.77
-    },
-    {
-      "log": "native-multiplex-headers-1.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 23.39
-    },
-    {
-      "log": "native-multiplex-headers-1.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 37.36
-    },
-    {
-      "log": "native-multiplex-headers-1.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 46.88
-    },
-    {
-      "log": "native-multiplex-headers-1.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 62.62
-    },
-    {
-      "log": "native-multiplex-headers-2.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 749.48
-    },
-    {
-      "log": "native-multiplex-headers-2.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 664.16
-    },
-    {
-      "log": "native-multiplex-headers-2.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 678.73
-    },
-    {
-      "log": "native-multiplex-headers-2.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 673.17
-    },
-    {
-      "log": "native-multiplex-headers-2.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 23.09
-    },
-    {
-      "log": "native-multiplex-headers-2.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 37.18
-    },
-    {
-      "log": "native-multiplex-headers-2.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 47.26
-    },
-    {
-      "log": "native-multiplex-headers-2.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 61.32
-    },
-    {
-      "log": "native-multiplex-headers-3.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 762.35
-    },
-    {
-      "log": "native-multiplex-headers-3.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 1082.33
-    },
-    {
-      "log": "native-multiplex-headers-3.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 789.56
-    },
-    {
-      "log": "native-multiplex-headers-3.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 669.02
-    },
-    {
-      "log": "native-multiplex-headers-3.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 24.37
-    },
-    {
-      "log": "native-multiplex-headers-3.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 38.0
-    },
-    {
-      "log": "native-multiplex-headers-3.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 47.91
-    },
-    {
-      "log": "native-multiplex-headers-3.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 63.36
-    },
-    {
-      "log": "native-multiplex-headers-4.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 790.6
-    },
-    {
-      "log": "native-multiplex-headers-4.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 710.71
-    },
-    {
-      "log": "native-multiplex-headers-4.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 937.9
-    },
-    {
-      "log": "native-multiplex-headers-4.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 751.84
-    },
-    {
-      "log": "native-multiplex-headers-4.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 25.33
-    },
-    {
-      "log": "native-multiplex-headers-4.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 40.15
-    },
-    {
-      "log": "native-multiplex-headers-4.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 48.01
-    },
-    {
-      "log": "native-multiplex-headers-4.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 61.08
-    },
-    {
-      "log": "native-multiplex-slice-0.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 712.22
-    },
-    {
-      "log": "native-multiplex-slice-0.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 713.16
-    },
-    {
-      "log": "native-multiplex-slice-0.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 643.06
-    },
-    {
-      "log": "native-multiplex-slice-0.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 698.22
-    },
-    {
-      "log": "native-multiplex-slice-0.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 27.15
-    },
-    {
-      "log": "native-multiplex-slice-0.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 31.52
-    },
-    {
-      "log": "native-multiplex-slice-0.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 38.98
-    },
-    {
-      "log": "native-multiplex-slice-0.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 51.16
-    },
-    {
-      "log": "native-multiplex-slice-1.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 7346.08
-    },
-    {
-      "log": "native-multiplex-slice-1.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 698.72
-    },
-    {
-      "log": "native-multiplex-slice-1.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 642.71
-    },
-    {
-      "log": "native-multiplex-slice-1.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 690.95
-    },
-    {
-      "log": "native-multiplex-slice-1.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 28.57
-    },
-    {
-      "log": "native-multiplex-slice-1.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 33.54
-    },
-    {
-      "log": "native-multiplex-slice-1.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 41.51
-    },
-    {
-      "log": "native-multiplex-slice-1.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 52.33
-    },
-    {
-      "log": "native-multiplex-slice-2.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 727.12
-    },
-    {
-      "log": "native-multiplex-slice-2.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 680.36
-    },
-    {
-      "log": "native-multiplex-slice-2.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 666.21
-    },
-    {
-      "log": "native-multiplex-slice-2.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 672.8
-    },
-    {
-      "log": "native-multiplex-slice-2.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 28.77
-    },
-    {
-      "log": "native-multiplex-slice-2.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 32.79
-    },
-    {
-      "log": "native-multiplex-slice-2.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 41.14
-    },
-    {
-      "log": "native-multiplex-slice-2.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 54.64
-    },
-    {
-      "log": "native-multiplex-slice-3.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 714.95
-    },
-    {
-      "log": "native-multiplex-slice-3.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 696.3
-    },
-    {
-      "log": "native-multiplex-slice-3.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 680.24
-    },
-    {
-      "log": "native-multiplex-slice-3.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 726.51
-    },
-    {
-      "log": "native-multiplex-slice-3.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 27.35
-    },
-    {
-      "log": "native-multiplex-slice-3.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 31.5
-    },
-    {
-      "log": "native-multiplex-slice-3.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 40.03
-    },
-    {
-      "log": "native-multiplex-slice-3.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 51.66
-    },
-    {
-      "log": "native-multiplex-slice-4.log",
-      "blocked": false,
-      "streams": 1,
-      "ns_per_stream_poll": 836.77
-    },
-    {
-      "log": "native-multiplex-slice-4.log",
-      "blocked": false,
-      "streams": 32,
-      "ns_per_stream_poll": 755.18
-    },
-    {
-      "log": "native-multiplex-slice-4.log",
-      "blocked": false,
-      "streams": 128,
-      "ns_per_stream_poll": 938.67
-    },
-    {
-      "log": "native-multiplex-slice-4.log",
-      "blocked": false,
-      "streams": 1024,
-      "ns_per_stream_poll": 749.1
-    },
-    {
-      "log": "native-multiplex-slice-4.log",
-      "blocked": true,
-      "streams": 1,
-      "ns_per_stream_poll": 30.7
-    },
-    {
-      "log": "native-multiplex-slice-4.log",
-      "blocked": true,
-      "streams": 32,
-      "ns_per_stream_poll": 33.75
-    },
-    {
-      "log": "native-multiplex-slice-4.log",
-      "blocked": true,
-      "streams": 128,
-      "ns_per_stream_poll": 40.52
-    },
-    {
-      "log": "native-multiplex-slice-4.log",
-      "blocked": true,
-      "streams": 1024,
-      "ns_per_stream_poll": 53.9
-    }
-  ],
   "allocation_probe": {
-    "allocation-encoding-1.log": {
-      "calls": 67,
-      "requested_bytes": 319706,
-      "peak_live_bytes": 268780,
-      "live_after_bytes": 0
+    "calls": 70,
+    "requested_bytes": 319816,
+    "peak_live_bytes": 268780,
+    "live_after_bytes": 0,
+    "comparison": "Identical to baseline; three final Linux release runs"
+  },
+  "arm64_hpack_probe": {
+    "before": {
+      "0": {
+        "ns": [
+          13.691,
+          16.606,
+          14.325,
+          24.998,
+          26.652,
+          26.76,
+          18.437,
+          20.476,
+          27.803
+        ],
+        "median_ns": 20.476
+      },
+      "1": {
+        "ns": [
+          6.302,
+          7.397,
+          8.154,
+          13.081,
+          8.142,
+          7.409,
+          6.395,
+          7.084,
+          6.878
+        ],
+        "median_ns": 7.397
+      },
+      "2": {
+        "ns": [
+          76.932,
+          87.406,
+          71.59,
+          73.253,
+          75.143,
+          68.966,
+          68.629,
+          68.646,
+          68.821
+        ],
+        "median_ns": 71.59
+      },
+      "3": {
+        "ns": [
+          37.239,
+          53.569,
+          34.081,
+          35.336,
+          34.218,
+          33.923,
+          34.403,
+          35.175,
+          34.08
+        ],
+        "median_ns": 34.403
+      },
+      "4": {
+        "ns": [
+          54.74,
+          43.024,
+          36.254,
+          36.595,
+          36.614,
+          36.046,
+          36.823,
+          36.358,
+          35.844
+        ],
+        "median_ns": 36.595
+      },
+      "5": {
+        "ns": [
+          53.95,
+          60.238,
+          51.927,
+          51.508,
+          52.349,
+          50.507,
+          50.746,
+          50.665,
+          51.052
+        ],
+        "median_ns": 51.508
+      },
+      "6": {
+        "ns": [
+          50.075,
+          53.975,
+          48.389,
+          48.984,
+          49.836,
+          48.224,
+          49.899,
+          48.505,
+          50.155
+        ],
+        "median_ns": 49.836
+      },
+      "7": {
+        "ns": [
+          50.147,
+          52.943,
+          50.941,
+          49.294,
+          48.737,
+          49.692,
+          51.371,
+          49.599,
+          50.93
+        ],
+        "median_ns": 50.147
+      },
+      "8": {
+        "ns": [
+          8.893,
+          9.403,
+          8.266,
+          8.695,
+          8.897,
+          8.476,
+          8.881,
+          8.966,
+          8.791
+        ],
+        "median_ns": 8.881
+      }
     },
-    "allocation-encoding-2.log": {
-      "calls": 67,
-      "requested_bytes": 319706,
-      "peak_live_bytes": 268780,
-      "live_after_bytes": 0
-    },
-    "allocation-encoding-3.log": {
-      "calls": 67,
-      "requested_bytes": 319706,
-      "peak_live_bytes": 268780,
-      "live_after_bytes": 0
-    },
-    "allocation-slice-1.log": {
-      "calls": 45,
-      "requested_bytes": 319354,
-      "peak_live_bytes": 268764,
-      "live_after_bytes": 0
-    },
-    "allocation-slice-2.log": {
-      "calls": 45,
-      "requested_bytes": 319354,
-      "peak_live_bytes": 268764,
-      "live_after_bytes": 0
-    },
-    "allocation-slice-3.log": {
-      "calls": 45,
-      "requested_bytes": 319354,
-      "peak_live_bytes": 268764,
-      "live_after_bytes": 0
-    },
-    "multiplex-batch-0.log": {
-      "calls": 45,
-      "requested_bytes": 319354,
-      "peak_live_bytes": 268764,
-      "live_after_bytes": 0
-    },
-    "multiplex-batch-1.log": {
-      "calls": 45,
-      "requested_bytes": 319354,
-      "peak_live_bytes": 268764,
-      "live_after_bytes": 0
-    },
-    "multiplex-batch-2.log": {
-      "calls": 45,
-      "requested_bytes": 319354,
-      "peak_live_bytes": 268764,
-      "live_after_bytes": 0
-    },
-    "multiplex-batch-3.log": {
-      "calls": 45,
-      "requested_bytes": 319354,
-      "peak_live_bytes": 268764,
-      "live_after_bytes": 0
-    },
-    "multiplex-batch-4.log": {
-      "calls": 45,
-      "requested_bytes": 319354,
-      "peak_live_bytes": 268764,
-      "live_after_bytes": 0
-    },
-    "multiplex-before-0.log": {
-      "calls": 70,
-      "requested_bytes": 319816,
-      "peak_live_bytes": 268780,
-      "live_after_bytes": 0
-    },
-    "multiplex-before-1.log": {
-      "calls": 70,
-      "requested_bytes": 319816,
-      "peak_live_bytes": 268780,
-      "live_after_bytes": 0
-    },
-    "multiplex-before-2.log": {
-      "calls": 70,
-      "requested_bytes": 319816,
-      "peak_live_bytes": 268780,
-      "live_after_bytes": 0
-    },
-    "multiplex-before-3.log": {
-      "calls": 70,
-      "requested_bytes": 319816,
-      "peak_live_bytes": 268780,
-      "live_after_bytes": 0
-    },
-    "multiplex-before-4.log": {
-      "calls": 70,
-      "requested_bytes": 319816,
-      "peak_live_bytes": 268780,
-      "live_after_bytes": 0
-    },
-    "multiplex-headers-0.log": {
-      "calls": 45,
-      "requested_bytes": 319354,
-      "peak_live_bytes": 268764,
-      "live_after_bytes": 0
-    },
-    "multiplex-headers-1.log": {
-      "calls": 45,
-      "requested_bytes": 319354,
-      "peak_live_bytes": 268764,
-      "live_after_bytes": 0
-    },
-    "multiplex-headers-2.log": {
-      "calls": 45,
-      "requested_bytes": 319354,
-      "peak_live_bytes": 268764,
-      "live_after_bytes": 0
-    },
-    "multiplex-headers-3.log": {
-      "calls": 45,
-      "requested_bytes": 319354,
-      "peak_live_bytes": 268764,
-      "live_after_bytes": 0
-    },
-    "multiplex-headers-4.log": {
-      "calls": 45,
-      "requested_bytes": 319354,
-      "peak_live_bytes": 268764,
-      "live_after_bytes": 0
+    "option": {
+      "0": {
+        "ns": [
+          13.532,
+          16.053,
+          15.369,
+          17.388,
+          22.741,
+          13.592,
+          14.23,
+          15.438,
+          13.086
+        ],
+        "median_ns": 15.369
+      },
+      "1": {
+        "ns": [
+          6.37,
+          7.882,
+          6.133,
+          7.733,
+          6.979,
+          6.493,
+          7.218,
+          7.131,
+          6.607
+        ],
+        "median_ns": 6.979
+      },
+      "2": {
+        "ns": [
+          63.105,
+          66.042,
+          62.218,
+          71.314,
+          66.975,
+          63.914,
+          58.848,
+          61.675,
+          58.194
+        ],
+        "median_ns": 63.105
+      },
+      "3": {
+        "ns": [
+          26.548,
+          25.613,
+          25.932,
+          26.048,
+          24.806,
+          24.264,
+          24.288,
+          25.078,
+          26.677
+        ],
+        "median_ns": 25.613
+      },
+      "4": {
+        "ns": [
+          25.56,
+          25.547,
+          25.718,
+          25.912,
+          25.581,
+          25.591,
+          25.378,
+          25.698,
+          25.312
+        ],
+        "median_ns": 25.581
+      },
+      "5": {
+        "ns": [
+          30.958,
+          30.124,
+          28.499,
+          29.844,
+          29.676,
+          29.437,
+          29.656,
+          28.044,
+          30.082
+        ],
+        "median_ns": 29.676
+      },
+      "6": {
+        "ns": [
+          26.571,
+          26.56,
+          26.804,
+          26.17,
+          26.243,
+          26.233,
+          26.192,
+          25.748,
+          26.81
+        ],
+        "median_ns": 26.243
+      },
+      "7": {
+        "ns": [
+          28.202,
+          29.031,
+          28.285,
+          28.172,
+          27.594,
+          27.353,
+          28.389,
+          28.707,
+          28.444
+        ],
+        "median_ns": 28.285
+      },
+      "8": {
+        "ns": [
+          8.733,
+          8.56,
+          8.591,
+          8.824,
+          8.932,
+          8.82,
+          9.443,
+          8.716,
+          9.048
+        ],
+        "median_ns": 8.82
+      }
     }
   },
-  "flow_probe": [
-    {
-      "window": 262144,
-      "rtt_ms": 0,
-      "trial": 0,
-      "upload_seconds": 0.0041603899881010875,
-      "complete_seconds": 0.006492420987342484,
-      "stalls": 60,
-      "bytes": 4194304
-    },
-    {
-      "window": 262144,
-      "rtt_ms": 0,
-      "trial": 1,
-      "upload_seconds": 0.0013052260037511587,
-      "complete_seconds": 0.003000374010298401,
-      "stalls": 60,
-      "bytes": 4194304
-    },
-    {
-      "window": 262144,
-      "rtt_ms": 0,
-      "trial": 2,
-      "upload_seconds": 0.0011216819984838367,
-      "complete_seconds": 0.002667786000529304,
-      "stalls": 60,
-      "bytes": 4194304
-    },
-    {
-      "window": 65535,
-      "rtt_ms": 0,
-      "trial": 0,
-      "upload_seconds": 0.004244098992785439,
-      "complete_seconds": 0.006098081998061389,
-      "stalls": 204,
-      "bytes": 4194304
-    },
-    {
-      "window": 65535,
-      "rtt_ms": 0,
-      "trial": 1,
-      "upload_seconds": 0.004259099005139433,
-      "complete_seconds": 0.006025248003425077,
-      "stalls": 204,
-      "bytes": 4194304
-    },
-    {
-      "window": 65535,
-      "rtt_ms": 0,
-      "trial": 2,
-      "upload_seconds": 0.003445463997195475,
-      "complete_seconds": 0.004461268996237777,
-      "stalls": 204,
-      "bytes": 4194304
-    },
-    {
-      "window": 262144,
-      "rtt_ms": 20,
-      "trial": 0,
-      "upload_seconds": 0.5145704340102384,
-      "complete_seconds": 2.0210536930098897,
-      "stalls": 60,
-      "bytes": 4194304
-    },
-    {
-      "window": 262144,
-      "rtt_ms": 20,
-      "trial": 1,
-      "upload_seconds": 0.8875033350050217,
-      "complete_seconds": 1.2882090260100085,
-      "stalls": 60,
-      "bytes": 4194304
-    },
-    {
-      "window": 262144,
-      "rtt_ms": 20,
-      "trial": 2,
-      "upload_seconds": 1.004190991006908,
-      "complete_seconds": 1.9034340670041274,
-      "stalls": 60,
-      "bytes": 4194304
-    },
-    {
-      "window": 65535,
-      "rtt_ms": 20,
-      "trial": 0,
-      "upload_seconds": 2.3559672739938833,
-      "complete_seconds": 3.4813812759966822,
-      "stalls": 204,
-      "bytes": 4194304
-    },
-    {
-      "window": 65535,
-      "rtt_ms": 20,
-      "trial": 1,
-      "upload_seconds": 2.305291402997682,
-      "complete_seconds": 3.7898759829986375,
-      "stalls": 204,
-      "bytes": 4194304
-    },
-    {
-      "window": 65535,
-      "rtt_ms": 20,
-      "trial": 2,
-      "upload_seconds": 2.3055115310125984,
-      "complete_seconds": 2.823760747007327,
-      "stalls": 204,
-      "bytes": 4194304
-    },
-    {
-      "window": 262144,
-      "rtt_ms": 80,
-      "trial": 0,
-      "upload_seconds": 3.057693971990375,
-      "complete_seconds": 8.655940408993047,
-      "stalls": 60,
-      "bytes": 4194304
-    },
-    {
-      "window": 262144,
-      "rtt_ms": 80,
-      "trial": 1,
-      "upload_seconds": 5.24330078199273,
-      "complete_seconds": 10.528524795998237,
-      "stalls": 60,
-      "bytes": 4194304
-    },
-    {
-      "window": 262144,
-      "rtt_ms": 80,
-      "trial": 2,
-      "upload_seconds": 1.8286657949938672,
-      "complete_seconds": 4.596193941993988,
-      "stalls": 60,
-      "bytes": 4194304
-    },
-    {
-      "window": 65535,
-      "rtt_ms": 80,
-      "trial": 0,
-      "upload_seconds": 8.820094016002258,
-      "complete_seconds": 10.888992003994645,
-      "stalls": 204,
-      "bytes": 4194304
-    },
-    {
-      "window": 65535,
-      "rtt_ms": 80,
-      "trial": 1,
-      "upload_seconds": 8.830939267005306,
-      "complete_seconds": 10.892062692000763,
-      "stalls": 204,
-      "bytes": 4194304
-    },
-    {
-      "window": 65535,
-      "rtt_ms": 80,
-      "trial": 2,
-      "upload_seconds": 8.875533783007995,
-      "complete_seconds": 12.58039209600247,
-      "stalls": 204,
-      "bytes": 4194304
+  "arm64_static_matrix": {
+    "iterations_per_case": 200000,
+    "repetitions": 7,
+    "positions": 61,
+    "distinct_names": 52,
+    "observations": {
+      "0:exact": {
+        "before": {
+          "median_ns": 4.811,
+          "min_ns": 4.533,
+          "max_ns": 5.72
+        },
+        "option": {
+          "median_ns": 5.24,
+          "min_ns": 4.552,
+          "max_ns": 5.598
+        }
+      },
+      "0:literal": {
+        "before": {
+          "median_ns": 27.739,
+          "min_ns": 25.655,
+          "max_ns": 42.064
+        },
+        "option": {
+          "median_ns": 28.225,
+          "min_ns": 24.244,
+          "max_ns": 36.14
+        }
+      },
+      "1:exact": {
+        "before": {
+          "median_ns": 5.49,
+          "min_ns": 4.667,
+          "max_ns": 6.774
+        },
+        "option": {
+          "median_ns": 5.196,
+          "min_ns": 4.82,
+          "max_ns": 6.334
+        }
+      },
+      "1:literal": {
+        "before": {
+          "median_ns": 47.942,
+          "min_ns": 43.18,
+          "max_ns": 53.779
+        },
+        "option": {
+          "median_ns": 46.493,
+          "min_ns": 43.742,
+          "max_ns": 57.51
+        }
+      },
+      "2:exact": {
+        "before": {
+          "median_ns": 7.639,
+          "min_ns": 5.942,
+          "max_ns": 11.526
+        },
+        "option": {
+          "median_ns": 7.002,
+          "min_ns": 6.777,
+          "max_ns": 8.151
+        }
+      },
+      "2:literal": {
+        "before": {
+          "median_ns": 49.802,
+          "min_ns": 45.384,
+          "max_ns": 53.267
+        },
+        "option": {
+          "median_ns": 47.541,
+          "min_ns": 39.892,
+          "max_ns": 54.654
+        }
+      },
+      "3:exact": {
+        "before": {
+          "median_ns": 6.023,
+          "min_ns": 5.41,
+          "max_ns": 6.39
+        },
+        "option": {
+          "median_ns": 6.979,
+          "min_ns": 5.839,
+          "max_ns": 9.438
+        }
+      },
+      "3:literal": {
+        "before": {
+          "median_ns": 33.726,
+          "min_ns": 32.949,
+          "max_ns": 34.029
+        },
+        "option": {
+          "median_ns": 30.936,
+          "min_ns": 28.791,
+          "max_ns": 34.265
+        }
+      },
+      "4:exact": {
+        "before": {
+          "median_ns": 7.461,
+          "min_ns": 7.036,
+          "max_ns": 8.549
+        },
+        "option": {
+          "median_ns": 7.193,
+          "min_ns": 6.424,
+          "max_ns": 30.797
+        }
+      },
+      "4:literal": {
+        "before": {
+          "median_ns": 33.869,
+          "min_ns": 32.366,
+          "max_ns": 35.487
+        },
+        "option": {
+          "median_ns": 32.212,
+          "min_ns": 30.046,
+          "max_ns": 43.902
+        }
+      },
+      "5:exact": {
+        "before": {
+          "median_ns": 9.176,
+          "min_ns": 8.453,
+          "max_ns": 9.373
+        },
+        "option": {
+          "median_ns": 8.679,
+          "min_ns": 8.129,
+          "max_ns": 10.047
+        }
+      },
+      "5:literal": {
+        "before": {
+          "median_ns": 52.344,
+          "min_ns": 49.871,
+          "max_ns": 54.445
+        },
+        "option": {
+          "median_ns": 48.092,
+          "min_ns": 45.734,
+          "max_ns": 75.801
+        }
+      },
+      "6:exact": {
+        "before": {
+          "median_ns": 10.895,
+          "min_ns": 9.467,
+          "max_ns": 11.519
+        },
+        "option": {
+          "median_ns": 10.371,
+          "min_ns": 9.926,
+          "max_ns": 11.922
+        }
+      },
+      "6:literal": {
+        "before": {
+          "median_ns": 52.512,
+          "min_ns": 50.74,
+          "max_ns": 57.333
+        },
+        "option": {
+          "median_ns": 46.59,
+          "min_ns": 44.15,
+          "max_ns": 48.487
+        }
+      },
+      "7:exact": {
+        "before": {
+          "median_ns": 14.955,
+          "min_ns": 13.372,
+          "max_ns": 18.688
+        },
+        "option": {
+          "median_ns": 12.633,
+          "min_ns": 11.57,
+          "max_ns": 13.694
+        }
+      },
+      "7:literal": {
+        "before": {
+          "median_ns": 58.211,
+          "min_ns": 51.415,
+          "max_ns": 61.932
+        },
+        "option": {
+          "median_ns": 45.646,
+          "min_ns": 42.033,
+          "max_ns": 64.492
+        }
+      },
+      "8:exact": {
+        "before": {
+          "median_ns": 17.089,
+          "min_ns": 15.199,
+          "max_ns": 19.911
+        },
+        "option": {
+          "median_ns": 17.035,
+          "min_ns": 15.399,
+          "max_ns": 18.084
+        }
+      },
+      "8:literal": {
+        "before": {
+          "median_ns": 56.796,
+          "min_ns": 52.208,
+          "max_ns": 59.455
+        },
+        "option": {
+          "median_ns": 44.4,
+          "min_ns": 41.568,
+          "max_ns": 97.088
+        }
+      },
+      "9:exact": {
+        "before": {
+          "median_ns": 20.904,
+          "min_ns": 17.735,
+          "max_ns": 25.056
+        },
+        "option": {
+          "median_ns": 19.93,
+          "min_ns": 17.62,
+          "max_ns": 21.619
+        }
+      },
+      "9:literal": {
+        "before": {
+          "median_ns": 55.838,
+          "min_ns": 52.235,
+          "max_ns": 66.413
+        },
+        "option": {
+          "median_ns": 43.202,
+          "min_ns": 42.058,
+          "max_ns": 48.118
+        }
+      },
+      "10:exact": {
+        "before": {
+          "median_ns": 24.88,
+          "min_ns": 21.895,
+          "max_ns": 26.594
+        },
+        "option": {
+          "median_ns": 22.52,
+          "min_ns": 21.353,
+          "max_ns": 25.054
+        }
+      },
+      "10:literal": {
+        "before": {
+          "median_ns": 53.24,
+          "min_ns": 50.582,
+          "max_ns": 72.623
+        },
+        "option": {
+          "median_ns": 43.902,
+          "min_ns": 42.04,
+          "max_ns": 45.918
+        }
+      },
+      "11:exact": {
+        "before": {
+          "median_ns": 26.575,
+          "min_ns": 24.904,
+          "max_ns": 37.19
+        },
+        "option": {
+          "median_ns": 25.004,
+          "min_ns": 23.327,
+          "max_ns": 27.819
+        }
+      },
+      "11:literal": {
+        "before": {
+          "median_ns": 54.009,
+          "min_ns": 50.948,
+          "max_ns": 61.632
+        },
+        "option": {
+          "median_ns": 44.298,
+          "min_ns": 43.095,
+          "max_ns": 45.991
+        }
+      },
+      "12:exact": {
+        "before": {
+          "median_ns": 31.779,
+          "min_ns": 28.247,
+          "max_ns": 34.678
+        },
+        "option": {
+          "median_ns": 29.99,
+          "min_ns": 29.55,
+          "max_ns": 32.961
+        }
+      },
+      "12:literal": {
+        "before": {
+          "median_ns": 54.668,
+          "min_ns": 53.798,
+          "max_ns": 58.77
+        },
+        "option": {
+          "median_ns": 44.598,
+          "min_ns": 42.583,
+          "max_ns": 46.634
+        }
+      },
+      "13:exact": {
+        "before": {
+          "median_ns": 33.964,
+          "min_ns": 31.347,
+          "max_ns": 36.354
+        },
+        "option": {
+          "median_ns": 31.961,
+          "min_ns": 30.467,
+          "max_ns": 36.545
+        }
+      },
+      "13:literal": {
+        "before": {
+          "median_ns": 54.332,
+          "min_ns": 53.099,
+          "max_ns": 57.115
+        },
+        "option": {
+          "median_ns": 42.866,
+          "min_ns": 40.717,
+          "max_ns": 46.757
+        }
+      },
+      "14:exact": {
+        "before": {
+          "median_ns": 9.426,
+          "min_ns": 8.999,
+          "max_ns": 10.111
+        },
+        "option": {
+          "median_ns": 9.021,
+          "min_ns": 8.93,
+          "max_ns": 13.395
+        }
+      },
+      "14:literal": {
+        "before": {
+          "median_ns": 29.719,
+          "min_ns": 29.234,
+          "max_ns": 30.569
+        },
+        "option": {
+          "median_ns": 24.675,
+          "min_ns": 23.548,
+          "max_ns": 26.315
+        }
+      },
+      "15:exact": {
+        "before": {
+          "median_ns": 8.383,
+          "min_ns": 7.683,
+          "max_ns": 9.497
+        },
+        "option": {
+          "median_ns": 8.334,
+          "min_ns": 8.075,
+          "max_ns": 10.073
+        }
+      },
+      "15:literal": {
+        "before": {
+          "median_ns": 29.062,
+          "min_ns": 27.038,
+          "max_ns": 30.122
+        },
+        "option": {
+          "median_ns": 22.977,
+          "min_ns": 22.313,
+          "max_ns": 55.298
+        }
+      },
+      "16:exact": {
+        "before": {
+          "median_ns": 11.022,
+          "min_ns": 10.3,
+          "max_ns": 12.267
+        },
+        "option": {
+          "median_ns": 11.044,
+          "min_ns": 9.706,
+          "max_ns": 26.722
+        }
+      },
+      "16:literal": {
+        "before": {
+          "median_ns": 29.706,
+          "min_ns": 29.032,
+          "max_ns": 30.796
+        },
+        "option": {
+          "median_ns": 23.121,
+          "min_ns": 22.052,
+          "max_ns": 32.888
+        }
+      },
+      "17:exact": {
+        "before": {
+          "median_ns": 10.236,
+          "min_ns": 9.392,
+          "max_ns": 11.03
+        },
+        "option": {
+          "median_ns": 9.957,
+          "min_ns": 9.59,
+          "max_ns": 11.2
+        }
+      },
+      "17:literal": {
+        "before": {
+          "median_ns": 38.143,
+          "min_ns": 37.718,
+          "max_ns": 38.794
+        },
+        "option": {
+          "median_ns": 31.235,
+          "min_ns": 29.986,
+          "max_ns": 33.556
+        }
+      },
+      "18:exact": {
+        "before": {
+          "median_ns": 10.253,
+          "min_ns": 9.383,
+          "max_ns": 12.037
+        },
+        "option": {
+          "median_ns": 10.096,
+          "min_ns": 9.437,
+          "max_ns": 11.139
+        }
+      },
+      "18:literal": {
+        "before": {
+          "median_ns": 36.419,
+          "min_ns": 35.293,
+          "max_ns": 37.716
+        },
+        "option": {
+          "median_ns": 30.108,
+          "min_ns": 28.412,
+          "max_ns": 30.89
+        }
+      },
+      "19:exact": {
+        "before": {
+          "median_ns": 9.766,
+          "min_ns": 9.548,
+          "max_ns": 12.188
+        },
+        "option": {
+          "median_ns": 9.862,
+          "min_ns": 9.443,
+          "max_ns": 10.749
+        }
+      },
+      "19:literal": {
+        "before": {
+          "median_ns": 28.022,
+          "min_ns": 27.177,
+          "max_ns": 28.976
+        },
+        "option": {
+          "median_ns": 22.088,
+          "min_ns": 21.278,
+          "max_ns": 23.21
+        }
+      },
+      "20:exact": {
+        "before": {
+          "median_ns": 11.615,
+          "min_ns": 10.572,
+          "max_ns": 12.254
+        },
+        "option": {
+          "median_ns": 10.972,
+          "min_ns": 10.456,
+          "max_ns": 11.73
+        }
+      },
+      "20:literal": {
+        "before": {
+          "median_ns": 31.982,
+          "min_ns": 31.174,
+          "max_ns": 32.86
+        },
+        "option": {
+          "median_ns": 25.301,
+          "min_ns": 23.942,
+          "max_ns": 26.442
+        }
+      },
+      "21:exact": {
+        "before": {
+          "median_ns": 14.951,
+          "min_ns": 12.964,
+          "max_ns": 15.818
+        },
+        "option": {
+          "median_ns": 14.914,
+          "min_ns": 13.815,
+          "max_ns": 15.729
+        }
+      },
+      "21:literal": {
+        "before": {
+          "median_ns": 41.122,
+          "min_ns": 40.404,
+          "max_ns": 41.8
+        },
+        "option": {
+          "median_ns": 29.666,
+          "min_ns": 28.29,
+          "max_ns": 32.198
+        }
+      },
+      "22:exact": {
+        "before": {
+          "median_ns": 13.243,
+          "min_ns": 12.419,
+          "max_ns": 13.754
+        },
+        "option": {
+          "median_ns": 13.237,
+          "min_ns": 11.744,
+          "max_ns": 14.048
+        }
+      },
+      "22:literal": {
+        "before": {
+          "median_ns": 41.706,
+          "min_ns": 39.655,
+          "max_ns": 44.277
+        },
+        "option": {
+          "median_ns": 31.097,
+          "min_ns": 29.492,
+          "max_ns": 34.406
+        }
+      },
+      "23:exact": {
+        "before": {
+          "median_ns": 13.978,
+          "min_ns": 13.643,
+          "max_ns": 15.383
+        },
+        "option": {
+          "median_ns": 14.553,
+          "min_ns": 13.743,
+          "max_ns": 34.986
+        }
+      },
+      "23:literal": {
+        "before": {
+          "median_ns": 42.754,
+          "min_ns": 40.957,
+          "max_ns": 44.103
+        },
+        "option": {
+          "median_ns": 30.591,
+          "min_ns": 28.287,
+          "max_ns": 33.044
+        }
+      },
+      "24:exact": {
+        "before": {
+          "median_ns": 11.665,
+          "min_ns": 11.019,
+          "max_ns": 12.453
+        },
+        "option": {
+          "median_ns": 11.65,
+          "min_ns": 10.733,
+          "max_ns": 12.597
+        }
+      },
+      "24:literal": {
+        "before": {
+          "median_ns": 34.076,
+          "min_ns": 32.516,
+          "max_ns": 34.79
+        },
+        "option": {
+          "median_ns": 26.829,
+          "min_ns": 25.157,
+          "max_ns": 27.299
+        }
+      },
+      "25:exact": {
+        "before": {
+          "median_ns": 11.439,
+          "min_ns": 11.206,
+          "max_ns": 12.761
+        },
+        "option": {
+          "median_ns": 11.427,
+          "min_ns": 11.137,
+          "max_ns": 11.807
+        }
+      },
+      "25:literal": {
+        "before": {
+          "median_ns": 35.431,
+          "min_ns": 33.187,
+          "max_ns": 37.243
+        },
+        "option": {
+          "median_ns": 26.294,
+          "min_ns": 24.576,
+          "max_ns": 27.21
+        }
+      },
+      "26:exact": {
+        "before": {
+          "median_ns": 12.812,
+          "min_ns": 12.663,
+          "max_ns": 13.095
+        },
+        "option": {
+          "median_ns": 13.04,
+          "min_ns": 12.325,
+          "max_ns": 13.953
+        }
+      },
+      "26:literal": {
+        "before": {
+          "median_ns": 34.501,
+          "min_ns": 33.504,
+          "max_ns": 36.648
+        },
+        "option": {
+          "median_ns": 25.507,
+          "min_ns": 24.539,
+          "max_ns": 26.361
+        }
+      },
+      "27:exact": {
+        "before": {
+          "median_ns": 15.241,
+          "min_ns": 14.475,
+          "max_ns": 16.17
+        },
+        "option": {
+          "median_ns": 15.475,
+          "min_ns": 14.614,
+          "max_ns": 16.9
+        }
+      },
+      "27:literal": {
+        "before": {
+          "median_ns": 35.19,
+          "min_ns": 34.489,
+          "max_ns": 37.481
+        },
+        "option": {
+          "median_ns": 24.952,
+          "min_ns": 23.307,
+          "max_ns": 26.203
+        }
+      },
+      "28:exact": {
+        "before": {
+          "median_ns": 15.002,
+          "min_ns": 13.82,
+          "max_ns": 15.839
+        },
+        "option": {
+          "median_ns": 14.467,
+          "min_ns": 13.904,
+          "max_ns": 15.598
+        }
+      },
+      "28:literal": {
+        "before": {
+          "median_ns": 35.994,
+          "min_ns": 35.474,
+          "max_ns": 36.887
+        },
+        "option": {
+          "median_ns": 25.856,
+          "min_ns": 24.876,
+          "max_ns": 28.8
+        }
+      },
+      "29:exact": {
+        "before": {
+          "median_ns": 18.571,
+          "min_ns": 16.98,
+          "max_ns": 20.109
+        },
+        "option": {
+          "median_ns": 19.28,
+          "min_ns": 17.649,
+          "max_ns": 19.784
+        }
+      },
+      "29:literal": {
+        "before": {
+          "median_ns": 46.893,
+          "min_ns": 45.663,
+          "max_ns": 47.841
+        },
+        "option": {
+          "median_ns": 32.465,
+          "min_ns": 30.602,
+          "max_ns": 34.093
+        }
+      },
+      "30:exact": {
+        "before": {
+          "median_ns": 14.007,
+          "min_ns": 12.641,
+          "max_ns": 14.299
+        },
+        "option": {
+          "median_ns": 13.016,
+          "min_ns": 12.176,
+          "max_ns": 13.563
+        }
+      },
+      "30:literal": {
+        "before": {
+          "median_ns": 34.58,
+          "min_ns": 32.617,
+          "max_ns": 36.337
+        },
+        "option": {
+          "median_ns": 24.803,
+          "min_ns": 24.163,
+          "max_ns": 26.278
+        }
+      },
+      "31:exact": {
+        "before": {
+          "median_ns": 16.67,
+          "min_ns": 16.007,
+          "max_ns": 17.801
+        },
+        "option": {
+          "median_ns": 16.638,
+          "min_ns": 15.385,
+          "max_ns": 17.902
+        }
+      },
+      "31:literal": {
+        "before": {
+          "median_ns": 42.168,
+          "min_ns": 41.686,
+          "max_ns": 42.895
+        },
+        "option": {
+          "median_ns": 29.611,
+          "min_ns": 27.845,
+          "max_ns": 30.651
+        }
+      },
+      "32:exact": {
+        "before": {
+          "median_ns": 14.03,
+          "min_ns": 13.236,
+          "max_ns": 14.453
+        },
+        "option": {
+          "median_ns": 13.924,
+          "min_ns": 13.33,
+          "max_ns": 14.334
+        }
+      },
+      "32:literal": {
+        "before": {
+          "median_ns": 44.379,
+          "min_ns": 40.942,
+          "max_ns": 46.214
+        },
+        "option": {
+          "median_ns": 34.632,
+          "min_ns": 32.52,
+          "max_ns": 35.636
+        }
+      },
+      "33:exact": {
+        "before": {
+          "median_ns": 15.542,
+          "min_ns": 14.519,
+          "max_ns": 16.804
+        },
+        "option": {
+          "median_ns": 15.676,
+          "min_ns": 15.534,
+          "max_ns": 17.07
+        }
+      },
+      "33:literal": {
+        "before": {
+          "median_ns": 45.483,
+          "min_ns": 44.271,
+          "max_ns": 45.704
+        },
+        "option": {
+          "median_ns": 33.961,
+          "min_ns": 31.336,
+          "max_ns": 39.579
+        }
+      },
+      "34:exact": {
+        "before": {
+          "median_ns": 18.828,
+          "min_ns": 17.26,
+          "max_ns": 19.084
+        },
+        "option": {
+          "median_ns": 19.241,
+          "min_ns": 17.502,
+          "max_ns": 19.888
+        }
+      },
+      "34:literal": {
+        "before": {
+          "median_ns": 43.967,
+          "min_ns": 41.673,
+          "max_ns": 44.507
+        },
+        "option": {
+          "median_ns": 29.205,
+          "min_ns": 28.077,
+          "max_ns": 30.877
+        }
+      },
+      "35:exact": {
+        "before": {
+          "median_ns": 32.925,
+          "min_ns": 30.162,
+          "max_ns": 34.325
+        },
+        "option": {
+          "median_ns": 33.134,
+          "min_ns": 31.638,
+          "max_ns": 35.287
+        }
+      },
+      "35:literal": {
+        "before": {
+          "median_ns": 77.023,
+          "min_ns": 75.97,
+          "max_ns": 78.424
+        },
+        "option": {
+          "median_ns": 46.26,
+          "min_ns": 43.823,
+          "max_ns": 48.685
+        }
+      },
+      "36:exact": {
+        "before": {
+          "median_ns": 18.237,
+          "min_ns": 17.062,
+          "max_ns": 19.21
+        },
+        "option": {
+          "median_ns": 18.689,
+          "min_ns": 18.151,
+          "max_ns": 19.169
+        }
+      },
+      "36:literal": {
+        "before": {
+          "median_ns": 47.811,
+          "min_ns": 44.008,
+          "max_ns": 48.507
+        },
+        "option": {
+          "median_ns": 32.58,
+          "min_ns": 32.001,
+          "max_ns": 33.83
+        }
+      },
+      "37:exact": {
+        "before": {
+          "median_ns": 20.451,
+          "min_ns": 19.424,
+          "max_ns": 20.899
+        },
+        "option": {
+          "median_ns": 20.572,
+          "min_ns": 20.116,
+          "max_ns": 22.28
+        }
+      },
+      "37:literal": {
+        "before": {
+          "median_ns": 50.655,
+          "min_ns": 48.329,
+          "max_ns": 51.046
+        },
+        "option": {
+          "median_ns": 33.915,
+          "min_ns": 32.284,
+          "max_ns": 34.71
+        }
+      },
+      "38:exact": {
+        "before": {
+          "median_ns": 14.756,
+          "min_ns": 14.442,
+          "max_ns": 16.7
+        },
+        "option": {
+          "median_ns": 15.85,
+          "min_ns": 14.687,
+          "max_ns": 16.729
+        }
+      },
+      "38:literal": {
+        "before": {
+          "median_ns": 36.176,
+          "min_ns": 35.554,
+          "max_ns": 37.662
+        },
+        "option": {
+          "median_ns": 25.064,
+          "min_ns": 24.047,
+          "max_ns": 27.356
+        }
+      },
+      "39:exact": {
+        "before": {
+          "median_ns": 14.91,
+          "min_ns": 14.462,
+          "max_ns": 15.804
+        },
+        "option": {
+          "median_ns": 14.727,
+          "min_ns": 14.541,
+          "max_ns": 15.558
+        }
+      },
+      "39:literal": {
+        "before": {
+          "median_ns": 35.249,
+          "min_ns": 33.044,
+          "max_ns": 36.272
+        },
+        "option": {
+          "median_ns": 24.511,
+          "min_ns": 22.395,
+          "max_ns": 24.785
+        }
+      },
+      "40:exact": {
+        "before": {
+          "median_ns": 23.471,
+          "min_ns": 21.453,
+          "max_ns": 25.794
+        },
+        "option": {
+          "median_ns": 23.538,
+          "min_ns": 22.882,
+          "max_ns": 24.655
+        }
+      },
+      "40:literal": {
+        "before": {
+          "median_ns": 51.651,
+          "min_ns": 51.031,
+          "max_ns": 53.039
+        },
+        "option": {
+          "median_ns": 32.498,
+          "min_ns": 30.433,
+          "max_ns": 34.984
+        }
+      },
+      "41:exact": {
+        "before": {
+          "median_ns": 16.731,
+          "min_ns": 16.253,
+          "max_ns": 18.236
+        },
+        "option": {
+          "median_ns": 17.099,
+          "min_ns": 16.72,
+          "max_ns": 19.49
+        }
+      },
+      "41:literal": {
+        "before": {
+          "median_ns": 38.928,
+          "min_ns": 37.845,
+          "max_ns": 39.629
+        },
+        "option": {
+          "median_ns": 25.508,
+          "min_ns": 24.128,
+          "max_ns": 26.494
+        }
+      },
+      "42:exact": {
+        "before": {
+          "median_ns": 17.927,
+          "min_ns": 17.382,
+          "max_ns": 18.931
+        },
+        "option": {
+          "median_ns": 18.452,
+          "min_ns": 17.76,
+          "max_ns": 19.861
+        }
+      },
+      "42:literal": {
+        "before": {
+          "median_ns": 40.492,
+          "min_ns": 39.691,
+          "max_ns": 41.957
+        },
+        "option": {
+          "median_ns": 25.508,
+          "min_ns": 25.286,
+          "max_ns": 26.761
+        }
+      },
+      "43:exact": {
+        "before": {
+          "median_ns": 25.493,
+          "min_ns": 23.885,
+          "max_ns": 26.912
+        },
+        "option": {
+          "median_ns": 26.009,
+          "min_ns": 24.211,
+          "max_ns": 27.684
+        }
+      },
+      "43:literal": {
+        "before": {
+          "median_ns": 53.817,
+          "min_ns": 53.464,
+          "max_ns": 55.44
+        },
+        "option": {
+          "median_ns": 30.852,
+          "min_ns": 30.645,
+          "max_ns": 31.594
+        }
+      },
+      "44:exact": {
+        "before": {
+          "median_ns": 24.837,
+          "min_ns": 23.881,
+          "max_ns": 25.456
+        },
+        "option": {
+          "median_ns": 25.15,
+          "min_ns": 23.773,
+          "max_ns": 29.16
+        }
+      },
+      "44:literal": {
+        "before": {
+          "median_ns": 54.796,
+          "min_ns": 54.145,
+          "max_ns": 56.964
+        },
+        "option": {
+          "median_ns": 34.434,
+          "min_ns": 32.467,
+          "max_ns": 35.001
+        }
+      },
+      "45:exact": {
+        "before": {
+          "median_ns": 21.015,
+          "min_ns": 18.859,
+          "max_ns": 26.222
+        },
+        "option": {
+          "median_ns": 20.394,
+          "min_ns": 19.562,
+          "max_ns": 20.743
+        }
+      },
+      "45:literal": {
+        "before": {
+          "median_ns": 41.645,
+          "min_ns": 39.485,
+          "max_ns": 47.147
+        },
+        "option": {
+          "median_ns": 25.271,
+          "min_ns": 24.007,
+          "max_ns": 26.722
+        }
+      },
+      "46:exact": {
+        "before": {
+          "median_ns": 20.215,
+          "min_ns": 19.165,
+          "max_ns": 21.42
+        },
+        "option": {
+          "median_ns": 20.139,
+          "min_ns": 18.92,
+          "max_ns": 21.554
+        }
+      },
+      "46:literal": {
+        "before": {
+          "median_ns": 41.597,
+          "min_ns": 39.815,
+          "max_ns": 42.379
+        },
+        "option": {
+          "median_ns": 24.906,
+          "min_ns": 23.644,
+          "max_ns": 25.835
+        }
+      },
+      "47:exact": {
+        "before": {
+          "median_ns": 16.683,
+          "min_ns": 16.166,
+          "max_ns": 17.934
+        },
+        "option": {
+          "median_ns": 17.049,
+          "min_ns": 16.311,
+          "max_ns": 17.315
+        }
+      },
+      "47:literal": {
+        "before": {
+          "median_ns": 34.558,
+          "min_ns": 33.558,
+          "max_ns": 38.697
+        },
+        "option": {
+          "median_ns": 21.888,
+          "min_ns": 20.671,
+          "max_ns": 23.657
+        }
+      },
+      "48:exact": {
+        "before": {
+          "median_ns": 21.543,
+          "min_ns": 20.26,
+          "max_ns": 22.891
+        },
+        "option": {
+          "median_ns": 20.606,
+          "min_ns": 19.819,
+          "max_ns": 21.51
+        }
+      },
+      "48:literal": {
+        "before": {
+          "median_ns": 42.724,
+          "min_ns": 40.22,
+          "max_ns": 44.127
+        },
+        "option": {
+          "median_ns": 25.228,
+          "min_ns": 24.493,
+          "max_ns": 26.007
+        }
+      },
+      "49:exact": {
+        "before": {
+          "median_ns": 24.678,
+          "min_ns": 23.931,
+          "max_ns": 26.412
+        },
+        "option": {
+          "median_ns": 25.662,
+          "min_ns": 24.945,
+          "max_ns": 26.57
+        }
+      },
+      "49:literal": {
+        "before": {
+          "median_ns": 51.628,
+          "min_ns": 48.466,
+          "max_ns": 64.076
+        },
+        "option": {
+          "median_ns": 29.025,
+          "min_ns": 28.837,
+          "max_ns": 30.376
+        }
+      },
+      "50:exact": {
+        "before": {
+          "median_ns": 40.512,
+          "min_ns": 39.427,
+          "max_ns": 44.645
+        },
+        "option": {
+          "median_ns": 40.561,
+          "min_ns": 39.527,
+          "max_ns": 43.327
+        }
+      },
+      "50:literal": {
+        "before": {
+          "median_ns": 84.075,
+          "min_ns": 81.616,
+          "max_ns": 87.638
+        },
+        "option": {
+          "median_ns": 45.511,
+          "min_ns": 44.797,
+          "max_ns": 48.114
+        }
+      },
+      "51:exact": {
+        "before": {
+          "median_ns": 43.074,
+          "min_ns": 41.43,
+          "max_ns": 44.28
+        },
+        "option": {
+          "median_ns": 42.383,
+          "min_ns": 40.432,
+          "max_ns": 68.862
+        }
+      },
+      "51:literal": {
+        "before": {
+          "median_ns": 85.197,
+          "min_ns": 81.298,
+          "max_ns": 87.072
+        },
+        "option": {
+          "median_ns": 46.985,
+          "min_ns": 45.357,
+          "max_ns": 47.674
+        }
+      },
+      "52:exact": {
+        "before": {
+          "median_ns": 18.804,
+          "min_ns": 17.656,
+          "max_ns": 19.679
+        },
+        "option": {
+          "median_ns": 18.269,
+          "min_ns": 17.584,
+          "max_ns": 19.473
+        }
+      },
+      "52:literal": {
+        "before": {
+          "median_ns": 37.03,
+          "min_ns": 35.217,
+          "max_ns": 38.617
+        },
+        "option": {
+          "median_ns": 21.594,
+          "min_ns": 21.228,
+          "max_ns": 23.861
+        }
+      },
+      "53:exact": {
+        "before": {
+          "median_ns": 26.932,
+          "min_ns": 25.546,
+          "max_ns": 28.429
+        },
+        "option": {
+          "median_ns": 26.247,
+          "min_ns": 25.696,
+          "max_ns": 27.344
+        }
+      },
+      "53:literal": {
+        "before": {
+          "median_ns": 52.782,
+          "min_ns": 48.425,
+          "max_ns": 54.187
+        },
+        "option": {
+          "median_ns": 29.305,
+          "min_ns": 27.197,
+          "max_ns": 30.856
+        }
+      },
+      "54:exact": {
+        "before": {
+          "median_ns": 20.904,
+          "min_ns": 19.644,
+          "max_ns": 21.767
+        },
+        "option": {
+          "median_ns": 20.224,
+          "min_ns": 19.048,
+          "max_ns": 21.85
+        }
+      },
+      "54:literal": {
+        "before": {
+          "median_ns": 40.944,
+          "min_ns": 40.185,
+          "max_ns": 41.777
+        },
+        "option": {
+          "median_ns": 24.927,
+          "min_ns": 24.267,
+          "max_ns": 26.267
+        }
+      },
+      "55:exact": {
+        "before": {
+          "median_ns": 19.093,
+          "min_ns": 18.655,
+          "max_ns": 21.426
+        },
+        "option": {
+          "median_ns": 18.668,
+          "min_ns": 18.38,
+          "max_ns": 20.414
+        }
+      },
+      "55:literal": {
+        "before": {
+          "median_ns": 35.703,
+          "min_ns": 35.048,
+          "max_ns": 37.151
+        },
+        "option": {
+          "median_ns": 20.983,
+          "min_ns": 20.351,
+          "max_ns": 21.928
+        }
+      },
+      "56:exact": {
+        "before": {
+          "median_ns": 21.405,
+          "min_ns": 20.528,
+          "max_ns": 22.949
+        },
+        "option": {
+          "median_ns": 20.947,
+          "min_ns": 20.48,
+          "max_ns": 22.485
+        }
+      },
+      "56:literal": {
+        "before": {
+          "median_ns": 41.6,
+          "min_ns": 39.982,
+          "max_ns": 48.104
+        },
+        "option": {
+          "median_ns": 23.472,
+          "min_ns": 22.291,
+          "max_ns": 24.911
+        }
+      },
+      "57:exact": {
+        "before": {
+          "median_ns": 22.467,
+          "min_ns": 21.479,
+          "max_ns": 43.331
+        },
+        "option": {
+          "median_ns": 22.429,
+          "min_ns": 21.43,
+          "max_ns": 23.86
+        }
+      },
+      "57:literal": {
+        "before": {
+          "median_ns": 42.984,
+          "min_ns": 40.95,
+          "max_ns": 95.271
+        },
+        "option": {
+          "median_ns": 24.33,
+          "min_ns": 23.493,
+          "max_ns": 25.541
+        }
+      },
+      "58:exact": {
+        "before": {
+          "median_ns": 31.312,
+          "min_ns": 30.293,
+          "max_ns": 33.973
+        },
+        "option": {
+          "median_ns": 32.444,
+          "min_ns": 31.089,
+          "max_ns": 35.162
+        }
+      },
+      "58:literal": {
+        "before": {
+          "median_ns": 61.228,
+          "min_ns": 57.811,
+          "max_ns": 63.367
+        },
+        "option": {
+          "median_ns": 33.895,
+          "min_ns": 31.081,
+          "max_ns": 37.009
+        }
+      },
+      "59:exact": {
+        "before": {
+          "median_ns": 24.144,
+          "min_ns": 22.494,
+          "max_ns": 25.502
+        },
+        "option": {
+          "median_ns": 23.342,
+          "min_ns": 21.983,
+          "max_ns": 25.239
+        }
+      },
+      "59:literal": {
+        "before": {
+          "median_ns": 44.012,
+          "min_ns": 43.261,
+          "max_ns": 48.511
+        },
+        "option": {
+          "median_ns": 24.56,
+          "min_ns": 23.903,
+          "max_ns": 25.212
+        }
+      },
+      "60:exact": {
+        "before": {
+          "median_ns": 24.977,
+          "min_ns": 23.955,
+          "max_ns": 29.443
+        },
+        "option": {
+          "median_ns": 25.003,
+          "min_ns": 24.666,
+          "max_ns": 25.984
+        }
+      },
+      "60:literal": {
+        "before": {
+          "median_ns": 47.709,
+          "min_ns": 46.386,
+          "max_ns": 54.627
+        },
+        "option": {
+          "median_ns": 26.119,
+          "min_ns": 24.665,
+          "max_ns": 26.431
+        }
+      }
     }
-  ],
-  "flow_method": {
-    "variant": "batch (rejected owned-array traversal prototype)",
-    "payload_bytes": 4194304,
-    "stream_windows": [
-      65535,
-      262144
+  },
+  "reproduction": {
+    "focused_source": "#![allow(dead_code)]\n#[path = \"codec.rs\"] mod hpack;\nuse std::{hint::black_box, time::Instant};\nfn main() {\n    let fields: &[(&[u8], &[u8])] = &[(b\":status\",b\"200\"),(b\":method\",b\"POST\"),(b\":status\",b\"418\"),(b\"content-type\",b\"application/json\"),(b\"content-length\",b\"1024\"),(b\"server\",b\"maximus\"),(b\"www-authenticate\",b\"Basic\"),(b\"x-custom\",b\"opaque\"),(b\"accept-encoding\",b\"gzip, deflate\")];\n    for (i, &(n,v)) in fields.iter().enumerate() {\n        let mut out=Vec::with_capacity(256);\n        hpack::encode([(n,v)],&mut out);\n        assert_eq!(hpack::Decoder::new(0,4096,10).decode(&out).unwrap(),[(n.to_vec(),v.to_vec())]);\n        let wire=out.clone();\n        let t=Instant::now();\n        for _ in 0..1000000 {out.clear();hpack::encode(black_box([(n,v)]),black_box(&mut out));black_box(&out);}\n        println!(\"case={i} ns={:.3} wire={wire:x?}\",t.elapsed().as_nanos() as f64/1000000.0);\n    }\n}\n",
+    "matrix_source": "#![allow(dead_code)]\n#[path=\"codec.rs\"] mod hpack;\nuse std::{hint::black_box,time::Instant};\nfn main(){\n for (i,&(n,v)) in hpack::probe_table().iter().enumerate(){\n  for (mode,v) in [(\"exact\",v),(\"literal\",b\"probe-value\".as_slice())] {\n   let mut out=Vec::with_capacity(256);hpack::encode([(n,v)],&mut out);\n   assert_eq!(hpack::Decoder::new(0,4096,1).decode(&out).unwrap(),[(n.to_vec(),v.to_vec())]);\n   let t=Instant::now();\n   for _ in 0..200000 {out.clear();hpack::encode(black_box([(n,v)]),black_box(&mut out));black_box(&out);}\n   println!(\"{i},{mode},{:.3}\",t.elapsed().as_nanos() as f64/200000.0);\n  }\n }\n}\n",
+    "codec_append": "\npub fn probe_table() -> &'static [(&'static [u8], &'static [u8])] { STATIC }\n",
+    "compile": [
+      "rustc",
+      "--edition=2024",
+      "-Copt-level=3",
+      "-Clto=thin",
+      "-Ccodegen-units=1",
+      "probe.rs",
+      "-o",
+      "probe"
     ],
-    "connection_window": 1048576,
-    "response_window": 8388608,
-    "server_cpu": 0,
-    "client_cpu": 1,
-    "rtt_ms": [
-      0,
-      20,
-      80
+    "run": [
+      "taskset",
+      "-c",
+      "0",
+      "./probe"
     ],
-    "scope": "Private Docker network namespace; tc netem on loopback; half the nominal RTT per direction; no bandwidth shaping. Three sequential connections per setting; window order reversed at 20 ms."
+    "k6_workload": "import http from 'k6/http';\nimport exec from 'k6/execution';\nimport { check } from 'k6';\nimport { Counter, Trend } from 'k6/metrics';\nconst starts = new Counter('starts');\nconst steady = new Counter('steady_requests');\nconst latency = new Trend('steady_latency', true);\nconst path = __ENV.PATHNAME || '/echo';\nconst body = 'x'.repeat(Number(__ENV.BODY_BYTES || 1024));\nconst expected = path === '/echo' ? body : path === '/json' ? '{\"message\":\"Hello, World!\"}' : path.startsWith('/users/') ? '42' : 'Hello, World!';\nconst duration = __ENV.DURATION || '35s';\nconst vus = Number(__ENV.VUS || 64);\nexport const options = {\n  scenarios: { load: __ENV.RATE ? { executor: 'ramping-arrival-rate', startRate: 100, timeUnit: '1s', stages: [{duration: '5s', target: Number(__ENV.RATE)}, {duration: `${parseInt(duration) - 5}s`, target: Number(__ENV.RATE)}], preAllocatedVUs: vus } : {executor: 'constant-vus', vus, duration}},\n  tlsVersion: { min: 'tls1.3', max: 'tls1.3' },\n  summaryTrendStats: ['med', 'p(99)', 'p(99.9)', 'max'],\n  thresholds: {http_req_failed: ['rate==0'], checks: ['rate==1'], ...(__ENV.RATE ? {dropped_iterations: ['count==0']} : {})},\n};\nexport default function () {\n  starts.add(1);\n  const r = path === '/echo' ? http.post('https://localhost:8080' + path, body) : http.get('https://localhost:8080' + path);\n  check(r, {'status/body/H2': r => r.status === 200 && r.body === expected && r.proto === 'HTTP/2.0'});\n  if (exec.instance.currentTestRunDuration >= 5000) {steady.add(1);latency.add(r.timings.duration);}\n}\nexport function handleSummary(data) {return {[__ENV.RESULT]: JSON.stringify(data)};}\n",
+    "homelab_runner": "import subprocess, pathlib, json, time, csv, argparse\nout=pathlib.Path('artifacts/lean-gains');base=['kubectl','--context','homelab','-n','maximus-perf-gains','exec','measure']\ndef cmd(container,*args):return base+['-c',container,'--',*args]\ndef read(container,*args):return subprocess.check_output(cmd(container,*args),text=True)\ndef stats():\n return json.loads(read('server','python3','-c',\"import json,os,pathlib;pid=pathlib.Path('/work/server.pid').read_text().strip();s=pathlib.Path('/proc/'+pid+'/stat').read_text().split(')')[1].split();print(json.dumps(dict(ticks=int(s[11])+int(s[12]),rss=int(s[21])*os.sysconf('SC_PAGE_SIZE'),hz=os.sysconf('SC_CLK_TCK'))))\"))\np=argparse.ArgumentParser();p.add_argument('--vus',type=int,default=64);p.add_argument('--variants',default='before,lookup');p.add_argument('--label',required=True);p.add_argument('--repeats',type=int,default=5);p.add_argument('--body',default='1024');p.add_argument('--rate',default='0');p.add_argument('--path',default='/echo');p.add_argument('--duration',default='35s');a=p.parse_args()\nrows=[];variants=a.variants.split(',')\nfor n in range(a.repeats):\n for v in variants[n%len(variants):]+variants[:n%len(variants)]:\n  key=f'{a.label}-{v}-{n}'\n  read('server','sh','-c',f'MAXIMUS_CERT=/work/cert.pem MAXIMUS_KEY=/work/key.pem PROTOCOL=h2 WORKERS=1 /work/results/pin 4 /work/results/server-{v} maximus >/work/server.log 2>&1 & echo $! >/work/server.pid')\n  try:\n   for _ in range(50):\n    if 'ready' in read('server','cat','/work/server.log'):break\n    time.sleep(.1)\n   else:raise RuntimeError('server not ready')\n   before=stats()\n   env=['env',f'PATHNAME={a.path}',f'BODY_BYTES={a.body}',f'DURATION={a.duration}',f'VUS={a.vus}','SSL_CERT_FILE=/work/cert.pem',f'RESULT=/work/results/{key}.json']\n   if a.rate!='0':env.append(f'RATE={a.rate}')\n   t=time.monotonic()\n   with (out/f'{key}.log').open('w') as f:r=subprocess.run(cmd('client',*env,'/work/results/pin','80','k6','run','--quiet','/work/load.js'),stdout=f,stderr=subprocess.STDOUT)\n   elapsed=time.monotonic()-t;after=stats()\n   s=json.loads(read('server','cat',f'/work/results/{key}.json'));(out/f'{key}.json').write_text(json.dumps(s))\n   m=s['metrics'];val=lambda k,f,default=0:m.get(k,{}).get('values',{}).get(f,default)\n   count=val('http_reqs','count');assert count==val('starts','count')==val('iterations','count') and count>0\n   row=dict(phase=a.label,variant=v,repeat=n,path=a.path,body=int(a.body),rate=int(a.rate),requests=count,rps=val('http_reqs','rate'),cpu_us=(after['ticks']-before['ticks'])/before['hz']*1e6/count,steady_requests=val('steady_requests','count'),p99_ms=val('steady_latency','p(99)'),p999_ms=val('steady_latency','p(99.9)'),rss=after['rss'],failures=val('http_req_failed','passes'),checks_failed=val('checks','fails'),dropped=val('dropped_iterations','count'),exit=r.returncode,wall_seconds=elapsed)\n   rows.append(row)\n   with (out/f'{a.label}.csv').open('w') as f:w=csv.DictWriter(f,fieldnames=list(row),lineterminator='\\n');w.writeheader();w.writerows(rows)\n   print(json.dumps(row),flush=True)\n  finally:read('server','sh','-c','kill $(cat /work/server.pid); sleep 0.2')\n"
   },
-  "pgo": {
-    "profile_sha256": "cd48ac048abcbc9cd515578846f3718f7dc7a98f7f837d7a233be76a244c0aa7",
-    "training": "H1 and TLS/H2; four routes; 64 KiB echo; 16 VUs, 4s each; graceful application exit. Training data is not comparative performance evidence.",
-    "variant": "batch (rejected owned-array traversal prototype)",
-    "source_hook_sha256": "c3ccc585cd2b0a9d9427a6aa1c175caf4f3142e131f465b8e211ae17879fbb2f",
-    "generate_flags": "-Cprofile-generate=/results/pgo-data",
-    "use_flags": "-Cprofile-use=/results/pgo.profdata -Cllvm-args=-pgo-warn-missing-function",
-    "target": "aarch64-unknown-linux-gnu",
-    "control": "Same temporary application source, implicit native target, no PGO flags. Product source is identical."
-  },
-  "script_sha256": {
-    "flow-client.py": "24f8c7c176bc02eee478dd720cf03929ab59002588130d234c237026f7807151",
-    "qualify-load.sh": "811eaa68b3339652a95902653259a82e0f1678e6ba799ed5fa68b8f74d21e2d3",
-    "allocation-source-headers.rs": "1e3ddb2eb807284ddbfdd76b1c544c6b46d0291d0944ccc455aa285d9a4b7b6a",
-    "allocation-source-slice.rs": "4046baabbba38f84ef23bc734d2bd3fef5bc8a6b526d749b91e8a779a6d57deb",
-    "allocation-source-encoding.rs": "02b0d59767c4cf71d7f83157d20e21cd7a353c4a9e2c6ddfc29113006fb035b3",
-    "flow-server.rs": "b5b54d7aed94209b390fdf7b50b197368dedd3d30a7083d0c7883f792a332f20",
-    "write-progress-test.rs": "2d86104e6ebc929b35c0f6cc49a15b54ff3f8b129bfe4d58de2baed8156689b5",
-    "multiplex-probe.rs": "38b5da2261cc4a7b3377c034b7eb0f9a6bdd2f67ca8419a93ca5b73cd802d6bb",
-    "native-probes.sh": "43d56096438579c47ae40e3a71ef8d01857556cedb242d3264f93e250bcad61d",
-    "build-batch-probe.sh": "782647208a87927b611aae98ace68fd1d12e260e841f48c09edc0bf0e906d2c6",
-    "allocation-source-batch.rs": "28225a29f2e099214220bf6b49efb504ebfc3fbd07692bf0f3498695f804ac1c",
-    "run-load.py": "3207053fb29d6d498b4a80bcc7138382b1979e6d8bdc3d97190b8f5ae8b95830",
-    "measure-allocations.sh": "b43628763b5d2aae0e4ce10a1ce5c1956baf198e5b5ede138dc79210041c8cb8",
-    "allocation-source-before.rs": "74a4a33fd966ea96d2667922eadcac8986657311c52f67eff39b081b83f74cb5",
-    "run-allocations.sh": "8dd206489bbefc5ce204d575f12fbbe25eae1200eed7cc16c880d6dfc0e58dca",
-    "summary.py": "fd1256b12fe8636443b0490f1091a9e4a05131abceaa9c855acdbea00b95faec",
-    "build.sh": "8ca7cda1e09d1b7f62108dc85c3bf532c31805a577691dd65fced73e2a3d870c",
-    "apply-next.py": "72c554cb612a261f78ac59ee209ba20e238b88efb8775bbfb04b2d030d4db5d0",
-    "screen.sh": "55a6c6597d78541b2ed6bb7aa41d2916798e072df0d63e711bc7b290245ab70b",
-    "insert-next-tests.py": "e1cc0ac06ded671d004a0bd9cbbf711e1b8e9c703b30040f292b582bbbd6b1e0",
-    "rejected-scheduler.rs": "977e45c5523ef2c3e829b96e3437f41cb0a16f9585809ab2a45f564c3c2e5aaa",
-    "run-flow.py": "b91a68d68acb3652d3e5ddda4af441f2e472597b59056fa27b3fcd5bf27361ab",
-    "pgo-build.sh": "3ffcc489999370c681e7d88b2fb0ebaeb0b987a5a01a3e3db3909f47d42ba93b",
-    "header-tests.rs": "a2be516f155406daac3aa84ee306e197f1b914a6c1822a0f6efe1026ff43030a",
-    "evidence.py": "8f6fbfdd24a5913b7feb321b7f0ec9ca3ddec3f34c5fa8a7759b7d038c0f8931",
-    "build-slice-probe.sh": "b5f16d6b1f5786b98e35748d000ddc9ab351026a3a37dc7b53f5bb62c4dd77c1",
-    "build-encoding-probe.sh": "c402d231647d98763e2a45d1d0a34dc7a418731bdf90fb2ef1ab04eca72a0268",
-    "train-pgo.py": "b026d9ea038192f0bca12d2514700b4858642be93581fe937e24dd4afee3947b"
-  },
-  "log_sha256": {
-    "fuzz-batch.log": "247424428038c34c48d69cc82da8b546b924bd18217ad10169d35bef6d170bda",
-    "qualified-load.log": "7d414e153bba0ceaaac4877ed70dde83711012391298602c0c422b41b2c983d3",
-    "build-pgo-control.log": "0e7e299ac58d444a6559b22820e1bf87330a28affd916b0851f7410d4ed8643a",
-    "slice-focused.log": "e61cbe44f423e960beec40986117aaa692d4035c684eba6b5fa51948f2f40ce2",
-    "interop-qualified.log": "1a4f4381efba49a360525baf95544a382c4979b775e1ac51816082a176ab78af",
-    "final-load.log": "4ee88ff488d6dad82ec3875a1659043a07e6ffee5c81a86603cb03490a96e3e0",
-    "candidate-focused.log": "8f78fecb49c5e9e10aa7264251a062a89e6188a9ac9b5fb5981d68e7273b46ee",
-    "check-slice.log": "b4fb8f7717ddb3b37ec46b0dfff0c24e6bb0afeb6e7f278ccd8d224067414b5b",
-    "native-multiplex-batch-4.log": "3b40faf87a88833b22d881293a7a01c7d211a5be3159b0417b9e88a23bf1ae39",
-    "native-probes.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "build-headers.log": "cd7ce170534c19e472a2191456fa9a36e9a336717cf61df191ae573f978806c7",
-    "conformance-build.log": "e4ed41eb687ed8d6ed2b1d1f1bc9db4725ea86421ea533f4fffb30eefc191abd",
-    "multiplex-before-4.log": "a16f5c3f439bfe7d267ed9afa35a8c1e0ed7be4461536ae54ef1b6915ea89319",
-    "multiplex-headers-4.log": "ae8e6cb4185cd937d58d7e6a7372e80f36b12021fb7714b8727c99fe3d18ac4b",
-    "allocation-build-batch.log": "0b582f2fb0a272f53c3ce5b22d33c4a795290ceb8b7ff3d6f4568ec853007dbc",
-    "native-multiplex-batch-3.log": "f1b1c0d2495116a92c4f692f70c57940969e4b88ca0c8c7f4b34a72b5f3b03b5",
-    "downstream.log": "9e10948d221ab0af66d95fa823d7b38fa146b201b60a8bfdf619095062d7eb52",
-    "conformance-final.log": "bf62d2d4df26e311608e1b2b5e6afb4781e42869c99fdd5609f46a6ca2f51593",
-    "multiplex-before-0.log": "6c2cd47e73b8861a84e27f33ae389e96aca2326e81d83a1ec5794d83f1433b66",
-    "multiplex-headers-0.log": "c49e9b18c6505e52a795224aac8c50265316328b6af38b2e00bbb5e717440226",
-    "downstream-final.log": "cfdcd2a4bfac61481d34ab680556c620c312e095e5223da70da799ce613b4a6c",
-    "multiplex-headers-1.log": "226e843d050e4e8ec6e5a2ce4aed62ed6f08bfeb1ea7dfb79aa7005520a853e6",
-    "multiplex-before-1.log": "0355fe6929e2e312fa2a4216c7dd0f851d41f092b387901a92069c4070693e82",
-    "linux-encoding.log": "4e6e1a1ffb718dc7c2aab7e8fb5bf2f27e5616026193d550e9fa86c3005e36ed",
-    "interop-slice.log": "d91b888c7590aab7805e56d5c3aa7ac3c10d8827597bfe3e2c9b9bc759e268ff",
-    "native-multiplex-batch-2.log": "5539bfd9c23ff65ef02ba0333ce4ba2b723dfda19ee86243175c46d3045b1a2a",
-    "native-multiplex-batch-0.log": "f12553a8f73a2fb18890297610a57f66cdd830518027eb1421c148d64a6fd6b1",
-    "new-tests-baseline.log": "dd11305d716767182a2eb32406e1600cc9f3fffe2f11fc73e489cb4754aa33f2",
-    "batch-boundary.log": "ffb1d0427db7d4d8b9082f2ecba41a94961c94d28462c9a120b024ff2587a456",
-    "drain-red.log": "d960b9a6819f909ea9e4e39a6e8f0688bcd4473af6bda892a39078860c2b35c1",
-    "multiplex-before-3.log": "bfeb9cff8dbbe8b798b0703e0fd466f728ece3e5e72e4c248a13c5979c3a3d88",
-    "multiplex-headers-3.log": "4cf81881f847f34ca1cd76c4d895f5f7206cb7f7985ffc6071df9277a756126c",
-    "allocation-red.log": "7ac5f7ab76b9167ef38fa26e2032e38bbe466b1e83254bb91572045ef1e4f2f6",
-    "multiplex-headers-2.log": "c3e9d26d5e9cee21411f253ea5b64193aedca1f4c66df486fb53f1402c8a8cb6",
-    "multiplex-before-2.log": "8e6e33acb6562a24c59d4ced3f1ed64ad1b3161d576591902176a399f5775487",
-    "native-multiplex-batch-1.log": "89cda66f1065c59786ae614e5c71befe5240093873f6eb876d58725de0a18b58",
-    "native-multiplex-headers-4.log": "7e8d8144439079b425f1c2a87cfa02d82d78e15576ffad195215904a3237c0fc",
-    "check-encoding.log": "3bfb53cc45139f2eec7927baf55b19c652b9a61a3bafa9c68b7356cdf9721006",
-    "fuzz-hpack.log": "c619a7f25a6733e85a4ca2e2b9064a4dc5ff057a7433443d47af557ebbca97a5",
-    "h3-slice.log": "7146bef93ac5adcc8abab18feb0780da1582f913753f3ed8c8915132ec1cceb2",
-    "screen.log": "5127760dfa049fbd8c23ce17a142201d2ab4a21366061606032f1b9cca510808",
-    "allocation-build-before.log": "c26dd8d697a043c1f3cec606d4950f4a2eee8c398b610732b6bf1e407ab9ea84",
-    "allocation-green.log": "4f392129bdc66279e334a6923d1f1be3cdf462c3852e48d4cb797b3c14209eb9",
-    "native-multiplex-slice-4.log": "57df5d8079246422803685b6cc73cd17e20d4c32c4c2fb7edc79c6e4bd8429c2",
-    "clippy.log": "566e7ecfe8bfba78e8713f66d6a59e27472edc54067bdd3f2a610b7024d529a3",
-    "linux-slice.log": "0a9ea04e265adeb0f02372b10ece41398a87838ebf90aba0612da97c857d50ed",
-    "h3.log": "ca568d0e13431dcfddee3f0e4956cc189568d0ef97bbaf26018af81bd0512796",
-    "allocation-build-encoding.log": "79b9b01b8669afd0395ed57641f47e183ab9791dc1d5ecd9aecd453186e2f3a3",
-    "native-multiplex-slice-0.log": "79ab7386233ee564e24519e8e394deda58954ed7ced6b9a24a8f857fd7ccd218",
-    "native-multiplex-headers-3.log": "c506a061a3f5a31d2aeb94cfe473151f6fadf4baba97a03aad7c5ccfd0924402",
-    "native-multiplex-headers-2.log": "60e8567ff3a778ddf78401cd589118ec348ac77a68de550349d83ec44f711380",
-    "interop.log": "3e5ff323fa838e832d1fefc9551035296c31132b7eff5abd56d24373a7974afb",
-    "native-multiplex-slice-1.log": "1ce8079eda0dec3b1e2322520c1626ee7137d0990c380e44c008d47927a22edd",
-    "h2-candidate-tests.log": "017eb584b183546b2f87550c092f64224039e2ef5b1d0ef7a4b05ab3559281d1",
-    "train-pgo.log": "52f96c26a39ed25108a6db43d6e11c6051eba8a498a5baab1891adfa7ac7c262",
-    "build-traversal.log": "c34499374948962e3abb4e0259402ca1c9b75768c48d7533828a1d1105bf55fb",
-    "native-build-before.log": "2aa836ab06197538e4b6538b4b60106e1eb2580c230446c5aa9d33aa2da44d80",
-    "native-multiplex-slice-3.log": "1990d30639b84004bf60e8c520e54c58359b6ef68123a987eb437bc3edd9966a",
-    "native-build-slice.log": "11ef8edf2869e121a4288179ba373c0febc38fd95a8b88b65f40803167b4e86a",
-    "native-multiplex-headers-0.log": "062bb9f29a86fd52a13fc8aaa87a4ddc060b1f4230602096379fcedb75b10bf2",
-    "build-batch.log": "00ab778ede579f06b51b92b44fdc25c56eacd9ddd81f73731a8787ee1b574f63",
-    "native-multiplex-headers-1.log": "72dac4e49f315f7a83f7589f06cd3288e02481073dce242a1153fa723c71932b",
-    "native-multiplex-slice-2.log": "63de8b9048a86ddd3e46d32ad1a51d8a1b380924003b3877815a304b268c2c30",
-    "build-combined.log": "41766f0a1a5e169e1679e67d718f305f574caa77e9d147bed39df1df8d1e1fbb",
-    "build-final.log": "e6a3fffde50050574f496555cccd52e37205793752734ca7c14fc5059a6deacb",
-    "pgo-build-use.log": "e2a8b6dd11d138295136c05a44f35d937b27bbb3aac11e116cdbfed14115622f",
-    "h1-red.log": "929e85dadacffc043aa0cbc01843c90cd9dfd8362c79244813a028c5befc7db0",
-    "build-encoding.log": "94cab94a53664e6bffa2813664f1f603e7b7315c0f9856cc9f49dfce6e4cf1c7",
-    "fuzz-http2.log": "46ed6edd31a65ecac5ca302a324272ab9f4d7f84a6484d36f82cf7357303c410",
-    "fuzz-final-http2.log": "760b08d3673f76cba6a31a81a23f06a677d23efdb87568e9444fc59c6ae177da",
-    "allocation-slice-3.log": "46ef67227cc4f1ec437b2a1533d36d30d139a34dde1007a773ff83d8eb4faef0",
-    "check-final.log": "f1d92412c09c0cd8dc16f474b9a4042792a749824114a2d5dece07e60af1a9cf",
-    "multiplex-batch-1.log": "0534a04f6225d1b86af3db0e786baf19422fc3d18c0433a70663b08bd9ccce2b",
-    "allocation-headers-2.log": "9703cb7702c233b1b8de66a862f5074de1c26855aa292b45c361f66f54d80f64",
-    "check-batch.log": "63d8a16a59d5f828a2439bbb25c6b9b2c17e973d48c89e7151cf4344050d0dd7",
-    "allocation-build-headers.log": "08ff1e21ff41478d62502aa762743877a3b0e22a3fc456e3cea52d2f0b4f1e79",
-    "build-before.log": "9ec50dd7cc53c80f957f1eb8426c4c55d614f06889bd94eb12ba1a52eb832c94",
-    "allocation-encoding-1.log": "20287ea830f3fbea8328b569138dfb4dc1cf0757b30d47bc8ea3a5584f25e668",
-    "native-multiplex-before-4.log": "6451d9ad04c02ae873df859fe6c951f9314b021e3931f60b2d9fc423898c1d14",
-    "allocation-headers-3.log": "8487995e5ac252f82f8cd05afe381bfc4b5be65d63273348ca602bc6e5e94c4b",
-    "multiplex-batch-0.log": "da2b6cbbb182a7be10cef5fd1b0f917a72fe5a7de1a4e04d8b1d1951ddca849b",
-    "allocation-slice-2.log": "46ef67227cc4f1ec437b2a1533d36d30d139a34dde1007a773ff83d8eb4faef0",
-    "h2spec-batch-tls.log": "5f8384a445da01f4271d223c83ce2134113a0d73a60c0884bbfa65752e428d8a",
-    "read-bound-red.log": "538bafc0a1aaba49e0901173a16af9827e8fc76f7b52c20531718c8ca3917e37",
-    "multiplex-batch-2.log": "d9f43d4a29428897a4e03c3a361064b354b354e13e030ce8f0a738fba1c8a70c",
-    "allocation-build-slice.log": "08ec5efb4c4e129cc256bd251e8759d1a634cf143102db8226b17a9b8ad8ffc8",
-    "allocation-headers-1.log": "6bbe9351d0c102d3bd3087311addfe05ac1e3061a33153c39e7c5330d0201ee2",
-    "allocation-encoding-3.log": "20287ea830f3fbea8328b569138dfb4dc1cf0757b30d47bc8ea3a5584f25e668",
+  "trial_csv_sha256": "27d8e9ea53927025ce41af2ccee667f519a3ee43e51cc7e6a33adf300cc63940",
+  "logs_sha256": {
+    "small-fixed-option-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "option-before-8.log": "2c30db0fec4d16ca08e22fcdc511ae038393a7544a84aaa18a3295746e1615f2",
+    "arm64-size.log": "7c9aa0d9f617e6fb3c64508539cb35467dbd4853c2802741622734f2049952c5",
+    "downstream.log": "8749846311c4c8cf0114edf5c1c17b0b96d727e66b0ab300ec7b72e623dcefe6",
+    "allocation-1.log": "3cba35262580730fa28fb1e331719a10c55af90240c7cce8670e8d9156a75d0b",
+    "small-fixed-option-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "small-fixed-option-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "allocation-0.log": "3cba35262580730fa28fb1e331719a10c55af90240c7cce8670e8d9156a75d0b",
+    "allocation-2.log": "95d8855f01a574d2dc808ff85f0d9e29410436761b7a9b202bac89adea144ff6",
+    "small-fixed-option-1.log": "2cc73d2b66d91e04ba2f84fd018bab3f87c8adeb5fb49ca5aec1f301c6292e9d",
+    "pilot-before-0.log": "ef43fb7e13bfdbecae5d4f4066bfb30b327a92943c1af3f3b4b3e39d09b3afb2",
+    "small-fixed-option-0.log": "5dbde0187ab7b0bb96ac3d7a23e4c857b8923ff0c89cadbab12c40afe6e4cb12",
+    "plaintext-before-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "large-before-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "option-option-1.log": "4036ae132e9e7c48f1ef9e4a618ac9aae5d4539656677490efacb8eced0fb5cb",
+    "fuzz-hpack.log": "f82cad895f1bffc5d5d9f482db7fbbe2a1f98c8cdf3f8c1c8fabc370b9461a8d",
+    "option-option-0.log": "65c21eda0e5dc1e97a627a12b23c61f2d9ddab702092ffaf2f7166a5bb755fc5",
+    "large-before-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-before-6.log": "827da46d3f03d167f634b9fcea122cbe3c59c7618e79baa478ca9d74d41c9a9d",
+    "matrix-before-4.log": "55b028d09b4768b8d35015cb07c01061af94efcf3a3a90e343c222e217cb8b1a",
+    "fixed-admitted-option-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "large-before-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "option-option-2.log": "b809ec9ddaac9eb85c059a1da545ea6d7ec28b8d6fd07626d6d7c972b6490a30",
+    "homelab-environment.log": "66c87b6288a8897ef56123777f941641f67f96fda26ac22f8cd1b1f81d0dd2af",
+    "homelab-build.log": "649988cc62f52d64eef73230f0d4ac158e3888e1ad1c88accb53c9b0b66331a1",
+    "option-option-3.log": "bb184be97a19fc4a56a5233d47df9bfb424987af9e5cd650625fe34b9a0cb48b",
+    "large-before-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-before-5.log": "64ce6aa6eff60b02dd56911987c06108ee638102da82fdc1753b51980ecadc44",
+    "matrix-before-1.log": "35b6484d3cada20c0a6d0f008f18ff20eefd05b94ada45b73f60fed1baf51153",
+    "fixed-admitted-option-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "large-before-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plaintext-before-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "homelab-images.log": "f9132dbb29c417246505796311c154246c5b2d819716f456043080d1302ff6e7",
+    "option-option-7.log": "25631172a648cd05ccec960f4eb4af74328566fe79bba73772b65b4545a9f498",
+    "homelab-final-identity.log": "926623ad40320cacb41c5d6a4a999192eb6aec6e420f53623141a362ea5b7343",
+    "interop.log": "acb8bbb6d838066b6de33edcd347d0f15c5cb3c99e077b454804d2f8bfa4ece4",
+    "option-option-6.log": "89c8504209e2c9b683e4c2414a13fa3c858c02c2f2ddc21d2de09f669b192cd1",
+    "plaintext-before-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "fixed-admitted-option-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-before-0.log": "5948b041c13e5f42670a4e7ef675a1a7bd6e1a75b26920ab798a69a73de40de3",
+    "fixed-headroom-before-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-before-2.log": "9d3dbd561fa4d2f1676571ffd686784a0f4140f02038c68bcc32d81d16ba20b8",
+    "fixed-admitted-option-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plaintext-before-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "option-option-4.log": "04d9fe31be4b411f34da189a6abe931fa04a96a3d764204e2696fd0243219bed",
+    "homelab-build-complete.log": "f51851b32c2fd9c008a5c434755a2cc7f452c6ead6f949a51b11f6f5cacdecb9",
+    "homelab-final-bytes.log": "ca058ab8aea983a6d9bcb5049b45ed78a456660b37f83aaff7b74f679802c3f5",
+    "homelab-build-offline.log": "bdf8e4c2d220a413766dcc4734a5908933b3f022501aad4e3f36664d979e25d5",
+    "option-option-5.log": "cf77f8452edfbc347bdbeaf51b10a88bd64e62a6d37f85bd64fa528514d852ee",
+    "plaintext-before-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "fuzz-http2.log": "5f386b48d3e59c7709f359283df772e440c560c6392ebb054aaa46578d03cfcb",
+    "fixed-admitted-option-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-before-3.log": "7322c9f8e18d63c317afb292b0b740bf840eef6c4d07e3fcd94a50b88835b978",
+    "option-option-8.log": "155d396d894c5e06706b86359cec64c8633a953ffcc47726f1318eb668f62242",
+    "small-fixed-before-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "homelab-option-build.log": "1effd86867840dcf55d12a5378a414cab475120df54779ee1c80156d626d0615",
     "h2spec-plain.log": "7008f23d69ca62ee3172536d4d2cf98ae0b252cd84dc414f26118d094d37bdca",
-    "netem-build.log": "f3fd02674a0cb95d24e99da6b1302acd251a3f844356cf129020c1bfb1cf48d9",
-    "allocation-encoding-2.log": "20287ea830f3fbea8328b569138dfb4dc1cf0757b30d47bc8ea3a5584f25e668",
-    "encoding-ablation.log": "59f1f8c9bd8dcf72e6b674cb48dd40ff0d7749b64264a95fafc69d8035d1b973",
-    "multiplex-batch-3.log": "c7aa12768e18d0503ff53395a4e00bc83e07df9ce1efec8941186ab093634afa",
-    "allocation-slice-1.log": "46ef67227cc4f1ec437b2a1533d36d30d139a34dde1007a773ff83d8eb4faef0",
-    "interop-final.log": "06b3b8118b312e3de182a093da4a90de2e81097dc7611c9b12f3ae950cad432b",
-    "linux-qualified.log": "c2176ddc5413a37274d5cde0ec43d2fec71454e39772189ba00a3880c4e91b46",
     "h2spec-tls.log": "5f8384a445da01f4271d223c83ce2134113a0d73a60c0884bbfa65752e428d8a",
-    "native-multiplex-before-3.log": "37bf8cf84a379d312d507aaf2b98e6ed39baeba017bb9ca810408288c3d7a5fa",
-    "small-steady.log": "750b622f10c39f7b0ff13261e305659e29589e7087057606b08d816e98d2d284",
-    "allocation-headers-4.log": "215a308dd5929aacd6102c13132641ff0d66667f1f34bdcc9b41319ae168c80c",
-    "linux.log": "c456d24e8eca2fec30dec267f02786c3d7657252631c38de61e6bb366fc8fa39",
-    "scheduling-green.log": "2003a730412bd1f0ea96e87e27698fd2cb365b307a3adefef877787b0632492f",
-    "h2spec-batch-plain.log": "7008f23d69ca62ee3172536d4d2cf98ae0b252cd84dc414f26118d094d37bdca",
-    "downstream-slice.log": "6fdd15b6454df070f5df7e36109a0393c620b77b3818092cb9c00912da457775",
-    "check-qualified.log": "6e84a82d0f219d3ee027a739c297efedcfcafeb7b84d25911583c494e2a75c65",
-    "allocation-headers-5.log": "962653581c8e942e7dc183c0b2713a2aefe2c825dc47338251d4abac513368d5",
-    "native-multiplex-before-2.log": "082e9fec0aa508a5366292b78722c4d1fef188c6a0b918e33fe33e5e42c97a67",
-    "flow-build.log": "013575ddbfda73578016821aefc173ee479486ad88aa68e3c02e65e364381994",
-    "final-focused.log": "e4c6e9919a0b202c566ac54bbda900c1d59fb3950bc9be217517aa32ec84941b",
-    "pgo-merge.log": "fb4562bf999148ffcae6ca67cc6213e519d3fdd3c752a25f96cf7638369293aa",
-    "multiplex-batch-4.log": "4fdb312f3ff42ae5d3e671a42e3dacdfecad4831830a1032e39a888a6332b9ba",
-    "fuzz-final-hpack.log": "e2f2169c1492106613b6053712d1b15520597106479539b9c5cd188e604ae285",
-    "native-multiplex-before-0.log": "43a9d80e80eca907864763e809eda82e11b717cbd66877805d1cd8bf618ce6b7",
-    "build-scheduled.log": "649314f99fc1e84a5f9a9571db8e6c4e8024e6e350bc4db7cabdfc403d959191",
-    "header-allocation-green.log": "360cbdd2f5ee308c142eacb8064c925bde2a56863f6c89ce18edd35dd2a226ca",
-    "scheduling-red.log": "5e0abefa595a428cafe34fbaa2a570f0408bde1c4d5e8fd25a4f28b74eb33789",
-    "native-multiplex-before-1.log": "4f1a6d16794f367a99e27f90f0537513ff20760fadc32fd1a58acde41597a819",
-    "batch-boundary-final.log": "6e1b75df878004796272b55e8d8f8017b415a80a12716425119f0072c1bb1dfd",
-    "baseline-tests.log": "d92c8b4892a26cf17f858456b7893f9668faf05799117bf612db69536cb1de7d",
-    "conformance-build-batch.log": "a1b480fab4a162ee88c7212b8849278e0dc286d3046188723e80300cf2edfbf8",
-    "check.log": "7cb37b2674e1a00a3033730730fa2675b726bfd213c7bb696c4f328ca62e8bb7",
-    "interop-encoding.log": "71e9e1260fbb5d0db0300a85d0cfec40b793b2ca08e39b307edc7a7168684b17",
-    "bounded-write-test.log": "dd6e6dc09853b343044277fa7b61add7c1f3a612319f983b037a82db89b4189f",
-    "allocation-before-1.log": "a341a000e3fba9a9ce7296356e53d65c02787246757b848bdbd2019739797162",
-    "pgo-build-generate.log": "28540a1dda0d2dd088832c5fc8fb710b78e5aae40de67773e0d2865c4504bbd9",
-    "allocation-before-3.log": "6bcf4d699ae95dd14516137103782a27f07db6557821912792460e81dbdefc27",
-    "drain-green.log": "824de9b46209746e4263c06df410ea956c45bb7e6e0d33022093742a258169a0",
-    "allocation-dispatch.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "h2spec-final-tls.log": "5f8384a445da01f4271d223c83ce2134113a0d73a60c0884bbfa65752e428d8a",
-    "allocation-before-2.log": "2045842809019f64f3576329fa437841509d36fc89493939b8ffb27e0a65cb12",
-    "batch-focused.log": "a1c98d2bc3f2a7db3b1e12f8268140d2df15354a3a7dd624c16cec53e823970b",
-    "flow-build-qualified.log": "9ffb6d9a646db9ec7da98c7dd14728b6a88e8bcd74c17a2850292eba78ec0dd1",
-    "elf-sections.log": "26cbd7fe31259e63d08f893f4e3749b49be779bc3c31b5f32a65f3ea61124b2c",
-    "header-allocation-red.log": "404c4cc080c683568caf066eecf9bc4ddca2361738cd5f372510a8edbda05c49",
-    "h2spec-final-plain.log": "7008f23d69ca62ee3172536d4d2cf98ae0b252cd84dc414f26118d094d37bdca",
-    "linux-final.log": "060bdb088414a0c64e419e8a378839c352dc5d51baf152b3ca0573592c454f07",
-    "build-slice.log": "e5ddd03d586aa59687379306f5356eb705c97cfbf6c6524fa24c0ea2ca940a52",
-    "allocation-before-5.log": "f4ec4697cd1b2d5e26d00e7aab7b1fe64866194008b53736adfc42d72166dc72",
-    "native-build-headers.log": "9fcbde6930a460c1585f3ef613bad023e52dfc8bd74062333da50e91776142ee",
-    "flow-build-final.log": "6484e6e60198af1ab68e2c88e232b151f549896580732a978c99a3672cfedc5b",
-    "allocation-before-4.log": "6afc634217474ba3ff86470ba8f789bca935db1d171dac56f6f5d346bc839136",
-    "native-build-batch.log": "63cd713dfcbd188016d406996ad531033068d3cc5f7c8098462f7c3262c291e5"
+    "small-fixed-before-3.log": "a456f5b0b2c2cf5c79716a741b366cd325099aa0424f47da3e7a045d907791cc",
+    "linux.log": "d7437bf8407a25f1207bc4e5a305334044000d5b48356ef3fc577c5f147f7a93",
+    "small-fixed-before-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "unit.log": "bb53bb1259397204281abd561dfea78d53c460d280553d58f7f2e5abe3fe3c1e",
+    "small-fixed-before-0.log": "a7fabc534e763c99d7dcccc74ee17ee9aa77f5d5f53e68e4e68039fe2b92ed5e",
+    "small-fixed-before-1.log": "a723239a992121bbb9802e564e064d61f08fc46a5144e06660777d07055a0d30",
+    "pilot-option-0.log": "fd1b35d40687985416137ba935d82dc0b44d9dd3ebc03cdd2cfe5e85e244f5f4",
+    "option-before-0.log": "8fbff01a9b2ec0809e3f5c19edf51bc6dfbf9903513fcea924e6496980565241",
+    "homelab-load-before.log": "48bbb8dd523519797245d006d71a8ab8d6ba5f72e5f773e01fb1ed2a5ea1df6e",
+    "matrix-option-6.log": "57270ea96e5857b022ae88dca522460ed593ff01c13511bd0e88bbbb1a1e53b3",
+    "large-option-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plaintext-option-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "large-option-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "check.log": "8eac0006c2a6355091c080b97644e246d67abf39103becff129e7b87eb94dbe1",
+    "conformance.log": "b86ae4f81e036d6549f194539a1945c46cb82b36b7a8e56ba0e8887aa4f7081d",
+    "option-before-1.log": "ad3219791c3d7636ee32ce1edfdbbe358bd59f634d4b90823926a4bbcfb773c9",
+    "homelab-load-after.log": "f307df76aab8e6df0de3e5b42681e0198cfe2f69224545ac78d25d0fb4f03930",
+    "cert.log": "befbf332ab8ed2a9bed29e40bb3beab91d38480b8304dbd7f62c655df16a2f8f",
+    "option-before-3.log": "1fd7bed7909b4979e91fb5f8db0aef617374df37979efb62a4ae1ed145f78349",
+    "matrix-option-5.log": "feeb8f9e9e31fb2c149b595ae29aae8290184349c27c2e6cea100e058797f161",
+    "large-option-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "large-option-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-option-4.log": "2b737002ff6a1d71e9e309c9afebcfcc1d91c10a6d0a71b20a5c2495708f2d25",
+    "fixed-admitted-before-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "option-before-2.log": "e6d830868daf1664e62f01c2bd57fdbd0428162d9dd83c29c6a2acea50ab1591",
+    "option-before-6.log": "fa502fac1f7d6ad938e4e7f6328cf50a47e7ff382a77afdd86af366891e3886a",
+    "fixed-admitted-before-0.log": "074c3e358c8b501f97fc6f00a2a2c216d026c9cc77112082d8df4af47685a4c1",
+    "matrix-option-0.log": "59b778080b364513df22fda8af0b394d4c45e833d509fa7fe7230645611dc750",
+    "plaintext-option-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "large-option-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plaintext-option-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-option-1.log": "1bb0b15e581a725576b300b4d6e226957d9f634ffb43efed39448d31f8e91f8c",
+    "fixed-admitted-before-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "option-before-7.log": "30f167aac04fadef0ca5030634e5b578e04ec8ec27525ca392faa0825e6c0e41",
+    "parity.log": "473d4b25ac2724c3505e396d934cf91b229fe0db21a1fa5986653d45b614f7be",
+    "allocation-build.log": "e66b849ae9d7daf7ec9407fbfa9b8528f7fd519d6e3faf7327d680ac5ad208e3",
+    "option-before-5.log": "d32cc9f27249c470e8d58ba74e5ad7d8cfac0ed883ad54d07497d9bd3fe8e738",
+    "fixed-admitted-before-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-option-3.log": "02494206c9d21d09182a58c7f79e95bb28b265ab18efc09b0ec869eaf69003a6",
+    "plaintext-option-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plaintext-option-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-option-2.log": "48617cefc9aac688cefdef4a4d7c1773842004ec54398a3adaf5e96a21c54934",
+    "fixed-admitted-before-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "option-before-4.log": "b9a39438abc005999355d5b86d50fb2dc265ccc45b816e29bd927beafb4ff13a"
+  },
+  "scripts_sha256": {
+    "probe-before.rs": "5accfd5fd5822a30fb467420c891eec8d9906d3896be40c17f68c7dea22bcb32",
+    "hpack-option.rs": "2dc7e69bdc41ca7c7120b51fea9ff3cd23d2c7b719fe6b631689d98f6700affa",
+    "finalize-report.py": "219f4bddb680c7838c7088e80fb14fd788369908a70b28f7ca933e537a8fd454",
+    "hpack-bounded.rs": "63396476dcc300a035ce82a9563ebc3fb15980df290933f90fe756ca185f3796",
+    "hpack-before.rs": "d0df939f7dff51d0cd98e246867219582e1b3c2a91182f3bf394afe134ee83db",
+    "probe-option.rs": "82d67cacf44c41d315401321f7a9c793700f056c83bae2c7ccea9d2ff3f77578",
+    "hpack-group.rs": "6b959d929ef852b577b9305df482624c6cf58edc20e70806805f4a0cf538842c",
+    "load-pilot.js": "eda437e14aa3ef7121ed172a645e807de8bc8e057d0ab115e93ee070a1e6c5eb",
+    "parity.rs": "0b29f8240404b4085428927dceb450457e9567e58e9575874354840271deb3eb",
+    "probe-single.rs": "cd78059d0dacc4e2e5f1f9e3532ba4f88426a52b5daa6ff2c1c3602f52360068",
+    "probe-lookup.rs": "e90526148329238cac07fbfee0f87c7358a09c8447c81e0a555046dc5a2b6475",
+    "hpack-probe.rs": "0c98dd29d8501cfc6c8ff58db2d58b1134177292dfff026ce62317aee3b2b346",
+    "pin.rs": "800b1139956322e8e57f7670297f369f4ec6465b1cdbc7ec6c89b436e43aab8e",
+    "hpack-single.rs": "9c7f2299d82a3af524555899ab4c2d8a089f9fe943751150a927444ff5b6a9a7",
+    "summarize.py": "421a65feb684d34b4bbac887ef156b1deecbd96baea5f6756a74f5759b48d201",
+    "homelab-load.py": "9554025ed20ffa96d332741fa30542e9cdeb3f0913adca3ab18e74dc8754319f",
+    "hpack-lookup.rs": "b5ca0b43cf48d0f2d1daedc3fab0ccdf2f1887b6afb125a9a3da19104e4631fb",
+    "load.js": "59dd68fa88b94751cead59fdbea52ebc64d9b039ab72d7b8ebb2e7272e3c5417",
+    "probe-bounded.rs": "f9de659b058f78e46174e24e5801375a259931513245ad7394a93a31aedd8bde",
+    "matrix-option.rs": "47975b5f4d5e3950a7da2e8c352edc5e186b3acac181e1a7c472f22af0797afb",
+    "matrix-codec-option.rs": "b2066620c793f581b078e97b20aa639878f3ae6cbe63b069f6fb0363f1ce0a8d",
+    "matrix-before.rs": "0e2b3c371f59ac6b99f18dfd4f49b6cb85fadea4561d44df979ad6e18cee21c8",
+    "probe-group.rs": "20794e6ce424eb022c0631388a40eb9f0ccd58f968114c7b30a5255d2c7d85fa",
+    "pod.yaml": "6d4b7391599a91354069abd040fe0153c148bdcd4070b72c93b999585202d423",
+    "publish.py": "680482ef2cbfd157c13547dbab5394eb230574bc85152cb1ce91606ef50d45b4",
+    "matrix-codec-before.rs": "e88c3c97047b76e8cc0eedebb86c7e0043706ac0b6113646fa2c182ac5237677"
   },
   "limitations": [
-    "Shared three-CPU VM with unrelated service containers.",
-    "Socket CPU includes a broader cgroup interval than request timing. RSS is sampled, not a continuous peak.",
-    "Rejected trials remain in the CSV. Lower allocation counts do not guarantee lower RSS or faster sockets.",
-    "Full raw instrumentation, source copies and logs remain local ignored artifacts."
+    "Small repeated experiment, not a universal no-regression guarantee.",
+    "Shared hosts; task builds and competing load are excluded on the homelab during timed trials.",
+    "No framework-ranking or server-capacity claim.",
+    "Raw tooling, corpora, binaries, certificates and logs remain ignored local artifacts."
   ]
 }
