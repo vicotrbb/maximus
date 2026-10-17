@@ -1,0 +1,232 @@
+{
+  "baseline": "7b03eb31160c9461291a40ba9ad4541286fba1cf",
+  "candidate": "94291485e48505c80b2ab6f2e6b8b250acc24173",
+  "compiler_image": "rust:1.96-bookworm",
+  "allocator_cpu_placement": "single VM CPU 0 for client and server",
+  "binaries": {
+    "linux-before": {
+      "sha256": "57f5f3395b940fbbf11c28904a5085abda3b8846c8bab01928638abdfaa0472a",
+      "bytes": 9528056
+    },
+    "linux-after": {
+      "sha256": "7a7dc82b9fd7654b90cc3a27b90195e6a7c5c3ef51cad5e9ada49e3c5cd9ba45",
+      "bytes": 9528152
+    },
+    "allocations-before": {
+      "sha256": "55aa79f63c550c48b559d0caaa513418b517c707d985b8bc99c64168ca37c8f0",
+      "bytes": 2379832
+    },
+    "allocations-after": {
+      "sha256": "fba852287ccf246275cbe6582a086277fa28a93ce774131b7b6a8ff7a1aca08f",
+      "bytes": 2379880
+    },
+    "linux-array24": {
+      "sha256": "55317baa168784d306e7de10799341dee8020f0c117f7fe5515e50ad2c1836df",
+      "bytes": 9610240
+    },
+    "linux-array9": {
+      "sha256": "d6b47f97e49f12be4a3da31c6d205e3db809bc7bd16ebe6470248c2f06ef027f",
+      "bytes": 9603640
+    }
+  },
+  "sources": {
+    "crates/http1/Cargo.toml": "40438b837cfd6280fc0fe25470b64093032658f56adf39ff74d3821142b9b9b8",
+    "crates/http2/src/lib.rs": "791017e7f80bab917c5485f53ce2762ac489310a702dc7911997c3f676a690a9",
+    "benches/baselines/src/bin/allocations.rs": "f5b6129b2abd954fdb9cc9147f43151d51794ab83656a8dec2daf55e9f2b15de",
+    "benches/baselines/src/main.rs": "e8b7cd2d9002b5c82d9206c14ed9457fdce2a087a23ef5d81707be2ac0152962",
+    "benches/load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+    "benches/baselines/Cargo.toml": "fc3624debc36d1f07849b3538b45b75af77048f6132a633a01ac6fece96a2401",
+    "benches/baselines/Cargo.lock": "f494307bbaec4c4d45e2c3eb753b595ecd3029572c148d4c7942e27707ac4b1e"
+  },
+  "dependencies": {
+    "before": {
+      "minimal": {
+        "packages": 64,
+        "compio_features": "io,io-compat,io-uring,net,polling,runtime,time"
+      },
+      "all": {
+        "packages": 127,
+        "compio_features": "h3,io,io-compat,io-uring,net,polling,quic,ring,runtime,rustls,time,tls"
+      }
+    },
+    "after": {
+      "minimal": {
+        "packages": 64,
+        "compio_features": "io,io-uring,net,polling,runtime,time"
+      },
+      "all": {
+        "packages": 127,
+        "compio_features": "h3,io,io-compat,io-uring,net,polling,quic,ring,runtime,rustls,time,tls"
+      }
+    }
+  },
+  "runner_sha256": "61ead4be1f5e350bdcee05eee4690a71b19ca7da73df1586166a01728adf4b48",
+  "environments": {
+    "h2": {
+      "date_utc": "2026-10-17T00:36:49Z",
+      "args": {
+        "engines": "before,after",
+        "paths": "/plaintext,/echo",
+        "rates": "1000",
+        "workers": 1,
+        "duration": "20s",
+        "repeats": 3,
+        "vus": 64,
+        "label": "h2",
+        "client_cpus": "1,2",
+        "sample_seconds": 0,
+        "protocol": "h2"
+      },
+      "source_commit": "94291485e48505c80b2ab6f2e6b8b250acc24173",
+      "source_dirty": false,
+      "workload_sha256": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+      "running_containers": "tesar-web-1 tesar-web\ntesar-operator-1 tesar-operator\ntesar-worker-captures-1 tesar-worker\ntesar-worker-1 tesar-worker\ntesar-leader-1 tesar-leader\ntesar-api-1 tesar-api\ntesar-pgbouncer-1 edoburu/pgbouncer:v1.24.1-p1\ntesar-redis-1 redis:8-alpine\ntesar-postgres-1 imresamu/postgis:17-3.5\ntesar-nats-1 nats:2.12.1-alpine\ntesar-minio-1 minio/minio:RELEASE.2025-04-22T22-12-26Z",
+      "docker": "29.4.0",
+      "kernel": "Linux 9f20ad2a2d34 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+      "cpus": "3",
+      "images": {
+        "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+        "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+      }
+    },
+    "h1-control": {
+      "date_utc": "2026-10-17T00:43:03Z",
+      "args": {
+        "engines": "before,after",
+        "paths": "/plaintext",
+        "rates": "1000",
+        "workers": 1,
+        "duration": "10s",
+        "repeats": 3,
+        "vus": 64,
+        "label": "h1-control",
+        "client_cpus": "1,2",
+        "sample_seconds": 0,
+        "protocol": "plain"
+      },
+      "source_commit": "94291485e48505c80b2ab6f2e6b8b250acc24173",
+      "source_dirty": true,
+      "workload_sha256": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+      "running_containers": "tesar-web-1 tesar-web\ntesar-operator-1 tesar-operator\ntesar-worker-captures-1 tesar-worker\ntesar-worker-1 tesar-worker\ntesar-leader-1 tesar-leader\ntesar-api-1 tesar-api\ntesar-pgbouncer-1 edoburu/pgbouncer:v1.24.1-p1\ntesar-redis-1 redis:8-alpine\ntesar-postgres-1 imresamu/postgis:17-3.5\ntesar-nats-1 nats:2.12.1-alpine\ntesar-minio-1 minio/minio:RELEASE.2025-04-22T22-12-26Z",
+      "docker": "29.4.0",
+      "kernel": "Linux fa9fee1404ff 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+      "cpus": "3",
+      "images": {
+        "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+        "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+      }
+    },
+    "h2-saturation": {
+      "date_utc": "2026-10-17T00:44:36Z",
+      "args": {
+        "engines": "before,after",
+        "paths": "/plaintext",
+        "rates": "0",
+        "workers": 1,
+        "duration": "10s",
+        "repeats": 3,
+        "vus": 64,
+        "label": "h2-saturation",
+        "client_cpus": "1,2",
+        "sample_seconds": 0,
+        "protocol": "h2"
+      },
+      "source_commit": "94291485e48505c80b2ab6f2e6b8b250acc24173",
+      "source_dirty": true,
+      "workload_sha256": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+      "running_containers": "tesar-web-1 tesar-web\ntesar-operator-1 tesar-operator\ntesar-worker-captures-1 tesar-worker\ntesar-worker-1 tesar-worker\ntesar-leader-1 tesar-leader\ntesar-api-1 tesar-api\ntesar-pgbouncer-1 edoburu/pgbouncer:v1.24.1-p1\ntesar-redis-1 redis:8-alpine\ntesar-postgres-1 imresamu/postgis:17-3.5\ntesar-nats-1 nats:2.12.1-alpine\ntesar-minio-1 minio/minio:RELEASE.2025-04-22T22-12-26Z",
+      "docker": "29.4.0",
+      "kernel": "Linux 8d4293f3e636 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+      "cpus": "3",
+      "images": {
+        "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+        "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+      }
+    }
+  },
+  "logs": {
+    "check-selected.log": "051ec64d73991488a87e25a084dd8e4c1f8e54c4f13c3c555e0d3c7ce2a00c60",
+    "downstream-selected.log": "b7d4406b141fbf5734b87ded1ccf9997e423f6ed0b0a4379df2c2f9beb7fa17e",
+    "linux-selected.log": "3d7011393239ac76a3cf1d7fb82596ed72bc2aebeaff784d74b15880e96c386c",
+    "interop-selected.log": "54c35761d093e688f370487668e0f24fb28c670653a3b04d1f0d8cbba0f2318e",
+    "selected-alloc-before-4.csv": "33e2d49cb673f8a84bccbda13a72b94ee4a8c9eb445fcf0421057b158857300d",
+    "selected-alloc-before-0.csv": "398a23a8f66b2ecc0cd8c4bf5100ebbda73633b02d9cc0f8dc638004b21ddd2b",
+    "selected-alloc-before-1.csv": "041072888912436b70ba2a53a089222a1945df8998e5eae31d946b945bcdeffb",
+    "selected-alloc-before-3.csv": "7eedd7dfd1df20ffabadb4b50232a98d85e022a810e10b65382c5f7cedcfd1e1",
+    "selected-alloc-before-2.csv": "d503a2e316c25533814d01f216409c4350a60478f50a4585df7a6141f6825450",
+    "selected-alloc-after-4.csv": "76c48d1b679c6103b7b457a3a9fbc2dbd854a9b792329964bdf2553bcbbfb408",
+    "selected-alloc-after-2.csv": "a1c712fe2a65766294d4f0f5266bbb5197255920f91d68fa10286ecd79cdf169",
+    "selected-alloc-after-3.csv": "bb92ac9c04b0cde34573d32e889f9154b4e85055cc7ec767bc4c55eea567454f",
+    "selected-alloc-after-1.csv": "1672ab5b7b1d4d9f0fb8ed81d06d5ef315eb3cdd92524ffa8843cba7fbb13b96",
+    "selected-alloc-after-0.csv": "9c5ca3617ed133d27df5fbca7cd1e38f8bc59b9e06386fcafb2a81e8cc542065",
+    "load-h2-saturation.log": "7a8ea712e737c970218e9814d40393d3528364b7129d1902310ae9c3f82c98bf",
+    "load-h2.log": "162ef3d4f294f986448cccedc6915da45314745afa3a33d251e8224c0e7fca17",
+    "load-h1.log": "373cc402c3e9a64f71d164929c49bd789a7b6a4da94ee746781e422fa30759fc"
+  },
+  "trial_totals": {
+    "requests": 3860376,
+    "failures": 0,
+    "checks_failed": 0,
+    "dropped": 2,
+    "iterations_started": 3860376,
+    "iterations_completed": 3860376
+  },
+  "experiment_status": "Rejected: allocation savings did not establish performance parity; HTTP/2 runtime restored to baseline.",
+  "final_cleanup": {
+    "runtime": "HTTP/2 production source matches baseline; test-only deadline replacement remains.",
+    "binaries": {
+      "minimal-qualified-final": {
+        "sha256": "68bb153925076cd6af6de836725378748298be4cbff34b16d999c8322cdaa2de",
+        "bytes": 1200984
+      },
+      "linux-qualified-final": {
+        "sha256": "57f5f3395b940fbbf11c28904a5085abda3b8846c8bab01928638abdfaa0472a",
+        "bytes": 9528056
+      },
+      "minimal-before-final": {
+        "sha256": "16a7a213e9304ff27db9a877c9cf463fbc24a357991edf74f7194c69b1db2be6",
+        "bytes": 1200968
+      },
+      "linux-before-final": {
+        "sha256": "57f5f3395b940fbbf11c28904a5085abda3b8846c8bab01928638abdfaa0472a",
+        "bytes": 9528056
+      }
+    },
+    "sources": {
+      "crates/http1/Cargo.toml": "40438b837cfd6280fc0fe25470b64093032658f56adf39ff74d3821142b9b9b8",
+      "crates/http2/src/lib.rs": "264d02c1928e023f9c415b1547338c65b0a7e69542d48aa534e8679c62bbb020",
+      "crates/http2/tests/wire.rs": "a9c0f3325fdc3a2c599e38b7f8853a73014b1c1a68878dc0cb856bc53d4b314d",
+      "scripts/check-features.sh": "e9be98f8bcd675befab0c70bb476ee556948bd514fceff5055b0b36ea6e06fa3",
+      "fuzz/Cargo.lock": "a7fa199aa65e75f9d8be10c85d26fae75a7ad2bd2d9a07b5f47c40f5e0ae214a"
+    },
+    "consumer_source": "fn main() -> Result<(), Box<dyn std::error::Error>> {\n    let server = maximus::Server::new(\"127.0.0.1:8080\".parse()?)\n        .start(|| |_: maximus::Request| async { \"Hello, World!\" })?;\n    std::io::stdin().read_line(&mut String::new())?;\n    server.shutdown()?;\n    Ok(())\n}\n",
+    "consumer_manifest": "[package]\nname = \"maximus-minimal-check\"\nversion = \"0.0.0\"\nedition = \"2024\"\n[dependencies]\nmaximus = { path = \"/work/crates/framework\", default-features = false }\n[profile.release]\nlto = \"thin\"\ncodegen-units = 1\n",
+    "consumer_lock_sha256": "5fa0ff279a7d9bba870b3ca9a9fc26b02b9df6f6e0b93121bc6708757bcff4c3",
+    "build_script": "#!/bin/sh\nset -eu\nfor variant in before qualified; do\n    source=\"$PWD\"\n    if [ \"$variant\" = before ]; then source=\"$PWD/artifacts/native-buffers/baseline\"; fi\n    docker run --rm --security-opt seccomp=unconfined \\\n      -v \"$source:/work\" -v maximus-cargo:/usr/local/cargo -v maximus-bench-target:/target \\\n      -v \"$PWD/artifacts/native-buffers:/results\" -v \"$PWD/artifacts/native-buffers/consumer:/consumer\" -w /work \\\n      -e CARGO_TARGET_DIR=/target -e VARIANT=\"$variant\" rust:1.96-bookworm \\\n      sh -c 'cargo clean --release --manifest-path benches/baselines/Cargo.toml -p maximus-http1 -p maximus-http2 -p maximus && cargo build --manifest-path benches/baselines/Cargo.toml --release --locked --bin maximus-comparison && cp /target/release/maximus-comparison /results/linux-$VARIANT-final && cargo clean --release --manifest-path /consumer/Cargo.toml -p maximus-http1 -p maximus && cargo build --manifest-path /consumer/Cargo.toml --release --offline && cp /target/release/maximus-minimal-check /results/minimal-$VARIANT-final' \\\n      > \"artifacts/native-buffers/build-qualified-$variant.log\" 2>&1\ndone\n",
+    "minimal_elf_size": {
+      "before": {
+        "text": 807129,
+        "data": 26664,
+        "bss": 2480
+      },
+      "after": {
+        "text": 807129,
+        "data": 26664,
+        "bss": 2480
+      }
+    },
+    "logs": {
+      "check-qualified.log": "59e55deb31e9e3b7663fb1db1d415f1b65d5f090617a7d031f3314298743f394",
+      "downstream-qualified.log": "080c4edbfc4102f18bdb0c173ed8565f3c1ca4324f24d8161b62906f6f33a534",
+      "linux-qualified.log": "9337697de7d8706fe29874c506a4a70b2882561b4fc2f165a015efbfcad07840",
+      "interop-qualified.log": "c187e5978d03f23bcb3a80edc1ea5a6db426e70ef450454900b7df73da24d2b1",
+      "build-qualified-before.log": "0b0752755700aabda5187803a0dcf303c9075e727eaf1c9acbaef8a565d02d23",
+      "build-qualified-qualified.log": "e1cde4515224866aa1ec9f3456a1465a3a7b764430e7fcc5df2ec8f2cf32c810",
+      "deadline-pass.log": "f0bc1db55b405c6b4c53ede5da43811dec03bc50024c643b29892a19d7b5d3f8",
+      "deadline-mutation.log": "cfc7a2741c7b4d1357a07a953fc595b7528d9c2662dceb344b171e645a90c2a4",
+      "deadline-restored.log": "4dd9b626ae77b2d61f0176a3edd0c2080efc09169c0fde3dad64f50f773ebf4e",
+      "late-client-reproduction.log": "08c0a6fea5fd93973540efe707f8920db35601fd35913fd3a08bf1ed5edbb59b",
+      "late-client-350ms.log": "c19b5ac45263b66ac4ebeac6bbb7a81ad09a9872b3bbdce78900d05d460c9950"
+    }
+  }
+}

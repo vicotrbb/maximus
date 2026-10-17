@@ -1193,7 +1193,7 @@ async fn run<R: ReadWire + 'static, W: WriteWire, H: Handler>(
                         return Err(e);
                     }
                 }
-                reading.as_mut().set(read_frame(
+                reading = Box::pin(read_frame(
                     r,
                     limits.header_timeout,
                     connection.header.as_ref().map(|h| h.deadline),
@@ -1211,6 +1211,48 @@ async fn run<R: ReadWire + 'static, W: WriteWire, H: Handler>(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn continuation_preserves_the_first_envelope_deadline() {
+        compio::runtime::Runtime::new().unwrap().block_on(async {
+            let bytes = [
+                0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 0, 0, 0, 1, 0x82, 0x86, 0, 0, 12, 9, 4,
+                0, 0, 0, 1, 0x84, 0x01, 9, b'l', b'o', b'c', b'a', b'l', b'h', b'o', b's', b't',
+            ];
+            let timeout = Duration::from_secs(60);
+            let mut connection = Connection::new(
+                Rc::new(|_: Request| async { "hello" }),
+                Rc::new(Limits::default()),
+            );
+            let mut output = Vec::new();
+            let (reader, settings) = read_frame(Native(bytes.as_slice()), timeout, None).await;
+            connection
+                .process(settings.ok().expect("SETTINGS"), &mut output)
+                .unwrap();
+            let before = Instant::now();
+            let (reader, first) = read_frame(reader, timeout, None).await;
+            let first = first.ok().expect("complete first fragment");
+            let deadline = first.header_deadline.expect("HEADERS establishes deadline");
+            assert!((before + timeout..=Instant::now() + timeout).contains(&deadline));
+            connection.process(first, &mut output).unwrap();
+            let stored = connection.header.as_ref().map(|h| h.deadline);
+            assert_eq!(stored, Some(deadline));
+            let (reader, continuation) = read_frame(reader, timeout * 2, stored).await;
+            let continuation = continuation.ok().expect("complete continuation");
+            assert_eq!(continuation.header.kind, 9);
+            assert_eq!(continuation.payload.len(), 12);
+            assert_eq!(continuation.header_deadline, Some(deadline));
+            connection.process(continuation, &mut output).unwrap();
+            assert!(connection.header.is_none());
+            let (_, expired) = read_frame(
+                reader,
+                timeout,
+                Some(Instant::now() - Duration::from_secs(1)),
+            )
+            .await;
+            assert!(matches!(expired, Err(ReadError::Protocol(PROTOCOL))));
+        });
+    }
 
     struct PartialWriter {
         bytes: Vec<u8>,
