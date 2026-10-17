@@ -62,21 +62,24 @@ fn main() {
             async fn body(_: Request) -> Body {
                 "Hello, World!".into()
             }
-            let handler = maximus::routes! { GET "/" => body };
-            let started = start();
-            for _ in 0..N {
-                black_box(
-                    handler
-                        .handle(Request::new(maximus::http::Request::new(Body::empty())))
-                        .await,
+            let handler = maximus::routes! { GET "/" => body, POST "/" => body, PUT "/" => body };
+            for method in ["GET", "HEAD", "POST", "PUT"] {
+                let method: maximus::Method = method.parse().unwrap();
+                let started = start();
+                for _ in 0..N {
+                    let mut request = maximus::http::Request::new(Body::empty());
+                    *request.method_mut() = method.clone();
+                    let response = handler.handle(black_box(Request::new(request))).await;
+                    assert_eq!(response.status(), maximus::StatusCode::OK);
+                    black_box(response);
+                }
+                end(method.as_str(), N, started);
+                assert_eq!(
+                    ALLOCS.load(Ordering::Relaxed),
+                    0,
+                    "successful static dispatch must not allocate Allow metadata"
                 );
             }
-            end("static-route-body", N, started);
-            assert_eq!(
-                ALLOCS.load(Ordering::Relaxed),
-                0,
-                "static route and borrowed body must stay allocation-free"
-            );
             let handler = |_: Request| async { "Hello, World!" };
             let started = start();
             for _ in 0..N {

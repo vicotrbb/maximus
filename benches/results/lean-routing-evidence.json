@@ -1,0 +1,2753 @@
+{
+  "baseline": "50f81bfb92f2fc375ec093e491098b432b78c727",
+  "selected": [
+    "compiled Allow metadata",
+    "HPACK trie reservation"
+  ],
+  "variant_legend": {
+    "before": "merged baseline",
+    "aa": "byte-identical baseline copy",
+    "route": "Allow only",
+    "headers": "H1 iterators only",
+    "hpack": "trie reservation only",
+    "line": "incremental line scanning only",
+    "after": "all four candidates",
+    "final": "three-change exploratory bundle: Allow, iterators, trie",
+    "scan": "three-change focused probe plus incremental scanning",
+    "selected": "retained pair: Allow and trie"
+  },
+  "acceptance": {
+    "baseline": "50f81bfb92f2fc375ec093e491098b432b78c727",
+    "gates": {
+      "behavior": "exact current routing/framing/error/limits; all required checks",
+      "cost": "direct savings verified independently for each retained optimization",
+      "performance": "screen repeated >3% CPU/throughput or >5% fixed-rate tail degradation; paired intervals and A/A variability decide follow-ups; inconclusive is not parity",
+      "footprint": "reject material binary/retained-memory increase",
+      "load": "no request errors or count mismatch; failed offered-load trials retained"
+    },
+    "no_new_dependencies": true,
+    "evaluated_scope": [
+      "compiled Allow metadata",
+      "H1 singleton header iterators",
+      "HPACK trie reservation",
+      "incremental CRLF scan"
+    ],
+    "retained_scope": [
+      "compiled Allow metadata",
+      "HPACK trie reservation"
+    ],
+    "rejected_scope": {
+      "incremental CRLF scan": "Short fragmented-line signal on ARM64; not established as a cross-platform win.",
+      "H1 singleton header iterators": "Three-change bundle failed H1 CPU screen; excluded pending separate evidence. Individual attribution remains uncertain."
+    }
+  },
+  "environment": "rustc 1.96.1 (31fca3adb 2026-06-26)\nbinary: rustc\ncommit-hash: 31fca3adb283cc9dfd56b49cdee9a96eb9c96ffd\ncommit-date: 2026-06-26\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.1\nLLVM version: 22.1.2\nLinux measure 6.6.68 #1-NixOS SMP PREEMPT_DYNAMIC Fri Dec 27 12:58:58 UTC 2024 x86_64 GNU/Linux\n200000 100000\n2-3\n4-5\n6-7\n",
+  "images": "2026-10-17T17:55:09Z\nclient docker.io/grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\nserver docker.io/library/rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\n",
+  "cpu": {
+    "lscpu": [
+      {
+        "field": "Architecture:",
+        "data": "x86_64"
+      },
+      {
+        "field": "CPU op-mode(s):",
+        "data": "32-bit, 64-bit"
+      },
+      {
+        "field": "Address sizes:",
+        "data": "48 bits physical, 48 bits virtual"
+      },
+      {
+        "field": "Byte Order:",
+        "data": "Little Endian"
+      },
+      {
+        "field": "CPU(s):",
+        "data": "16"
+      },
+      {
+        "field": "On-line CPU(s) list:",
+        "data": "0-15"
+      },
+      {
+        "field": "Vendor ID:",
+        "data": "AuthenticAMD"
+      },
+      {
+        "field": "Model name:",
+        "data": "AMD Ryzen 7 5825U with Radeon Graphics"
+      },
+      {
+        "field": "CPU family:",
+        "data": "25"
+      },
+      {
+        "field": "Model:",
+        "data": "80"
+      },
+      {
+        "field": "Thread(s) per core:",
+        "data": "2"
+      },
+      {
+        "field": "Core(s) per socket:",
+        "data": "8"
+      },
+      {
+        "field": "Socket(s):",
+        "data": "1"
+      },
+      {
+        "field": "Stepping:",
+        "data": "0"
+      },
+      {
+        "field": "CPU(s) scaling MHz:",
+        "data": "86%"
+      },
+      {
+        "field": "CPU max MHz:",
+        "data": "4546.0000"
+      },
+      {
+        "field": "CPU min MHz:",
+        "data": "400.0000"
+      },
+      {
+        "field": "BogoMIPS:",
+        "data": "3992.60"
+      },
+      {
+        "field": "Flags:",
+        "data": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd cppc arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap"
+      },
+      {
+        "field": "Virtualization:",
+        "data": "AMD-V"
+      },
+      {
+        "field": "L1d cache:",
+        "data": "256 KiB (8 instances)"
+      },
+      {
+        "field": "L1i cache:",
+        "data": "256 KiB (8 instances)"
+      },
+      {
+        "field": "L2 cache:",
+        "data": "4 MiB (8 instances)"
+      },
+      {
+        "field": "L3 cache:",
+        "data": "16 MiB (1 instance)"
+      },
+      {
+        "field": "NUMA node(s):",
+        "data": "1"
+      },
+      {
+        "field": "NUMA node0 CPU(s):",
+        "data": "0-15"
+      },
+      {
+        "field": "Vulnerability Gather data sampling:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Itlb multihit:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability L1tf:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Mds:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Meltdown:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Mmio stale data:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Reg file data sampling:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Retbleed:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Spec rstack overflow:",
+        "data": "Mitigation; Safe RET"
+      },
+      {
+        "field": "Vulnerability Spec store bypass:",
+        "data": "Mitigation; Speculative Store Bypass disabled via prctl"
+      },
+      {
+        "field": "Vulnerability Spectre v1:",
+        "data": "Mitigation; usercopy/swapgs barriers and __user pointer sanitization"
+      },
+      {
+        "field": "Vulnerability Spectre v2:",
+        "data": "Mitigation; Retpolines; IBPB conditional; IBRS_FW; STIBP always-on; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected"
+      },
+      {
+        "field": "Vulnerability Srbds:",
+        "data": "Not affected"
+      },
+      {
+        "field": "Vulnerability Tsx async abort:",
+        "data": "Not affected"
+      }
+    ]
+  },
+  "source_sha256": {
+    "crates/macros/src/lib.rs": "bcb583cc4287809942d606aa1d0bf62ecbeec82c3ff707ec84c5685b3ff870ef",
+    "crates/http2/src/hpack.rs": "c1c66ebd9f3090faf484c05a74d9800037da4d932c170355024111479bf2b01f",
+    "crates/http1/src/lib.rs": "0cb82f70a0e0a5fa93806ea4324edb38637d674b7df3699446b0715a7c9ef1f0",
+    "Cargo.lock": "8d5cf3dbc9060e69fe7551a2ce06b5af11246463eff4711342639e212e7b588f",
+    "benches/baselines/Cargo.lock": "f494307bbaec4c4d45e2c3eb753b595ecd3029572c148d4c7942e27707ac4b1e"
+  },
+  "server_binaries": [
+    {
+      "variant": "before",
+      "bytes": "9884328",
+      "text": "7867007",
+      "data": "384784",
+      "bss": "6377",
+      "sha256": "c41ae958230395cfd9b2531ca213f6430a5cd177e18d4149e08f1627f960c0ab"
+    },
+    {
+      "variant": "route",
+      "bytes": "9883216",
+      "text": "7866027",
+      "data": "384848",
+      "bss": "3305",
+      "sha256": "ee26245de903447ebdbd9907e9b261b786cef5834eabd4c0ddefcdcd6c2520c5"
+    },
+    {
+      "variant": "headers",
+      "bytes": "9883784",
+      "text": "7866415",
+      "data": "384784",
+      "bss": "6953",
+      "sha256": "a08a18857fcb68213816c045b4389d153d543ee989e9d9c699b4179985ca1ff2"
+    },
+    {
+      "variant": "line",
+      "bytes": "9884152",
+      "text": "7866851",
+      "data": "384800",
+      "bss": "6553",
+      "sha256": "0e3fcba29642f806d088558a6b9ae360058ef762edc34bcafd421905bf2129d8"
+    },
+    {
+      "variant": "hpack",
+      "bytes": "9884328",
+      "text": "7867003",
+      "data": "384784",
+      "bss": "6377",
+      "sha256": "58bc4f03006692c0183260e1f04e4b2c23a1589ad79425be8a55f814fc9ba3e4"
+    },
+    {
+      "variant": "after",
+      "bytes": "9882496",
+      "text": "7865275",
+      "data": "384864",
+      "bss": "4057",
+      "sha256": "55a822e589afa4362b51a5392dd43f675959f4c5b6f63a79654c19eb36d484be"
+    },
+    {
+      "variant": "final",
+      "bytes": "9882672",
+      "text": "7865431",
+      "data": "384848",
+      "bss": "3881",
+      "sha256": "9b93218cc43e02b6056bf8c29d576c8ffd41ef82600c97f34d68b09608ea287d"
+    },
+    {
+      "variant": "selected",
+      "bytes": 9883216,
+      "text": 7866023,
+      "data": 384848,
+      "bss": 3305,
+      "sha256": "6e3652dc6a245a5066febc4aea0237ddc1388085eac5c79d70a4b2cd8f50f40f"
+    }
+  ],
+  "large_routes": [
+    {
+      "variant": "before",
+      "bytes": 608624,
+      "result": "320 dispatches across 192 routes passed\n"
+    },
+    {
+      "variant": "final",
+      "bytes": 575280,
+      "result": "320 dispatches across 192 routes passed\n"
+    }
+  ],
+  "focused_exploratory_probes": {
+    "route-GET": {
+      "before": {
+        "allocations": 0,
+        "requested_bytes": 0,
+        "ns_samples": [
+          103.9466,
+          97.222625,
+          103.636715,
+          98.368855,
+          99.21401,
+          98.902765,
+          98.955265,
+          89.91299,
+          97.95858,
+          86.946505,
+          101.96063,
+          100.39135,
+          99.642325,
+          94.52465,
+          97.658655
+        ]
+      },
+      "final": {
+        "allocations": 0,
+        "requested_bytes": 0,
+        "ns_samples": [
+          103.428265,
+          94.31806,
+          96.40783,
+          92.207555,
+          95.293865,
+          96.98152,
+          95.100245,
+          104.733345,
+          97.620885,
+          100.85778,
+          95.642375,
+          112.705285,
+          94.61077,
+          94.62269,
+          105.63766
+        ]
+      },
+      "scan": {
+        "allocations": 0,
+        "requested_bytes": 0,
+        "ns_samples": [
+          93.95878,
+          111.001,
+          106.243465,
+          93.064935,
+          96.34411,
+          104.02926,
+          91.68922,
+          94.26907,
+          127.064115,
+          95.515535,
+          92.510725,
+          91.688065,
+          99.29807,
+          98.058915,
+          98.547695
+        ]
+      }
+    },
+    "route-HEAD": {
+      "before": {
+        "allocations": 0,
+        "requested_bytes": 0,
+        "ns_samples": [
+          102.62925,
+          98.741815,
+          102.120985,
+          97.18125,
+          97.54379,
+          99.21025,
+          91.382835,
+          89.836945,
+          97.16672,
+          87.37828,
+          101.55766,
+          100.089975,
+          87.05366,
+          95.973355,
+          96.696075
+        ]
+      },
+      "final": {
+        "allocations": 0,
+        "requested_bytes": 0,
+        "ns_samples": [
+          100.647585,
+          96.33514,
+          95.35899,
+          91.82312,
+          90.4178,
+          96.235205,
+          102.0251,
+          105.28604,
+          97.65425,
+          100.78785,
+          111.778775,
+          110.712855,
+          94.552805,
+          96.078255,
+          107.775025
+        ]
+      },
+      "scan": {
+        "allocations": 0,
+        "requested_bytes": 0,
+        "ns_samples": [
+          94.4186,
+          126.223965,
+          105.57144,
+          95.683955,
+          96.089625,
+          101.448955,
+          91.79682,
+          93.55827,
+          109.466585,
+          96.313,
+          93.33945,
+          91.350475,
+          98.540585,
+          92.43253,
+          94.75499
+        ]
+      }
+    },
+    "route-POST": {
+      "before": {
+        "allocations": 1,
+        "requested_bytes": 9,
+        "ns_samples": [
+          115.435525,
+          110.24847,
+          115.17934,
+          111.7398,
+          110.08621,
+          108.933275,
+          102.06152,
+          102.731745,
+          110.80067,
+          100.474955,
+          114.182795,
+          116.7914,
+          99.472855,
+          111.20574,
+          109.090775
+        ]
+      },
+      "final": {
+        "allocations": 0,
+        "requested_bytes": 0,
+        "ns_samples": [
+          98.11177,
+          97.021345,
+          96.92426,
+          95.146035,
+          93.51033,
+          96.649995,
+          101.760995,
+          103.495295,
+          96.93468,
+          100.51508,
+          98.927265,
+          109.766955,
+          95.415045,
+          95.037175,
+          106.724775
+        ]
+      },
+      "scan": {
+        "allocations": 0,
+        "requested_bytes": 0,
+        "ns_samples": [
+          95.78189,
+          100.37832,
+          107.89395,
+          97.421005,
+          97.032365,
+          102.44565,
+          93.78204,
+          96.110465,
+          106.09413,
+          98.272975,
+          95.38769,
+          93.425065,
+          97.11347,
+          93.47756,
+          98.42065
+        ]
+      }
+    },
+    "route-PUT": {
+      "before": {
+        "allocations": 2,
+        "requested_bytes": 27,
+        "ns_samples": [
+          122.91293,
+          122.50265,
+          130.39985,
+          124.522685,
+          122.905615,
+          122.77832,
+          117.241105,
+          118.99719,
+          123.132545,
+          114.36499,
+          126.84139,
+          125.700375,
+          116.620075,
+          121.863385,
+          131.435715
+        ]
+      },
+      "final": {
+        "allocations": 0,
+        "requested_bytes": 0,
+        "ns_samples": [
+          101.9469,
+          98.552705,
+          99.274575,
+          96.2599,
+          97.327425,
+          98.9698,
+          99.34611,
+          104.79411,
+          99.721525,
+          101.29271,
+          99.389345,
+          112.05901,
+          98.238655,
+          95.53848,
+          108.036115
+        ]
+      },
+      "scan": {
+        "allocations": 0,
+        "requested_bytes": 0,
+        "ns_samples": [
+          98.499205,
+          99.927465,
+          109.4474,
+          97.75594,
+          99.569035,
+          104.197775,
+          97.82512,
+          98.46534,
+          113.977855,
+          99.467295,
+          97.502205,
+          94.71947,
+          97.370555,
+          97.011125,
+          98.00692
+        ]
+      }
+    },
+    "route-PATCH": {
+      "before": {
+        "allocations": 6,
+        "requested_bytes": 739,
+        "ns_samples": [
+          179.26467,
+          182.27178,
+          191.08507,
+          185.922165,
+          197.209505,
+          183.947015,
+          179.919265,
+          181.153555,
+          184.152855,
+          177.427985,
+          194.355785,
+          184.238365,
+          176.473465,
+          187.637425,
+          192.302585
+        ]
+      },
+      "final": {
+        "allocations": 2,
+        "requested_bytes": 656,
+        "ns_samples": [
+          129.20628,
+          126.149425,
+          153.14405,
+          127.72502,
+          129.50169,
+          125.09828,
+          125.560755,
+          174.098705,
+          127.592615,
+          134.145765,
+          126.869595,
+          142.974185,
+          130.897595,
+          126.26194,
+          139.96893
+        ]
+      },
+      "scan": {
+        "allocations": 2,
+        "requested_bytes": 656,
+        "ns_samples": [
+          131.961515,
+          125.68785,
+          141.738035,
+          125.297005,
+          124.932015,
+          137.07057,
+          119.3993,
+          123.774065,
+          124.592615,
+          126.4522,
+          125.063765,
+          121.016125,
+          127.147925,
+          132.48927,
+          131.74225
+        ]
+      }
+    },
+    "huffman-cold": {
+      "before": {
+        "allocations": 12,
+        "requested_bytes": 49104
+      },
+      "final": {
+        "allocations": 3,
+        "requested_bytes": 12336
+      },
+      "scan": {
+        "allocations": 3,
+        "requested_bytes": 12336
+      }
+    },
+    "huffman-warm": {
+      "before": {
+        "allocations": 2,
+        "requested_bytes": 24,
+        "ns_samples": [
+          133.2966,
+          132.85396,
+          134.257075,
+          135.93747,
+          139.716445,
+          132.618815,
+          132.391485,
+          132.960965,
+          132.287785,
+          132.722715,
+          133.05119,
+          133.003495,
+          131.375905,
+          132.000435,
+          144.57357
+        ]
+      },
+      "final": {
+        "allocations": 2,
+        "requested_bytes": 24,
+        "ns_samples": [
+          137.8238,
+          133.640555,
+          144.46311,
+          140.919635,
+          131.882165,
+          136.39068,
+          133.241345,
+          262.58539,
+          136.50835,
+          141.20297,
+          136.445035,
+          140.65518,
+          131.53285,
+          132.064765,
+          134.282075
+        ]
+      },
+      "scan": {
+        "allocations": 2,
+        "requested_bytes": 24,
+        "ns_samples": [
+          133.373695,
+          133.71515,
+          137.100075,
+          133.166755,
+          134.067515,
+          132.79605,
+          132.28834,
+          132.845445,
+          133.44909,
+          134.529645,
+          132.867035,
+          131.255125,
+          131.997385,
+          131.51567,
+          132.580695
+        ]
+      }
+    },
+    "plain": {
+      "before": {
+        "allocations": 4,
+        "requested_bytes": 666,
+        "ns_samples": [
+          190.325075,
+          194.13792,
+          205.35558,
+          186.764315,
+          189.928375,
+          186.6773,
+          186.405585,
+          187.30825,
+          189.36686,
+          187.34276,
+          189.611925,
+          186.95548,
+          185.362705,
+          185.578715,
+          217.72262
+        ]
+      },
+      "final": {
+        "allocations": 4,
+        "requested_bytes": 666,
+        "ns_samples": [
+          177.620995,
+          176.932085,
+          189.46219,
+          175.834405,
+          176.736765,
+          178.351235,
+          179.60311,
+          217.10455,
+          194.49039,
+          181.790665,
+          179.781355,
+          193.92767,
+          176.28571,
+          175.488,
+          178.534285
+        ]
+      },
+      "scan": {
+        "allocations": 4,
+        "requested_bytes": 666,
+        "ns_samples": [
+          178.135975,
+          202.015035,
+          185.84071,
+          176.40764,
+          177.30074,
+          181.01625,
+          184.742525,
+          175.96831,
+          175.535435,
+          177.614535,
+          176.236715,
+          175.59099,
+          176.91901,
+          179.89101,
+          177.746085
+        ]
+      }
+    },
+    "fixed": {
+      "before": {
+        "allocations": 5,
+        "requested_bytes": 667,
+        "ns_samples": [
+          250.317635,
+          251.489915,
+          245.56115,
+          250.91377,
+          253.54597,
+          243.08695,
+          251.40185,
+          247.219955,
+          244.7197,
+          293.047705,
+          249.97223,
+          247.247055,
+          243.172765,
+          244.35391,
+          249.915975
+        ]
+      },
+      "final": {
+        "allocations": 5,
+        "requested_bytes": 667,
+        "ns_samples": [
+          231.81945,
+          232.43036,
+          251.07037,
+          231.7407,
+          232.04443,
+          232.79255,
+          231.30472,
+          240.271155,
+          255.75186,
+          239.456605,
+          236.318595,
+          239.32651,
+          230.14547,
+          229.635,
+          231.267105
+        ]
+      },
+      "scan": {
+        "allocations": 5,
+        "requested_bytes": 667,
+        "ns_samples": [
+          229.193915,
+          255.908855,
+          244.779815,
+          225.89394,
+          228.531705,
+          229.79205,
+          226.75463,
+          225.490225,
+          228.94599,
+          227.10935,
+          226.483515,
+          226.45932,
+          225.3448,
+          232.360425,
+          233.792595
+        ]
+      }
+    },
+    "chunked": {
+      "before": {
+        "allocations": 6,
+        "requested_bytes": 705,
+        "ns_samples": [
+          282.417065,
+          289.037035,
+          282.381795,
+          287.03879,
+          283.205355,
+          304.56663,
+          276.45333,
+          277.465355,
+          276.908245,
+          278.906895,
+          277.94472,
+          280.111335,
+          275.349485,
+          276.153915,
+          276.24103
+        ]
+      },
+      "final": {
+        "allocations": 5,
+        "requested_bytes": 673,
+        "ns_samples": [
+          253.30351,
+          251.544015,
+          279.36607,
+          252.30356,
+          254.574725,
+          257.224355,
+          255.174215,
+          262.694895,
+          270.5943,
+          259.06365,
+          252.543865,
+          260.425635,
+          253.09937,
+          256.08429,
+          255.088045
+        ]
+      },
+      "scan": {
+        "allocations": 5,
+        "requested_bytes": 673,
+        "ns_samples": [
+          249.109845,
+          249.575475,
+          265.13288,
+          249.51897,
+          248.833715,
+          250.13038,
+          248.49317,
+          242.60188,
+          253.690995,
+          246.614905,
+          245.61911,
+          246.55369,
+          247.11611,
+          251.51907,
+          250.767445
+        ]
+      }
+    },
+    "expect": {
+      "before": {
+        "allocations": 7,
+        "requested_bytes": 711,
+        "ns_samples": [
+          321.19342,
+          336.152085,
+          322.954965,
+          339.00986,
+          329.552445,
+          350.12357,
+          320.3131,
+          325.376465,
+          320.428165,
+          335.252425,
+          321.249675,
+          321.339095,
+          324.461225,
+          321.420145,
+          329.6333
+        ]
+      },
+      "final": {
+        "allocations": 6,
+        "requested_bytes": 679,
+        "ns_samples": [
+          306.036225,
+          301.4174,
+          332.00686,
+          303.336945,
+          305.209255,
+          315.7093,
+          306.787355,
+          304.98899,
+          325.01147,
+          309.537625,
+          304.98553,
+          306.813805,
+          301.091935,
+          302.75204,
+          305.14694
+        ]
+      },
+      "scan": {
+        "allocations": 6,
+        "requested_bytes": 679,
+        "ns_samples": [
+          295.89832,
+          339.459265,
+          308.956075,
+          297.96965,
+          298.28871,
+          297.891955,
+          293.723335,
+          305.024355,
+          295.975115,
+          298.15601,
+          298.31531,
+          295.337605,
+          293.65661,
+          295.577205,
+          295.74027
+        ]
+      }
+    },
+    "both": {
+      "before": {
+        "allocations": 8,
+        "requested_bytes": 749,
+        "ns_samples": [
+          356.418325,
+          368.950585,
+          350.01436,
+          351.16139,
+          358.31383,
+          356.93491,
+          352.782425,
+          351.481855,
+          349.819745,
+          354.19235,
+          390.05873,
+          352.204875,
+          383.910955,
+          350.01512,
+          350.166605
+        ]
+      },
+      "final": {
+        "allocations": 6,
+        "requested_bytes": 685,
+        "ns_samples": [
+          324.903115,
+          323.744915,
+          322.829225,
+          323.04178,
+          324.06397,
+          337.27071,
+          364.32575,
+          328.74376,
+          339.681085,
+          340.587155,
+          325.09658,
+          333.537415,
+          322.09473,
+          328.025695,
+          324.96323
+        ]
+      },
+      "scan": {
+        "allocations": 6,
+        "requested_bytes": 685,
+        "ns_samples": [
+          317.46769,
+          316.7606,
+          329.01117,
+          318.718165,
+          323.8423,
+          323.150985,
+          313.581205,
+          323.4213,
+          313.391145,
+          314.03527,
+          312.30163,
+          313.12945,
+          313.67138,
+          317.55135,
+          313.23956
+        ]
+      }
+    },
+    "line-16-1": {
+      "before": {
+        "allocations": 7,
+        "requested_bytes": 132,
+        "ns_samples": [
+          719.47,
+          745.32,
+          725.38,
+          728.08,
+          768.06,
+          724.78,
+          720.37,
+          737.3,
+          715.35,
+          729.09,
+          711.76,
+          726.58,
+          737.91,
+          753.73,
+          718.97
+        ]
+      },
+      "final": {
+        "allocations": 7,
+        "requested_bytes": 132,
+        "ns_samples": [
+          707.35,
+          703.23,
+          718.66,
+          759.45,
+          703.03,
+          715.06,
+          712.16,
+          713.56,
+          698.03,
+          718.97,
+          700.03,
+          711.15,
+          698.63,
+          726.28,
+          992.88
+        ]
+      },
+      "scan": {
+        "allocations": 7,
+        "requested_bytes": 132,
+        "ns_samples": [
+          703.53,
+          725.88,
+          881.48,
+          684.8,
+          692.52,
+          840.6,
+          698.93,
+          699.53,
+          695.62,
+          728.99,
+          698.62,
+          769.46,
+          749.12,
+          685.51,
+          689.31
+        ]
+      }
+    },
+    "line-16-64": {
+      "before": {
+        "allocations": 5,
+        "requested_bytes": 150,
+        "ns_samples": [
+          138.0092,
+          137.4171,
+          134.0166,
+          135.5956,
+          136.91,
+          141.2644,
+          134.7921,
+          137.4682,
+          133.0367,
+          135.81,
+          147.8499,
+          144.7229,
+          135.3521,
+          134.6858,
+          136.1025
+        ]
+      },
+      "final": {
+        "allocations": 5,
+        "requested_bytes": 150,
+        "ns_samples": [
+          133.9635,
+          131.6812,
+          134.1298,
+          131.6281,
+          129.6473,
+          133.6509,
+          133.0267,
+          135.2169,
+          130.2885,
+          134.4925,
+          138.5672,
+          133.5397,
+          131.7863,
+          135.1718,
+          158.0202
+        ]
+      },
+      "scan": {
+        "allocations": 5,
+        "requested_bytes": 150,
+        "ns_samples": [
+          133.9996,
+          140.4117,
+          136.1997,
+          133.6759,
+          133.3062,
+          138.2747,
+          137.5022,
+          135.2459,
+          139.8086,
+          135.4293,
+          138.1264,
+          132.4576,
+          132.0949,
+          134.1789,
+          133.7771
+        ]
+      }
+    },
+    "line-16-8192": {
+      "before": {
+        "allocations": 5,
+        "requested_bytes": 8278,
+        "ns_samples": [
+          230.1682,
+          232.4465,
+          223.71,
+          229.2235,
+          221.626,
+          240.6642,
+          219.9979,
+          225.4953,
+          221.4246,
+          220.5028,
+          248.2295,
+          241.5518,
+          224.279,
+          226.2037,
+          228.0972
+        ]
+      },
+      "final": {
+        "allocations": 5,
+        "requested_bytes": 8278,
+        "ns_samples": [
+          224.5695,
+          224.4774,
+          226.4491,
+          224.2219,
+          220.5149,
+          232.678,
+          224.9844,
+          221.9226,
+          214.1749,
+          231.0719,
+          231.8544,
+          220.7563,
+          218.473,
+          223.8813,
+          298.3807
+        ]
+      },
+      "scan": {
+        "allocations": 5,
+        "requested_bytes": 8278,
+        "ns_samples": [
+          220.4207,
+          237.7236,
+          230.3335,
+          220.5549,
+          222.0178,
+          248.4138,
+          221.3685,
+          230.0971,
+          222.1841,
+          218.3728,
+          227.6774,
+          219.4578,
+          223.1028,
+          218.0963,
+          224.0015
+        ]
+      }
+    },
+    "line-128-1": {
+      "before": {
+        "allocations": 10,
+        "requested_bytes": 804,
+        "ns_samples": [
+          8019.53,
+          8535.82,
+          8086.76,
+          8280.73,
+          8884.18,
+          8177.84,
+          8026.45,
+          7980.05,
+          7907.32,
+          7861.03,
+          8896.1,
+          9401.16,
+          7797.31,
+          8293.65,
+          7999.79
+        ]
+      },
+      "final": {
+        "allocations": 10,
+        "requested_bytes": 804,
+        "ns_samples": [
+          7638.01,
+          7651.94,
+          7707.64,
+          7831.67,
+          7566.07,
+          7701.63,
+          7583.91,
+          7703.84,
+          7453.16,
+          8528.3,
+          7719.26,
+          7738.6,
+          7674.48,
+          7617.47,
+          7508.36
+        ]
+      },
+      "scan": {
+        "allocations": 10,
+        "requested_bytes": 804,
+        "ns_samples": [
+          4330.92,
+          4843.9,
+          5481.41,
+          4315.09,
+          4391.04,
+          5718.26,
+          4485.52,
+          4394.94,
+          4359.18,
+          4867.94,
+          4326.42,
+          4392.85,
+          4987.68,
+          4543.43,
+          4314.1
+        ]
+      }
+    },
+    "line-128-64": {
+      "before": {
+        "allocations": 7,
+        "requested_bytes": 804,
+        "ns_samples": [
+          390.3606,
+          417.974,
+          389.7553,
+          383.1989,
+          416.5953,
+          385.2768,
+          387.8998,
+          381.4916,
+          381.6911,
+          383.0616,
+          410.2503,
+          394.4983,
+          378.0371,
+          398.5671,
+          385.8229
+        ]
+      },
+      "final": {
+        "allocations": 7,
+        "requested_bytes": 804,
+        "ns_samples": [
+          374.9032,
+          373.6337,
+          371.3534,
+          371.2753,
+          375.7697,
+          381.6861,
+          370.6701,
+          368.7374,
+          366.1364,
+          395.4141,
+          367.1234,
+          373.218,
+          374.6867,
+          365.7287,
+          379.7323
+        ]
+      },
+      "scan": {
+        "allocations": 7,
+        "requested_bytes": 804,
+        "ns_samples": [
+          320.074,
+          296.0904,
+          313.784,
+          296.3629,
+          293.7109,
+          319.5059,
+          288.9909,
+          290.4888,
+          297.3288,
+          290.3054,
+          296.2708,
+          295.341,
+          297.7967,
+          289.3356,
+          297.2717
+        ]
+      }
+    },
+    "line-128-8192": {
+      "before": {
+        "allocations": 5,
+        "requested_bytes": 8614,
+        "ns_samples": [
+          290.4056,
+          302.4896,
+          285.9161,
+          300.5709,
+          286.951,
+          291.0229,
+          294.1417,
+          290.9337,
+          281.6049,
+          289.2735,
+          294.9383,
+          292.2271,
+          285.4181,
+          287.8097,
+          290.634
+        ]
+      },
+      "final": {
+        "allocations": 5,
+        "requested_bytes": 8614,
+        "ns_samples": [
+          286.5863,
+          277.5342,
+          277.5452,
+          278.2886,
+          282.6509,
+          275.3641,
+          273.6608,
+          281.107,
+          279.0952,
+          298.0171,
+          273.1138,
+          273.748,
+          271.3274,
+          272.9305,
+          286.0023
+        ]
+      },
+      "scan": {
+        "allocations": 5,
+        "requested_bytes": 8614,
+        "ns_samples": [
+          282.4585,
+          273.6658,
+          347.6033,
+          272.4495,
+          273.5917,
+          281.3615,
+          270.7633,
+          274.3802,
+          278.3086,
+          276.4551,
+          273.9644,
+          272.0998,
+          278.0652,
+          272.124,
+          272.8283
+        ]
+      }
+    },
+    "line-4096-1": {
+      "before": {
+        "allocations": 15,
+        "requested_bytes": 24612,
+        "ns_samples": [
+          4188920.8,
+          4295555.66,
+          4235438.26,
+          4195827.12,
+          4336206.07,
+          4191259.44,
+          4106128.93,
+          4123676.87,
+          4178104.26,
+          4202673.93,
+          4135235.62,
+          4310990.58,
+          4087960.42,
+          4136233.02,
+          4116727.47
+        ]
+      },
+      "final": {
+        "allocations": 15,
+        "requested_bytes": 24612,
+        "ns_samples": [
+          3711767.73,
+          3676940.08,
+          3763332.88,
+          3792382.26,
+          3646496.65,
+          3685281.12,
+          3696679.57,
+          3689261.08,
+          3720670.84,
+          3852459.68,
+          3709530.59,
+          3726987.14,
+          3684117.61,
+          3671466.27,
+          3713607.43
+        ]
+      },
+      "scan": {
+        "allocations": 15,
+        "requested_bytes": 24612,
+        "ns_samples": [
+          135043.42,
+          143524.13,
+          175717.38,
+          127454.81,
+          131374.25,
+          161449.48,
+          127526.34,
+          128801.86,
+          127715.9,
+          142462.11,
+          127178.38,
+          128570.33,
+          142865.98,
+          127931.42,
+          128175.48
+        ]
+      }
+    },
+    "line-4096-64": {
+      "before": {
+        "allocations": 12,
+        "requested_bytes": 24612,
+        "ns_samples": [
+          67913.2536,
+          71207.2777,
+          68583.7242,
+          68745.4835,
+          67582.5464,
+          68920.0751,
+          68611.6743,
+          68679.8798,
+          68035.4097,
+          71067.2086,
+          67828.0347,
+          67831.2519,
+          67258.593,
+          67810.5465,
+          67775.0951
+        ]
+      },
+      "final": {
+        "allocations": 12,
+        "requested_bytes": 24612,
+        "ns_samples": [
+          60920.7862,
+          61077.5148,
+          61470.9492,
+          60667.7585,
+          60749.2874,
+          60687.3327,
+          61985.5487,
+          60860.5027,
+          60808.1552,
+          62090.0422,
+          63066.5091,
+          60266.9181,
+          60450.4116,
+          60660.3755,
+          60313.1108
+        ]
+      },
+      "scan": {
+        "allocations": 12,
+        "requested_bytes": 24612,
+        "ns_samples": [
+          4847.3186,
+          4459.4109,
+          4587.0703,
+          4173.166,
+          4252.8073,
+          4412.5838,
+          4254.0848,
+          4317.0664,
+          4265.1058,
+          4244.2911,
+          4194.0968,
+          4392.123,
+          4264.1939,
+          4258.7186,
+          4247.2928
+        ]
+      }
+    },
+    "line-4096-8192": {
+      "before": {
+        "allocations": 5,
+        "requested_bytes": 20518,
+        "ns_samples": [
+          3339.4083,
+          3534.7213,
+          3552.3268,
+          3394.8396,
+          3351.9792,
+          3396.0779,
+          3345.591,
+          3346.9266,
+          3455.7063,
+          3514.4278,
+          3451.0604,
+          3432.3138,
+          3383.8127,
+          3362.398,
+          3574.4628
+        ]
+      },
+      "final": {
+        "allocations": 5,
+        "requested_bytes": 20518,
+        "ns_samples": [
+          3186.9377,
+          3162.8219,
+          3483.9329,
+          3192.5493,
+          3171.7759,
+          3190.4494,
+          3228.0558,
+          3221.5435,
+          3165.016,
+          3179.5867,
+          3169.3232,
+          3224.7135,
+          3187.9316,
+          3185.7855,
+          3192.2658
+        ]
+      },
+      "scan": {
+        "allocations": 5,
+        "requested_bytes": 20518,
+        "ns_samples": [
+          3230.801,
+          3187.6149,
+          3247.092,
+          3209.6709,
+          3192.2698,
+          3340.6988,
+          3204.5321,
+          3652.2526,
+          3196.4497,
+          3224.6453,
+          3262.6445,
+          3852.6723,
+          3282.6695,
+          3217.5639,
+          3202.2058
+        ]
+      }
+    }
+  },
+  "huffman_followup": {
+    "header-aa": {
+      "pairs": 30,
+      "before_median": 134.8878365,
+      "after_median": 135.46184275000002,
+      "paired_change": -0.28317265261583735,
+      "bootstrap95": [
+        -2.245094040059248,
+        1.7777211454826913
+      ]
+    },
+    "header-final": {
+      "pairs": 30,
+      "before_median": 134.8878365,
+      "after_median": 135.83901600000002,
+      "paired_change": 0.10626409241323298,
+      "bootstrap95": [
+        -2.054372086183187,
+        2.3412933303785133
+      ]
+    },
+    "long-aa": {
+      "pairs": 30,
+      "before_median": 5557.74345,
+      "after_median": 5510.5149,
+      "paired_change": -1.0292234416322543,
+      "bootstrap95": [
+        -2.1800167149139793,
+        0.013308838936199052
+      ]
+    },
+    "long-final": {
+      "pairs": 30,
+      "before_median": 5557.74345,
+      "after_median": 5509.3237,
+      "paired_change": -1.6222829947005524,
+      "bootstrap95": [
+        -2.6598676073187777,
+        -0.7068283163363831
+      ]
+    }
+  },
+  "load_summaries": {
+    "aa-h1/aa": {
+      "pairs": 3,
+      "variants": [
+        "before",
+        "aa"
+      ],
+      "metrics": {
+        "rps": {
+          "before_median": 22221.888048490215,
+          "candidate_median": 22615.01814462837,
+          "median_change_percent": 1.7691120362064217,
+          "paired_geomean_change_percent": 2.094194904650526,
+          "bootstrap95_percent": [
+            0.6689175592242469,
+            3.3312190237697603
+          ]
+        },
+        "cpu_us": {
+          "before_median": 13.442256162517767,
+          "candidate_median": 13.293952578024594,
+          "median_change_percent": -1.1032640852857711,
+          "paired_geomean_change_percent": -0.6055494221758884,
+          "bootstrap95_percent": [
+            -3.0042580696332366,
+            2.3650693332315953
+          ]
+        },
+        "p99_ms": {
+          "before_median": 12.676159120000001,
+          "candidate_median": 12.441863920000005,
+          "median_change_percent": -1.8483138132143972,
+          "paired_geomean_change_percent": -1.8803261837076257,
+          "bootstrap95_percent": [
+            -2.550784917312332,
+            -1.2307111876516008
+          ]
+        },
+        "p999_ms": {
+          "before_median": 18.087541448000568,
+          "candidate_median": 17.558321632000453,
+          "median_change_percent": -2.925880322218233,
+          "paired_geomean_change_percent": -3.744125570400436,
+          "bootstrap95_percent": [
+            -4.935439255781415,
+            -2.925880322218233
+          ]
+        },
+        "rss": {
+          "before_median": 7208960.0,
+          "candidate_median": 7208960.0,
+          "median_change_percent": 0.0,
+          "paired_geomean_change_percent": 0.0,
+          "bootstrap95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "steady_requests": {
+          "before_median": 224769.0,
+          "candidate_median": 226794.0,
+          "median_change_percent": 0.9009249496149341,
+          "paired_geomean_change_percent": 1.3873443382241835,
+          "bootstrap95_percent": [
+            -0.07031885204473731,
+            3.3621641516378364
+          ]
+        }
+      }
+    },
+    "h1-get/final": {
+      "pairs": 5,
+      "variants": [
+        "before",
+        "final"
+      ],
+      "metrics": {
+        "rps": {
+          "before_median": 22588.414495549507,
+          "candidate_median": 22645.243180380712,
+          "median_change_percent": 0.25158332756114454,
+          "paired_geomean_change_percent": 0.9793743171143898,
+          "bootstrap95_percent": [
+            -0.329334586632557,
+            2.446970620439437
+          ]
+        },
+        "cpu_us": {
+          "before_median": 13.236062293601536,
+          "candidate_median": 13.56003607232897,
+          "median_change_percent": 2.447659821637793,
+          "paired_geomean_change_percent": 1.4034441093789596,
+          "bootstrap95_percent": [
+            -1.2321814869550418,
+            4.109401544449831
+          ]
+        },
+        "p99_ms": {
+          "before_median": 12.356479200000006,
+          "candidate_median": 12.40878451999998,
+          "median_change_percent": 0.42330278029338864,
+          "paired_geomean_change_percent": -0.5754871778677728,
+          "bootstrap95_percent": [
+            -2.1512417398576678,
+            0.9699550325658279
+          ]
+        },
+        "p999_ms": {
+          "before_median": 18.29526936000029,
+          "candidate_median": 17.767559582000086,
+          "median_change_percent": -2.8844056221110304,
+          "paired_geomean_change_percent": -2.042758341914075,
+          "bootstrap95_percent": [
+            -5.63374792646536,
+            1.9974894444700242
+          ]
+        },
+        "rss": {
+          "before_median": 7208960.0,
+          "candidate_median": 7208960.0,
+          "median_change_percent": 0.0,
+          "paired_geomean_change_percent": 0.3610202238386817,
+          "bootstrap95_percent": [
+            -1.444176043163392,
+            2.206039658941661
+          ]
+        },
+        "steady_requests": {
+          "before_median": 341081.0,
+          "candidate_median": 344274.0,
+          "median_change_percent": 0.9361412684963488,
+          "paired_geomean_change_percent": 1.2072112522846679,
+          "bootstrap95_percent": [
+            -0.3255028173270835,
+            2.8973266993927105
+          ]
+        }
+      }
+    },
+    "h1-post/final": {
+      "pairs": 5,
+      "variants": [
+        "before",
+        "final"
+      ],
+      "metrics": {
+        "rps": {
+          "before_median": 21246.166030880227,
+          "candidate_median": 20893.20636892184,
+          "median_change_percent": -1.6612863772474395,
+          "paired_geomean_change_percent": -1.9736435879324388,
+          "bootstrap95_percent": [
+            -3.144938976524514,
+            -1.0098332326404114
+          ]
+        },
+        "cpu_us": {
+          "before_median": 14.211731266514667,
+          "candidate_median": 14.695112319482272,
+          "median_change_percent": 3.401281968415315,
+          "paired_geomean_change_percent": 3.6039916419688955,
+          "bootstrap95_percent": [
+            2.539399627434369,
+            5.232674665413373
+          ]
+        },
+        "p99_ms": {
+          "before_median": 13.047980000000004,
+          "candidate_median": 13.125321879999968,
+          "median_change_percent": 0.5927498356064653,
+          "paired_geomean_change_percent": 1.3270111735825152,
+          "bootstrap95_percent": [
+            0.41631650141791265,
+            2.4287863891202965
+          ]
+        },
+        "p999_ms": {
+          "before_median": 17.961508272000437,
+          "candidate_median": 18.305312502000046,
+          "median_change_percent": 1.9141167033035478,
+          "paired_geomean_change_percent": 2.825211769403735,
+          "bootstrap95_percent": [
+            1.1771888922898155,
+            5.590885286667091
+          ]
+        },
+        "rss": {
+          "before_median": 7471104.0,
+          "candidate_median": 7471104.0,
+          "median_change_percent": 0.0,
+          "paired_geomean_change_percent": 0.01253604151219001,
+          "bootstrap95_percent": [
+            -1.7483371030245887,
+            2.1662139509438294
+          ]
+        },
+        "steady_requests": {
+          "before_median": 321587.0,
+          "candidate_median": 316140.0,
+          "median_change_percent": -1.6937873732458142,
+          "paired_geomean_change_percent": -2.3079131524588625,
+          "bootstrap95_percent": [
+            -3.5446658951021615,
+            -1.2541314213844745
+          ]
+        }
+      }
+    },
+    "h2-fixed/final": {
+      "pairs": 5,
+      "variants": [
+        "before",
+        "final"
+      ],
+      "metrics": {
+        "rps": {
+          "before_median": 4509.618308153527,
+          "candidate_median": 4509.631178304312,
+          "median_change_percent": 0.00028539335050759007,
+          "paired_geomean_change_percent": 0.018510767844204246,
+          "bootstrap95_percent": [
+            -0.0018053883585888997,
+            0.05635889103638991
+          ]
+        },
+        "cpu_us": {
+          "before_median": 32.28495911163145,
+          "candidate_median": 32.28524546543084,
+          "median_change_percent": 0.00088695729301147,
+          "paired_geomean_change_percent": 0.4670199808836317,
+          "bootstrap95_percent": [
+            -0.7886375042061688,
+            1.736224295296096
+          ]
+        },
+        "p99_ms": {
+          "before_median": 1.4887654399999894,
+          "candidate_median": 1.453757159999997,
+          "median_change_percent": -2.3514973587775323,
+          "paired_geomean_change_percent": 2.31768846275453,
+          "bootstrap95_percent": [
+            -27.85887545348299,
+            46.19200381114621
+          ]
+        },
+        "p999_ms": {
+          "before_median": 5.828270000000225,
+          "candidate_median": 6.140818038000401,
+          "median_change_percent": 5.362621120849997,
+          "paired_geomean_change_percent": 4.231741099420061,
+          "bootstrap95_percent": [
+            -19.883555532555686,
+            32.290211232668064
+          ]
+        },
+        "rss": {
+          "before_median": 9830400.0,
+          "candidate_median": 9961472.0,
+          "median_change_percent": 1.333333333333342,
+          "paired_geomean_change_percent": -0.504378234142977,
+          "bootstrap95_percent": [
+            -2.0565964679499227,
+            1.0724397313301548
+          ]
+        },
+        "steady_requests": {
+          "before_median": 100003.0,
+          "candidate_median": 100000.0,
+          "median_change_percent": -0.0029999100026989467,
+          "paired_geomean_change_percent": 0.0200132463297642,
+          "bootstrap95_percent": [
+            -0.003599869205195283,
+            0.06305357525497879
+          ]
+        }
+      }
+    },
+    "h1-ablation/route": {
+      "pairs": 5,
+      "variants": [
+        "before",
+        "route"
+      ],
+      "metrics": {
+        "rps": {
+          "before_median": 20679.92856830233,
+          "candidate_median": 20530.21968500296,
+          "median_change_percent": -0.7239332708761759,
+          "paired_geomean_change_percent": -0.7123217666138548,
+          "bootstrap95_percent": [
+            -2.7739064487564247,
+            0.7891930905489231
+          ]
+        },
+        "cpu_us": {
+          "before_median": 14.376662100088645,
+          "candidate_median": 14.2525526354236,
+          "median_change_percent": -0.8632703738949199,
+          "paired_geomean_change_percent": -0.5391152913156616,
+          "bootstrap95_percent": [
+            -2.8893702697856294,
+            2.13505006147785
+          ]
+        },
+        "p99_ms": {
+          "before_median": 13.437267400000005,
+          "candidate_median": 13.240395950000002,
+          "median_change_percent": -1.4651152212688978,
+          "paired_geomean_change_percent": -0.8345465978958133,
+          "bootstrap95_percent": [
+            -3.5965838949808537,
+            2.0847077223794086
+          ]
+        },
+        "p999_ms": {
+          "before_median": 18.34596056800134,
+          "candidate_median": 18.653556680000516,
+          "median_change_percent": 1.6766421734039971,
+          "paired_geomean_change_percent": 2.619769213877654,
+          "bootstrap95_percent": [
+            -5.083550681461279,
+            14.621658273702852
+          ]
+        },
+        "rss": {
+          "before_median": 7471104.0,
+          "candidate_median": 7471104.0,
+          "median_change_percent": 0.0,
+          "paired_geomean_change_percent": 0.7104952091864902,
+          "bootstrap95_percent": [
+            -0.6871413338560117,
+            1.779447850015381
+          ]
+        },
+        "steady_requests": {
+          "before_median": 206453.0,
+          "candidate_median": 208909.0,
+          "median_change_percent": 1.1896170072607237,
+          "paired_geomean_change_percent": -0.35074614094934287,
+          "bootstrap95_percent": [
+            -3.5310447355679897,
+            2.0481569414031897
+          ]
+        }
+      }
+    },
+    "h1-ablation/headers": {
+      "pairs": 5,
+      "variants": [
+        "before",
+        "headers"
+      ],
+      "metrics": {
+        "rps": {
+          "before_median": 20679.92856830233,
+          "candidate_median": 20610.881170848384,
+          "median_change_percent": -0.3338860539382149,
+          "paired_geomean_change_percent": -0.13414049275879414,
+          "bootstrap95_percent": [
+            -0.8540039116636478,
+            0.7386105900236917
+          ]
+        },
+        "cpu_us": {
+          "before_median": 14.376662100088645,
+          "candidate_median": 14.338038816981452,
+          "median_change_percent": -0.26865264578315173,
+          "paired_geomean_change_percent": -0.40551910676038805,
+          "bootstrap95_percent": [
+            -2.3069473636171844,
+            1.632078264879766
+          ]
+        },
+        "p99_ms": {
+          "before_median": 13.437267400000005,
+          "candidate_median": 13.341538340000014,
+          "median_change_percent": -0.7124146387083918,
+          "paired_geomean_change_percent": -0.18491095692184656,
+          "bootstrap95_percent": [
+            -1.9960244286313045,
+            0.9612548714134084
+          ]
+        },
+        "p999_ms": {
+          "before_median": 18.34596056800134,
+          "candidate_median": 18.617283633000024,
+          "median_change_percent": 1.4789253688461734,
+          "paired_geomean_change_percent": 3.0530113042674945,
+          "bootstrap95_percent": [
+            -1.785161262352497,
+            8.096153565358154
+          ]
+        },
+        "rss": {
+          "before_median": 7471104.0,
+          "candidate_median": 7340032.0,
+          "median_change_percent": -1.7543859649122862,
+          "paired_geomean_change_percent": -0.3533657305866189,
+          "bootstrap95_percent": [
+            -1.7483371030245887,
+            1.7669161359728403
+          ]
+        },
+        "steady_requests": {
+          "before_median": 206453.0,
+          "candidate_median": 207740.0,
+          "median_change_percent": 0.6233864366223862,
+          "paired_geomean_change_percent": 0.4504132717208842,
+          "bootstrap95_percent": [
+            -0.8327151899990226,
+            2.1216487551797725
+          ]
+        }
+      }
+    },
+    "h1-ablation/hpack": {
+      "pairs": 5,
+      "variants": [
+        "before",
+        "hpack"
+      ],
+      "metrics": {
+        "rps": {
+          "before_median": 20679.92856830233,
+          "candidate_median": 20743.104168261827,
+          "median_change_percent": 0.30549235095682636,
+          "paired_geomean_change_percent": 0.6546816880387274,
+          "bootstrap95_percent": [
+            0.08867229189437609,
+            1.2238919123006786
+          ]
+        },
+        "cpu_us": {
+          "before_median": 14.376662100088645,
+          "candidate_median": 14.669265957652145,
+          "median_change_percent": 2.03526976934163,
+          "paired_geomean_change_percent": 1.127154815848841,
+          "bootstrap95_percent": [
+            -0.3787859711322672,
+            2.757242210351518
+          ]
+        },
+        "p99_ms": {
+          "before_median": 13.437267400000005,
+          "candidate_median": 13.174970119999974,
+          "median_change_percent": -1.9520135470402988,
+          "paired_geomean_change_percent": -1.6767095251387754,
+          "bootstrap95_percent": [
+            -2.60590272095943,
+            -0.5550086190913905
+          ]
+        },
+        "p999_ms": {
+          "before_median": 18.34596056800134,
+          "candidate_median": 18.005241900000204,
+          "median_change_percent": -1.8571863094233865,
+          "paired_geomean_change_percent": -1.0963632222482866,
+          "bootstrap95_percent": [
+            -3.1574517624715637,
+            1.0524015739594494
+          ]
+        },
+        "rss": {
+          "before_median": 7471104.0,
+          "candidate_median": 7340032.0,
+          "median_change_percent": -1.7543859649122862,
+          "paired_geomean_change_percent": -1.0626665703853178,
+          "bootstrap95_percent": [
+            -1.7669184922247894,
+            -0.3533657305866189
+          ]
+        },
+        "steady_requests": {
+          "before_median": 206453.0,
+          "candidate_median": 210086.0,
+          "median_change_percent": 1.7597225518640958,
+          "paired_geomean_change_percent": 1.3832904841802662,
+          "bootstrap95_percent": [
+            0.10072096218853854,
+            2.682293300187566
+          ]
+        }
+      }
+    },
+    "h1-ablation/final": {
+      "pairs": 5,
+      "variants": [
+        "before",
+        "final"
+      ],
+      "metrics": {
+        "rps": {
+          "before_median": 20679.92856830233,
+          "candidate_median": 20591.20036495953,
+          "median_change_percent": -0.42905468967043836,
+          "paired_geomean_change_percent": -0.5260170395455344,
+          "bootstrap95_percent": [
+            -2.2853018393308777,
+            0.7587826275234244
+          ]
+        },
+        "cpu_us": {
+          "before_median": 14.376662100088645,
+          "candidate_median": 14.605552706571201,
+          "median_change_percent": 1.5920983945302947,
+          "paired_geomean_change_percent": 1.3826067951527854,
+          "bootstrap95_percent": [
+            -0.9334507015934301,
+            3.8866386858080526
+          ]
+        },
+        "p99_ms": {
+          "before_median": 13.437267400000005,
+          "candidate_median": 13.337392630000009,
+          "median_change_percent": -0.7432669681039172,
+          "paired_geomean_change_percent": 0.1082363383078544,
+          "bootstrap95_percent": [
+            -3.009921927699166,
+            4.211090884450441
+          ]
+        },
+        "p999_ms": {
+          "before_median": 18.34596056800134,
+          "candidate_median": 18.574777603000005,
+          "median_change_percent": 1.2472338755473267,
+          "paired_geomean_change_percent": 3.0374184990785924,
+          "bootstrap95_percent": [
+            -4.527476992817514,
+            10.50398533690462
+          ]
+        },
+        "rss": {
+          "before_median": 7471104.0,
+          "candidate_median": 7340032.0,
+          "median_change_percent": -1.7543859649122862,
+          "paired_geomean_change_percent": -0.6993693462086226,
+          "bootstrap95_percent": [
+            -2.4234648899905675,
+            0.7104952091864902
+          ]
+        },
+        "steady_requests": {
+          "before_median": 206453.0,
+          "candidate_median": 208305.0,
+          "median_change_percent": 0.8970564729018138,
+          "paired_geomean_change_percent": -0.16839506483244948,
+          "bootstrap95_percent": [
+            -2.7588275337889323,
+            2.0051620415973304
+          ]
+        }
+      }
+    },
+    "selected2-h1-post/selected": {
+      "pairs": 5,
+      "variants": [
+        "before",
+        "selected"
+      ],
+      "metrics": {
+        "rps": {
+          "before_median": 20885.244528642226,
+          "candidate_median": 21057.295065654736,
+          "median_change_percent": 0.8237899095534074,
+          "paired_geomean_change_percent": 0.3786469310347096,
+          "bootstrap95_percent": [
+            -1.04182766971328,
+            1.819511440406285
+          ]
+        },
+        "cpu_us": {
+          "before_median": 14.353311548196029,
+          "candidate_median": 14.181394856598581,
+          "median_change_percent": -1.1977493209157974,
+          "paired_geomean_change_percent": -1.0297654084517882,
+          "bootstrap95_percent": [
+            -3.0204131592177608,
+            1.2481627769893588
+          ]
+        },
+        "p99_ms": {
+          "before_median": 13.011597870000005,
+          "candidate_median": 13.044710029999989,
+          "median_change_percent": 0.2544818886259126,
+          "paired_geomean_change_percent": -0.17446628077523174,
+          "bootstrap95_percent": [
+            -0.9757753561043803,
+            1.2329051217287779
+          ]
+        },
+        "p999_ms": {
+          "before_median": 17.78923121200001,
+          "candidate_median": 18.180628890000236,
+          "median_change_percent": 2.2001944509901117,
+          "paired_geomean_change_percent": 0.8240417192144411,
+          "bootstrap95_percent": [
+            -0.08649735350685361,
+            1.6727015681821777
+          ]
+        },
+        "rss": {
+          "before_median": 7471104.0,
+          "candidate_median": 7340032.0,
+          "median_change_percent": -1.7543859649122862,
+          "paired_geomean_change_percent": 0.00022188056105765241,
+          "bootstrap95_percent": [
+            -1.4059885159169005,
+            1.4264885426214624
+          ]
+        },
+        "steady_requests": {
+          "before_median": 317269.0,
+          "candidate_median": 319578.0,
+          "median_change_percent": 0.727773592755665,
+          "paired_geomean_change_percent": 0.011997335899138761,
+          "bootstrap95_percent": [
+            -1.1557251186948392,
+            1.1259618430849994
+          ]
+        }
+      }
+    },
+    "selected2-h1-get/selected": {
+      "pairs": 5,
+      "variants": [
+        "before",
+        "selected"
+      ],
+      "metrics": {
+        "rps": {
+          "before_median": 22695.790147288488,
+          "candidate_median": 22705.27083943228,
+          "median_change_percent": 0.041772910668735896,
+          "paired_geomean_change_percent": 0.8773256786625216,
+          "bootstrap95_percent": [
+            -0.2626222819374635,
+            2.0303026699289184
+          ]
+        },
+        "cpu_us": {
+          "before_median": 13.540008968057888,
+          "candidate_median": 13.32242916688651,
+          "median_change_percent": -1.6069398601187723,
+          "paired_geomean_change_percent": -1.7089604288717086,
+          "bootstrap95_percent": [
+            -3.4874017556108194,
+            0.1975571936853715
+          ]
+        },
+        "p99_ms": {
+          "before_median": 12.454563799999997,
+          "candidate_median": 12.26094138000001,
+          "median_change_percent": -1.5546302793839062,
+          "paired_geomean_change_percent": -2.2237853311525058,
+          "bootstrap95_percent": [
+            -3.989483638352509,
+            -0.876619614643459
+          ]
+        },
+        "p999_ms": {
+          "before_median": 18.22943836800011,
+          "candidate_median": 17.723492970000212,
+          "median_change_percent": -2.7754305304766413,
+          "paired_geomean_change_percent": -3.8401808839641283,
+          "bootstrap95_percent": [
+            -6.101125028469179,
+            -1.6300004692711645
+          ]
+        },
+        "rss": {
+          "before_median": 7208960.0,
+          "candidate_median": 7208960.0,
+          "median_change_percent": 0.0,
+          "paired_geomean_change_percent": -0.359721556271031,
+          "bootstrap95_percent": [
+            -1.0752873356541848,
+            0.0
+          ]
+        },
+        "steady_requests": {
+          "before_median": 342817.0,
+          "candidate_median": 343675.0,
+          "median_change_percent": 0.25027930353511696,
+          "paired_geomean_change_percent": 0.5375377607721443,
+          "bootstrap95_percent": [
+            -0.24381275893915477,
+            1.4497759526319154
+          ]
+        }
+      }
+    },
+    "selected2-h2-fixed/selected": {
+      "pairs": 5,
+      "variants": [
+        "before",
+        "selected"
+      ],
+      "metrics": {
+        "rps": {
+          "before_median": 3609.699160599353,
+          "candidate_median": 3609.692797755027,
+          "median_change_percent": -0.0001762707650398987,
+          "paired_geomean_change_percent": 0.00633093281139363,
+          "bootstrap95_percent": [
+            -0.002544229994827507,
+            0.02177621119467954
+          ]
+        },
+        "cpu_us": {
+          "before_median": 32.02216066481994,
+          "candidate_median": 32.02322514875841,
+          "median_change_percent": 0.0033242102230657267,
+          "paired_geomean_change_percent": -0.8173947312166585,
+          "bootstrap95_percent": [
+            -2.303771371150165,
+            0.41865031715344614
+          ]
+        },
+        "p99_ms": {
+          "before_median": 1.12111,
+          "candidate_median": 1.0492395799999992,
+          "median_change_percent": -6.410648375271011,
+          "paired_geomean_change_percent": -16.049517147821433,
+          "bootstrap95_percent": [
+            -38.898013077803284,
+            1.6207059971954596
+          ]
+        },
+        "p999_ms": {
+          "before_median": 4.537418444000145,
+          "candidate_median": 2.8703630000000606,
+          "median_change_percent": -36.74017427694908,
+          "paired_geomean_change_percent": -43.929240831222984,
+          "bootstrap95_percent": [
+            -61.81404484121107,
+            -24.667861535537718
+          ]
+        },
+        "rss": {
+          "before_median": 9961472.0,
+          "candidate_median": 9961472.0,
+          "median_change_percent": 0.0,
+          "paired_geomean_change_percent": -0.7813457628780496,
+          "bootstrap95_percent": [
+            -1.8136224340579488,
+            0.5207716852624333
+          ]
+        },
+        "steady_requests": {
+          "before_median": 80001.0,
+          "candidate_median": 80001.0,
+          "median_change_percent": 0.0,
+          "paired_geomean_change_percent": 0.007502291335637068,
+          "bootstrap95_percent": [
+            -0.003999704397872339,
+            0.026259215990287466
+          ]
+        }
+      }
+    },
+    "selected2-h2-fixed/successful-pairs-only": {
+      "pairs": 4,
+      "variants": [
+        "before",
+        "selected"
+      ],
+      "metrics": {
+        "rps": {
+          "before_median": 3609.7516843585117,
+          "candidate_median": 3609.7112562169623,
+          "median_change_percent": -0.0011199701554165387,
+          "paired_geomean_change_percent": -0.001201671302220042,
+          "bootstrap95_percent": [
+            -0.0031395154785673896,
+            0.00034169438161146815
+          ]
+        },
+        "cpu_us": {
+          "before_median": 31.91223829129966,
+          "candidate_median": 32.02322514875841,
+          "median_change_percent": 0.34778775605033285,
+          "paired_geomean_change_percent": -0.08314637324773333,
+          "bootstrap95_percent": [
+            -0.8571148115421034,
+            0.6968641238624285
+          ]
+        },
+        "p99_ms": {
+          "before_median": 1.1028248999999999,
+          "candidate_median": 1.0469272899999997,
+          "median_change_percent": -5.0685843237671,
+          "paired_geomean_change_percent": -1.8658778455556968,
+          "bootstrap95_percent": [
+            -7.403506336042631,
+            4.0029222485768345
+          ]
+        },
+        "p999_ms": {
+          "before_median": 4.435012300000185,
+          "candidate_median": 2.8416849350001128,
+          "median_change_percent": -35.92610926918975,
+          "paired_geomean_change_percent": -32.568272708337275,
+          "bootstrap95_percent": [
+            -43.88534045613922,
+            -18.940276868350768
+          ]
+        },
+        "rss": {
+          "before_median": 10027008.0,
+          "candidate_median": 9961472.0,
+          "median_change_percent": -0.6535947712418277,
+          "paired_geomean_change_percent": -0.9757264257434617,
+          "bootstrap95_percent": [
+            -2.2492813463637518,
+            0.6513878110515403
+          ]
+        },
+        "steady_requests": {
+          "before_median": 80003.0,
+          "candidate_median": 80001.5,
+          "median_change_percent": -0.0018749296901376944,
+          "paired_geomean_change_percent": -0.0015623686612786791,
+          "bootstrap95_percent": [
+            -0.0053120835298070546,
+            0.001875005859552914
+          ]
+        }
+      }
+    }
+  },
+  "checks": {
+    "check-selected": {
+      "passed": 158,
+      "failed": 0,
+      "ignored": 0
+    },
+    "linux-selected": {
+      "passed": 136,
+      "failed": 0,
+      "ignored": 1
+    },
+    "vendor-tests": {
+      "passed": 237,
+      "failed": 0,
+      "ignored": 0
+    },
+    "exploratory-fuzz-request": [
+      "8890184",
+      "61"
+    ],
+    "exploratory-fuzz-http1": [
+      "1451618",
+      "61"
+    ],
+    "exploratory-fuzz-hpack": [
+      "1727752",
+      "61"
+    ],
+    "exploratory-fuzz-http2": [
+      "1847385",
+      "61"
+    ],
+    "selected-fuzz-request": [
+      "9496232",
+      "61"
+    ],
+    "selected-fuzz-hpack": [
+      "1580605",
+      "61"
+    ]
+  },
+  "manual_wire_checks": "GET /plaintext 200 PASS\nHEAD /plaintext 200 PASS\nPATCH /plaintext 405 PASS\nGET /missing 404 PASS\nGET /users/42 200 PASS\nGET /users/no 400 PASS\nchunked echo with Expect: PASS\n",
+  "aborted_attempt": {
+    "phase": "selected-h1-post",
+    "variant": "selected",
+    "repeat": 0,
+    "classification": "Kubernetes API TLS handshake timeout; no k6 summary produced",
+    "log": "Unable to connect to the server: net/http: TLS handshake timeout\n",
+    "unpaired_baseline_retained_in_csv": true
+  },
+  "reproduction": {
+    "make-probe.py": "from pathlib import Path\nimport sys, shutil\nroot=Path.cwd(); source=Path(sys.argv[1]).resolve(); dest=root/'artifacts/lean-routing/probe'; dest.mkdir(exist_ok=True)\n(dest/'h1').mkdir(exist_ok=True)\nfor f in ['lib.rs','io.rs','activity.rs']: shutil.copy(source/'crates/http1/src'/f,dest/'h1'/f)\nshutil.copy(source/'crates/http2/src/hpack.rs',dest/'hpack.rs')\nwith (dest/'h1/lib.rs').open('a') as f:f.write('''\npub fn probe_parse(bytes: &[u8]) -> (bool, bool) { let head = parse_head(bytes, &Limits::default()).unwrap(); (matches!(head.framing, Framing::Chunked), head.expect) }\npub async fn probe_line(bytes: Vec<u8>, step: usize) -> Vec<u8> {\n let mut reader = Reader { io: Futures(futures_util::io::Cursor::new(bytes)), bytes: Vec::new(), scratch: Vec::new(), capacity: step, activity: Activity::new() };\n reader.line(16384).await.unwrap()\n}\n''')\nwith (dest/'hpack.rs').open('a') as f:f.write('\\npub fn probe_huffman() -> Vec<u8> { decode_huffman(b\"\\\\xf1\\\\xe3\\\\xc2\\\\xe5\\\\xf2\\\\x3a\\\\x6b\\\\xa0\\\\xab\\\\x90\\\\xf4\\\\xff\", 100).unwrap() }\\n')\n(dest/'Cargo.toml').write_text(f'''[package]\nname=\"optimization-probe\"\nversion=\"0.0.0\"\nedition=\"2024\"\n[workspace]\n[dependencies]\nmaximus={{path=\"{source}/crates/framework\"}}\nmaximus-core={{path=\"{source}/crates/core\"}}\nmaximus-runtime={{path=\"{source}/crates/runtime\"}}\ncompio={{version=\"=0.19.2\",default-features=false,features=[\"runtime\",\"io-uring\",\"polling\",\"time\",\"io\"]}}\nfutures-util={{version=\"0.3\",features=[\"io\"]}}\nhttp-body-util=\"0.1\"\n[features]\nwebsocket=[]\n[[bin]]\nname=\"probe\"\npath=\"main.rs\"\n[profile.release]\nlto=\"thin\"\ncodegen-units=1\n''')\nif not (dest/'Cargo.lock').exists():shutil.copy(root/'Cargo.lock',dest/'Cargo.lock')\nallocator=(root/'benches/baselines/src/bin/allocations.rs').read_text(); allocator=allocator[allocator.index('use std::'):allocator.index('fn start()')]\n(dest/'main.rs').write_text('''#![allow(dead_code, unused_imports)]\n#[path=\"h1/lib.rs\"] mod h1;\nmod hpack;\n'''+allocator+'''\nfn ready<T>(f: impl std::future::Future<Output=T>) -> T {\n let mut f=std::pin::pin!(f);\n match f.as_mut().poll(&mut std::task::Context::from_waker(std::task::Waker::noop())) {std::task::Poll::Ready(v)=>v,_=>panic!(\"unexpected pending\")}\n}\nfn measure<T>(name:&str,n:usize,mut f:impl FnMut()->T) {\n ALLOCS.store(0,Ordering::Relaxed); BYTES.store(0,Ordering::Relaxed); ACTIVE.store(true,Ordering::Relaxed);\n black_box(f()); ACTIVE.store(false,Ordering::Relaxed);\n let allocs=ALLOCS.load(Ordering::Relaxed);let bytes=BYTES.load(Ordering::Relaxed);\n let time=Instant::now();for _ in 0..n { black_box(f()); }\n println!(\"{name},{allocs},{bytes},{}\",time.elapsed().as_nanos() as f64/n as f64);\n}\nfn main() {\n use maximus::{Body,Handler,Request};\n async fn body(_:Request)->Body { \"ok\".into() }\n let routes=maximus::routes!{GET \"/\"=>body,POST \"/\"=>body,PUT \"/\"=>body};\n for method in [\"GET\",\"HEAD\",\"POST\",\"PUT\",\"PATCH\"] {\n let method:maximus::Method=method.parse().unwrap();\n measure(&format!(\"route-{method}\"),200000,||{\n let mut request=maximus::http::Request::new(Body::empty()); *request.method_mut()=method.clone();\n ready(routes.handle(black_box(Request::new(request))))\n });\n }\n measure(\"huffman-cold\",0,hpack::probe_huffman);\n measure(\"huffman-warm\",200000,hpack::probe_huffman);\n for (name,extra) in [(\"plain\",\"\"),(\"fixed\",\"Content-Length: 1\\\\r\\\\n\"),(\"chunked\",\"Transfer-Encoding: chunked\\\\r\\\\n\"),(\"expect\",\"Content-Length: 1\\\\r\\\\nExpect: 100-continue\\\\r\\\\n\"),(\"both\",\"Transfer-Encoding: chunked\\\\r\\\\nExpect: 100-continue\\\\r\\\\n\")] {\n let bytes=format!(\"POST / HTTP/1.1\\\\r\\\\nHost: localhost\\\\r\\\\n{extra}\\\\r\\\\n\");\n measure(name,200000,||h1::probe_parse(black_box(bytes.as_bytes())));\n }\n for len in [16,128,4096] {for step in [1,64,8192] {\n let bytes=[vec![b'x';len],b\"\\\\r\\\\n\".to_vec()].concat();\n measure(&format!(\"line-{len}-{step}\"),if step==1 {100}else{10000},||ready(h1::probe_line(black_box(bytes.clone()),step)));\n }}\n}\n''')\n",
+    "remote-probes.py": "from pathlib import Path\nimport subprocess,io,tarfile,time,csv,statistics\nroot=Path.cwd();out=root/'artifacts/lean-routing';cmd=['kubectl','--context','homelab','-n','maximus-perf-routing','exec','-i','measure','-c','server','--']\nfor label,source in [('before',out/'baseline'),('final',root),('scan',root)]:\n subprocess.run(['python3',str(out/'make-probe.py'),str(source)],check=True)\n p=out/'probe';files={f'probe/{name}':(p/name).read_bytes() for name in ['Cargo.toml','Cargo.lock','main.rs','hpack.rs','h1/lib.rs','h1/io.rs','h1/activity.rs']}\n files['probe/Cargo.toml']=files['probe/Cargo.toml'].replace(str(source).encode(),b'/work')\n files['crates/macros/src/lib.rs']=(source/'crates/macros/src/lib.rs').read_bytes()\n if label=='scan':\n  s=files['probe/h1/lib.rs'].decode();s=s.replace('''        loop {\n            if let Some(end) = self.bytes.windows(2).position(|s| s == b\"\\\\r\\\\n\") {''','''        let mut scanned = 0;\n        loop {\n            if let Some(end) = self.bytes[scanned..].windows(2).position(|s| s == b\"\\\\r\\\\n\") {\n                let end = scanned + end;''',1)\n  target='''            if !self\n                .fill()\n                .await\n                .map_err(|_| Error::bad_request(\"body read failed\"))?''';s=s.replace(target,'            scanned = self.bytes.len().saturating_sub(1);\\n'+target,1);files['probe/h1/lib.rs']=s.encode()\n buf=io.BytesIO()\n with tarfile.open(fileobj=buf,mode='w') as tar:\n  for name,data in files.items():\n   info=tarfile.TarInfo(name);info.size=len(data);info.mtime=time.time();tar.addfile(info,io.BytesIO(data))\n subprocess.run(cmd+['tar','xf','-','-C','/work'],input=buf.getvalue(),check=True)\n with (out/f'linux-probe-build-{label}.log').open('w') as log:subprocess.run(cmd+['sh','-c',f'cd /work && cargo build --offline --release --manifest-path probe/Cargo.toml && cp probe/target/release/probe results/probe-{label} && sha256sum results/probe-{label}'],stdout=log,stderr=subprocess.STDOUT,check=True)\n print('Built '+label,flush=True)\nrows=[]\nfor n in range(15):\n variants=['before','final','scan'];variants=variants[n%3:]+variants[:n%3]\n for v in variants:\n  result=subprocess.check_output(cmd+['/work/results/pin','4',f'/work/results/probe-{v}'],text=True)\n  (out/f'linux-probe-{v}-{n}.csv').write_text(result)\n  for line in result.splitlines():\n   name,alloc,byte,ns=line.split(',');rows.append(dict(variant=v,repeat=n,case=name,allocations=int(alloc),bytes=int(byte),ns=float(ns)))\nwith (out/'linux-micro.csv').open('w') as f:w=csv.DictWriter(f,fieldnames=rows[0]);w.writeheader();w.writerows(rows)\nfor case in dict.fromkeys(r['case'] for r in rows):\n vals={v:statistics.median(r['ns'] for r in rows if r['case']==case and r['variant']==v) for v in ['before','final','scan']}\n print(case,vals,flush=True)\n",
+    "huffman-followup.py": "from pathlib import Path\nimport subprocess,csv,statistics,json\nroot=Path.cwd();out=root/'artifacts/lean-routing';cmd=['kubectl','--context','homelab','-n','maximus-perf-routing','exec','-i','measure','-c','server','--']\nmain='''#![allow(dead_code)]\nmod codec;\nuse std::{hint::black_box,time::Instant};\nfn main(){\n let long=[0u8;640];\n for (name,input,expected,n) in [(\"header\",&b\"\\\\xf1\\\\xe3\\\\xc2\\\\xe5\\\\xf2\\\\x3a\\\\x6b\\\\xa0\\\\xab\\\\x90\\\\xf4\\\\xff\"[..],b\"www.example.com\".to_vec(),2_000_000),(\"long\",&long[..],vec![b'0';1024],20_000)] {\n assert_eq!(codec::probe(input),expected);\n let time=Instant::now();for _ in 0..n {black_box(codec::probe(black_box(input)));}\n println!(\"{name},{}\",time.elapsed().as_nanos() as f64/n as f64);\n }}\n'''\nsubprocess.run(cmd+['sh','-c','mkdir -p /work/huffman && cat > /work/huffman/main.rs'],input=main.encode(),check=True)\nfor label,source in [('before',out/'baseline'),('final',root)]:\n code=(source/'crates/http2/src/hpack.rs').read_text()+'\\npub fn probe(input:&[u8])->Vec<u8>{decode_huffman(input,2048).unwrap()}\\n'\n subprocess.run(cmd+['sh','-c','cat > /work/huffman/codec.rs'],input=code.encode(),check=True)\n subprocess.run(cmd+['sh','-c',f'cd /work/huffman && rustc --edition=2024 -O -C lto=thin -C codegen-units=1 main.rs -o /work/results/huffman-{label}'],check=True)\nsubprocess.run(cmd+['cp','/work/results/huffman-before','/work/results/huffman-aa'],check=True)\nrows=[]\nfor n in range(30):\n vs=['before','aa','final'];vs=vs[n%3:]+vs[:n%3]\n for v in vs:\n  s=subprocess.check_output(cmd+['/work/results/pin','4',f'/work/results/huffman-{v}'],text=True)\n  for line in s.splitlines():\n   case,ns=line.split(',');rows.append(dict(variant=v,repeat=n,case=case,ns=float(ns)))\nwith (out/'huffman-followup.csv').open('w') as f:w=csv.DictWriter(f,fieldnames=rows[0]);w.writeheader();w.writerows(rows)\n(out/'huffman-followup-source.rs').write_text(main)\nfor case in ['header','long']:\n print(case,{v:statistics.median(r['ns'] for r in rows if r['case']==case and r['variant']==v) for v in ['before','aa','final']},flush=True)\n",
+    "large-routes.py": "from pathlib import Path\nimport subprocess,json\nroot=Path.cwd();out=root/'artifacts/lean-routing';p=out/'large';p.mkdir(exist_ok=True)\nsource='''use maximus::{Body,Handler,Request};\nfn ready<T>(f:impl std::future::Future<Output=T>)->T {let mut f=std::pin::pin!(f);match f.as_mut().poll(&mut std::task::Context::from_waker(std::task::Waker::noop())){std::task::Poll::Ready(v)=>v,_=>panic!()}}\nasync fn body(_:Request)->Body {\"ok\".into()}\nfn main(){ let routes=maximus::routes!{ ROUTES };\nfor i in 0..64 { for method in [\"GET\",\"HEAD\",\"POST\",\"PUT\",\"PATCH\"] {\n let request=Request::new(maximus::http::Request::builder().method(method).uri(format!(\"/items/{i}\")).body(Body::empty()).unwrap());\n let response=ready(routes.handle(std::hint::black_box(request)));\n assert_eq!(response.status().as_u16(),if method==\"PATCH\" {405}else{200});\n if method==\"PATCH\" {assert_eq!(response.headers()[\"allow\"],\"GET, HEAD, POST, PUT\");}\n}} println!(\"320 dispatches across 192 routes passed\");}\n'''.replace('ROUTES',','.join(f'{m} \"/items/{i}\"=>body' for i in range(64) for m in ['GET','POST','PUT']))\n(p/'main.rs').write_text(source)\nrows=[]\nfor variant,base in [('before',out/'baseline'),('final',root)]:\n (p/'Cargo.toml').write_text(f'''[package]\\nname=\"large-route-probe\"\\nversion=\"0.0.0\"\\nedition=\"2024\"\\n[workspace]\\n[dependencies]\\nmaximus={{path=\"{base}/crates/framework\"}}\\n[[bin]]\\nname=\"large\"\\npath=\"main.rs\"\\n[profile.release]\\nlto=\"thin\"\\ncodegen-units=1\\n''')\n with (out/f'large-build-{variant}.log').open('w') as log:subprocess.run(['cargo','build','--release','--offline','--manifest-path',str(p/'Cargo.toml')],stdout=log,stderr=subprocess.STDOUT,check=True)\n binary=p/'target/release/large';result=subprocess.check_output([str(binary)],text=True);rows.append(dict(variant=variant,bytes=binary.stat().st_size,result=result));print(rows[-1],flush=True)\n(out/'large.json').write_text(json.dumps(rows,indent=2))\n",
+    "load.py": "import subprocess, pathlib, json, time, csv, argparse\nout=pathlib.Path('artifacts/lean-routing');base=['kubectl','--context','homelab','-n','maximus-perf-routing','exec','measure']\ndef cmd(container,*args):return base+['-c',container,'--',*args]\ndef read(container,*args):return subprocess.check_output(cmd(container,*args),text=True)\ndef stats():\n return json.loads(read('server','python3','-c',\"import json,os,pathlib;pid=pathlib.Path('/work/server.pid').read_text().strip();s=pathlib.Path('/proc/'+pid+'/stat').read_text().split(')')[1].split();print(json.dumps(dict(ticks=int(s[11])+int(s[12]),rss=int(s[21])*os.sysconf('SC_PAGE_SIZE'),hz=os.sysconf('SC_CLK_TCK'))))\"))\np=argparse.ArgumentParser();p.add_argument('--protocol',default='h2');p.add_argument('--vus',type=int,default=64);p.add_argument('--variants',default='before,lookup');p.add_argument('--label',required=True);p.add_argument('--repeats',type=int,default=5);p.add_argument('--body',default='1024');p.add_argument('--rate',default='0');p.add_argument('--path',default='/echo');p.add_argument('--duration',default='35s');a=p.parse_args()\nrows=[];variants=a.variants.split(',')\nfor n in range(a.repeats):\n for v in variants[n%len(variants):]+variants[:n%len(variants)]:\n  key=f'{a.label}-{v}-{n}'\n  read('server','sh','-c',f'{\"MAXIMUS_CERT=/work/cert.pem MAXIMUS_KEY=/work/key.pem\" if a.protocol == \"h2\" else \"\"} PROTOCOL={a.protocol} WORKERS=1 /work/results/pin 4 /work/results/server-{v} maximus >/work/server.log 2>&1 & echo $! >/work/server.pid')\n  try:\n   for _ in range(50):\n    if 'ready' in read('server','cat','/work/server.log'):break\n    time.sleep(.1)\n   else:raise RuntimeError('server not ready')\n   before=stats()\n   env=['env',f'PROTOCOL={a.protocol}',f'PATHNAME={a.path}',f'BODY_BYTES={a.body}',f'DURATION={a.duration}',f'VUS={a.vus}','SSL_CERT_FILE=/work/cert.pem',f'RESULT=/work/results/{key}.json']\n   if a.rate!='0':env.append(f'RATE={a.rate}')\n   t=time.monotonic()\n   with (out/f'{key}.log').open('w') as f:r=subprocess.run(cmd('client',*env,'/work/results/pin','80','k6','run','--quiet','/work/load.js'),stdout=f,stderr=subprocess.STDOUT)\n   elapsed=time.monotonic()-t;after=stats()\n   s=json.loads(read('server','cat',f'/work/results/{key}.json'));(out/f'{key}.json').write_text(json.dumps(s))\n   m=s['metrics'];val=lambda k,f,default=0:m.get(k,{}).get('values',{}).get(f,default)\n   count=val('http_reqs','count');assert count==val('starts','count')==val('iterations','count') and count>0\n   row=dict(phase=a.label,variant=v,repeat=n,path=a.path,body=int(a.body),rate=int(a.rate),requests=count,rps=val('http_reqs','rate'),cpu_us=(after['ticks']-before['ticks'])/before['hz']*1e6/count,steady_requests=val('steady_requests','count'),p99_ms=val('steady_latency','p(99)'),p999_ms=val('steady_latency','p(99.9)'),rss=after['rss'],failures=val('http_req_failed','passes'),checks_failed=val('checks','fails'),dropped=val('dropped_iterations','count'),exit=r.returncode,wall_seconds=elapsed)\n   rows.append(row)\n   with (out/f'{a.label}.csv').open('w') as f:w=csv.DictWriter(f,fieldnames=list(row),lineterminator='\\n');w.writeheader();w.writerows(rows)\n   print(json.dumps(row),flush=True)\n  finally:read('server','sh','-c','kill $(cat /work/server.pid); sleep 0.2')\n",
+    "load.js": "import http from 'k6/http';\nimport exec from 'k6/execution';\nimport { check } from 'k6';\nimport { Counter, Trend } from 'k6/metrics';\nconst starts = new Counter('starts');\nconst steady = new Counter('steady_requests');\nconst latency = new Trend('steady_latency', true);\nconst h2 = __ENV.PROTOCOL !== 'h1';\nconst url = (h2 ? 'https' : 'http') + '://localhost:8080';\nconst path = __ENV.PATHNAME || '/echo';\nconst body = 'x'.repeat(Number(__ENV.BODY_BYTES || 1024));\nconst expected = path === '/echo' ? body : path === '/json' ? '{\"message\":\"Hello, World!\"}' : path.startsWith('/users/') ? '42' : 'Hello, World!';\nconst duration = __ENV.DURATION || '35s';\nconst vus = Number(__ENV.VUS || 64);\nexport const options = {\n  scenarios: { load: __ENV.RATE ? { executor: 'ramping-arrival-rate', startRate: 100, timeUnit: '1s', stages: [{duration: '5s', target: Number(__ENV.RATE)}, {duration: `${parseInt(duration) - 5}s`, target: Number(__ENV.RATE)}], preAllocatedVUs: vus } : {executor: 'constant-vus', vus, duration}},\n  tlsVersion: { min: 'tls1.3', max: 'tls1.3' },\n  summaryTrendStats: ['med', 'p(99)', 'p(99.9)', 'max'],\n  thresholds: {http_req_failed: ['rate==0'], checks: ['rate==1'], ...(__ENV.RATE ? {dropped_iterations: ['count==0']} : {})},\n};\nexport default function () {\n  starts.add(1);\n  const r = path === '/echo' ? http.post(url + path, body) : http.get(url + path);\n  check(r, {'status/body/H2': r => r.status === 200 && r.body === expected && r.proto === (h2 ? 'HTTP/2.0' : 'HTTP/1.1')});\n  if (exec.instance.currentTestRunDuration >= 5000) {steady.add(1);latency.add(r.timings.duration);}\n}\nexport function handleSummary(data) {return {[__ENV.RESULT]: JSON.stringify(data)};}\n"
+  },
+  "experimental_http1_patch": "--- a/crates/http1/src/lib.rs\n+++ b/crates/http1/src/lib.rs\n@@ -271,17 +271,14 @@\n         }\n     }\n     let length = content_length(request.headers())?;\n-    let encodings: Vec<_> = request\n-        .headers()\n-        .get_all(\"transfer-encoding\")\n-        .iter()\n-        .collect();\n-    if !encodings.is_empty()\n-        && (length.is_some()\n+    let mut encodings = request.headers().get_all(\"transfer-encoding\").iter();\n+    let encoding = encodings.next();\n+    if encoding.is_some_and(|value| {\n+        length.is_some()\n             || version == http::Version::HTTP_10\n-            || encodings.len() != 1\n-            || !encodings[0].as_bytes().eq_ignore_ascii_case(b\"chunked\"))\n-    {\n+            || encodings.next().is_some()\n+            || !value.as_bytes().eq_ignore_ascii_case(b\"chunked\")\n+    }) {\n         return Err(Error::bad_request(\n             \"ambiguous or unsupported transfer framing\",\n         ));\n@@ -292,25 +289,26 @@\n             \"body limit exceeded\",\n         ));\n     }\n-    let framing = if !encodings.is_empty() {\n+    let framing = if encoding.is_some() {\n         Framing::Chunked\n     } else {\n         length\n             .filter(|n| *n > 0)\n             .map_or(Framing::Empty, Framing::Fixed)\n     };\n-    let expects: Vec<_> = request.headers().get_all(\"expect\").iter().collect();\n-    if !expects.is_empty()\n-        && (expects.len() != 1\n-            || !expects[0].as_bytes().eq_ignore_ascii_case(b\"100-continue\")\n-            || version != http::Version::HTTP_11)\n-    {\n+    let mut expects = request.headers().get_all(\"expect\").iter();\n+    let expectation = expects.next();\n+    if expectation.is_some_and(|value| {\n+        expects.next().is_some()\n+            || !value.as_bytes().eq_ignore_ascii_case(b\"100-continue\")\n+            || version != http::Version::HTTP_11\n+    }) {\n         return Err(Error::new(\n             StatusCode::EXPECTATION_FAILED,\n             \"unsupported expectation\",\n         ));\n     }\n-    let expect = !expects.is_empty() && !matches!(framing, Framing::Empty);\n+    let expect = expectation.is_some() && !matches!(framing, Framing::Empty);\n     let close = token(request.headers(), \"connection\", \"close\")\n         || version == http::Version::HTTP_10\n             && !token(request.headers(), \"connection\", \"keep-alive\");\n",
+  "pod_yaml": "apiVersion: v1\nkind: Namespace\nmetadata:\n  name: maximus-perf-routing\n  labels:\n    purpose: temporary-maximus-benchmark\n---\napiVersion: v1\nkind: Pod\nmetadata:\n  name: measure\n  namespace: maximus-perf-routing\nspec:\n  nodeSelector:\n    kubernetes.io/hostname: homelab-01\n  restartPolicy: Never\n  activeDeadlineSeconds: 10800\n  volumes:\n    - name: work\n      emptyDir: {}\n  containers:\n    - name: server\n      image: rust:1.96-bookworm\n      command: [sh, -c, 'mkdir -p /work/results; chmod 777 /work/results; sleep 10800']\n      resources:\n        requests: {cpu: '2', memory: 4Gi}\n        limits: {cpu: '2', memory: 6Gi}\n      securityContext:\n        seccompProfile: {type: Unconfined}\n      volumeMounts:\n        - {name: work, mountPath: /work}\n    - name: client\n      image: grafana/k6:1.6.0\n      command: [sh, -c, 'sleep 10800']\n      resources:\n        requests: {cpu: '2', memory: 1Gi}\n        limits: {cpu: '2', memory: 2Gi}\n      volumeMounts:\n        - {name: work, mountPath: /work}\n",
+  "affinity_launcher": "use std::{os::unix::process::CommandExt, process::Command};\nunsafe extern \"C\" {\n    fn sched_setaffinity(pid: i32, size: usize, mask: *const u64) -> i32;\n}\nfn main() {\n    let mut args = std::env::args().skip(1);\n    let mask: u64 = args.next().unwrap().parse().unwrap();\n    // Temporary measurement launcher: kernel reads exactly one u64 affinity mask.\n    assert_eq!(unsafe { sched_setaffinity(0, 8, &mask) }, 0);\n    panic!(\"{}\", Command::new(args.next().unwrap()).args(args).exec());\n}\n",
+  "measurement_notes": [
+    "CPU is process user+system ticks divided by completed requests, including warmup; excludes separately scheduled kernel work.",
+    "k6 closed-loop runs are client/workload regression screens, not saturated server-capacity measurements.",
+    "Fixed-rate starts at 100/s, ramps five seconds, then holds the target. Latency excludes the first five seconds. Whole-run RPS includes the ramp.",
+    "Every valid row requires positive equal starts, iterations and HTTP response counts; all completed bodies/statuses/protocols are checked. Dropped arrivals fail the trial and remain in the CSV.",
+    "RSS is one post-run sample, not peak memory.",
+    "Bootstrap uses 20,000 paired resamples of mean log ratios with seed 73051. Small samples and shared-host noise limit inference; intervals do not prove universal parity.",
+    "Cold focused probe uses allocation counts only; zero-iteration timing is intentionally omitted.",
+    "H1 iterator and line-scan experiments are not retained. Focused bundle timings are exploratory, not timings of the final entire framework.",
+    "Huffman follow-up sample array index is repetition 0 through 29; final is the isolated candidate decoder."
+  ],
+  "huffman_followup_samples_ns": {
+    "header": {
+      "before": [
+        141.048781,
+        134.1545775,
+        134.779105,
+        134.996568,
+        154.7676845,
+        151.660229,
+        134.0818405,
+        135.449861,
+        136.250398,
+        138.002545,
+        133.372092,
+        132.7332765,
+        142.09733,
+        135.862701,
+        135.858432,
+        132.5285585,
+        132.5407755,
+        137.748544,
+        157.218061,
+        139.092463,
+        138.011131,
+        134.2421425,
+        132.8964315,
+        132.992875,
+        133.3083645,
+        134.314521,
+        134.4910515,
+        134.557327,
+        133.058856,
+        141.909938
+      ],
+      "aa": [
+        140.51446,
+        134.840508,
+        135.4248375,
+        133.6773285,
+        135.208836,
+        136.9644435,
+        133.6719005,
+        136.285546,
+        137.6454005,
+        135.038367,
+        151.354603,
+        132.9790285,
+        136.7744015,
+        135.6623205,
+        136.998014,
+        136.1226735,
+        134.4255905,
+        139.810169,
+        140.4904825,
+        133.6291735,
+        135.2815095,
+        133.2153245,
+        134.829739,
+        134.6885095,
+        139.8472395,
+        135.659655,
+        135.498848,
+        133.1263005,
+        156.085668,
+        135.0204005
+      ],
+      "final": [
+        141.8905965,
+        136.423183,
+        146.0582925,
+        135.7476705,
+        135.724872,
+        134.1456875,
+        141.4847445,
+        134.319967,
+        134.981615,
+        135.420103,
+        135.156406,
+        135.9337785,
+        135.067565,
+        134.627532,
+        135.9406085,
+        160.7394155,
+        135.0186825,
+        134.318581,
+        137.6961335,
+        135.620485,
+        134.739409,
+        135.7513025,
+        136.9370765,
+        139.571361,
+        138.7720495,
+        137.0782425,
+        139.291912,
+        135.527281,
+        136.9332745,
+        135.9267295
+      ]
+    },
+    "long": {
+      "before": [
+        5693.57985,
+        5581.73655,
+        5679.7199,
+        5616.82075,
+        5596.97345,
+        6114.14055,
+        5551.9523,
+        5494.6462,
+        5626.763,
+        5592.9792,
+        5894.16595,
+        5820.0981,
+        5563.5346,
+        5469.6389,
+        5496.25655,
+        5462.7613,
+        5800.77005,
+        5690.4968,
+        5752.14005,
+        5833.5523,
+        5505.7193,
+        5478.61925,
+        5467.52815,
+        5529.78,
+        5501.8458,
+        5493.0756,
+        5502.93335,
+        5509.91005,
+        5492.53395,
+        5468.5233
+      ],
+      "aa": [
+        5713.77075,
+        5482.9933,
+        6002.98125,
+        5605.25125,
+        5496.10615,
+        5499.2801,
+        5517.1581,
+        5569.48855,
+        5503.8717,
+        5503.17285,
+        5576.35455,
+        5480.59635,
+        5485.45855,
+        5549.74335,
+        5472.38215,
+        5499.0383,
+        5528.0745,
+        5750.55205,
+        5540.0537,
+        5495.6172,
+        5502.17305,
+        5552.5609,
+        5487.56025,
+        5474.8019,
+        5586.84095,
+        5473.4904,
+        5503.4032,
+        5539.45425,
+        5587.9615,
+        5538.75785
+      ],
+      "final": [
+        5544.68715,
+        5496.7084,
+        5537.7484,
+        5479.7415,
+        5539.5302,
+        5478.78815,
+        5669.1872,
+        5488.22755,
+        5513.23505,
+        5479.312,
+        5510.8825,
+        5578.192,
+        5482.38825,
+        5521.8202,
+        5529.5449,
+        5457.18865,
+        5521.47395,
+        5548.8194,
+        5486.58695,
+        5502.66105,
+        5481.7743,
+        5526.7257,
+        5505.87805,
+        5468.81105,
+        5496.65445,
+        5550.4197,
+        5518.1077,
+        5575.23275,
+        5498.5319,
+        5507.7649
+      ]
+    }
+  }
+}

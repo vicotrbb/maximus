@@ -215,7 +215,8 @@ fn decode_huffman(bytes: &[u8], limit: usize) -> Result<Vec<u8>, Error> {
     // The immutable trie is shared across all connections and built only once.
     static TREE: std::sync::OnceLock<Vec<Node>> = std::sync::OnceLock::new();
     let tree = TREE.get_or_init(|| {
-        let mut tree = vec![Node::default()];
+        let mut tree = Vec::with_capacity(2 * HUFFMAN.len() - 1);
+        tree.push(Node::default());
         for (symbol, &(code, width)) in HUFFMAN.iter().enumerate() {
             let mut node = 0;
             for shift in (0..width).rev() {

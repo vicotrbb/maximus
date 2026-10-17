@@ -80,3 +80,53 @@ fn literal_paths_own_method_errors_and_explicit_head_wins() {
         assert!(response.headers()["allow"].to_str().unwrap().contains("HEAD"));
     });
 }
+
+#[test]
+fn compiled_method_groups_preserve_allow_order_and_capture_names() {
+    compio::runtime::Runtime::new().unwrap().block_on(async {
+        async fn named(request: Request) -> String {
+            request.path::<String>("name").unwrap()
+        }
+        let router = routes! {
+            GET "/{id}/tail" => hello, GET "/prefix/{id}" => hello,
+            POST "/{name}/tail" => named, PUT "/{id}/tail" => hello,
+            HEAD "/fixed" => hello, GET "/fixed" => hello, POST "/fixed" => hello,
+        };
+        for (method, path, status, allow) in [
+            ("PATCH", "/value/tail", 405, Some("GET, HEAD, POST, PUT")),
+            ("PATCH", "/fixed", 405, Some("HEAD, GET, HEAD, POST")),
+            ("POST", "/prefix/tail", 405, Some("GET, HEAD")),
+            ("GET", "/missing/deeper/path", 404, None),
+            ("HEAD", "/value/tail", 200, None),
+            ("POST", "/value/tail", 200, None),
+        ] {
+            let request = Request::new(
+                maximus::http::Request::builder()
+                    .method(method)
+                    .uri(path)
+                    .body(Body::empty())
+                    .unwrap(),
+            );
+            let response = router.handle(request).await;
+            assert_eq!(response.status().as_u16(), status, "{method} {path}");
+            assert_eq!(
+                response.headers().get("allow").map(|v| v.to_str().unwrap()),
+                allow
+            );
+            if method == "POST" && status == 200 {
+                assert_eq!(
+                    response.into_body().collect().await.unwrap().to_bytes(),
+                    "value"
+                );
+            }
+        }
+        let empty = routes! {};
+        assert_eq!(
+            empty
+                .handle(Request::new(maximus::http::Request::new(Body::empty())))
+                .await
+                .status(),
+            StatusCode::NOT_FOUND
+        );
+    });
+}
