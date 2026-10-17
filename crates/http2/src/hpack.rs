@@ -170,14 +170,20 @@ pub fn encode<'a>(headers: impl IntoIterator<Item = (&'a [u8], &'a [u8])>, outpu
     // SETTINGS_HEADER_TABLE_SIZE. A size update may precede every block.
     output.push(0x20);
     for (name, value) in headers {
-        if let Some(index) = STATIC.iter().position(|&(n, v)| n == name && v == value) {
-            write_integer(index + 1, 7, 0x80, output);
+        let mut index = 0;
+        let exact = STATIC.iter().enumerate().find(|&(i, &(n, v))| {
+            if n != name {
+                return false;
+            }
+            if index == 0 {
+                index = i + 1;
+            }
+            v == value
+        });
+        if let Some((i, _)) = exact {
+            write_integer(i + 1, 7, 0x80, output);
             continue;
         }
-        let index = STATIC
-            .iter()
-            .position(|&(n, _)| n == name)
-            .map_or(0, |i| i + 1);
         write_integer(index, 4, 0x10, output);
         if index == 0 {
             write_integer(name.len(), 7, 0, output);
@@ -859,6 +865,27 @@ mod tests {
             Decoder::new(4096, 1024, 10).decode(&block).unwrap(),
             vec![(vec![255], vec![0]); 5]
         );
+    }
+
+    #[test]
+    fn encoder_prefers_exact_values_and_first_matching_name() {
+        for (i, &(name, value)) in STATIC.iter().enumerate() {
+            let mut out = Vec::new();
+            encode([(name, value)], &mut out);
+            assert_eq!(out, [0x20, 0x80 | (i + 1) as u8]);
+        }
+        for (name, value, expected) in [
+            (":method", "GET", "2082"),
+            (":method", "POST", "2083"),
+            (":method", "PATCH", "2012055041544348"),
+            (":status", "404", "208d"),
+            (":status", "418", "201803343138"),
+            ("x", "", "2010017800"),
+        ] {
+            let mut out = Vec::new();
+            encode([(name.as_bytes(), value.as_bytes())], &mut out);
+            assert_eq!(out, hex(expected));
+        }
     }
 
     #[test]

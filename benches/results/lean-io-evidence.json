@@ -1,0 +1,2468 @@
+{
+  "baseline_commit": "fe4129c95fc8a728f9b970087f43286b60a209fb",
+  "selected_variant": "encoding",
+  "acceptance": {
+    "status": "draft; no-regression gate not met",
+    "reason": "Mixed small-body socket results and increased comparison executable size require resolution before merge."
+  },
+  "comparison_executables": {
+    "linux-final": {
+      "bytes": 9594144,
+      "sha256": "442928c24604425ddb17b7502b17ecdd67dae96a09928ac9a96d77b84e5bfe9c"
+    },
+    "linux-combined": {
+      "bytes": 9588320,
+      "sha256": "d7de52feb8fcc05b089ccc40ee8ebbe6a6ff070a5b21e10c1ef8b831fc216f47"
+    },
+    "linux-pgo-use": {
+      "bytes": 8920848,
+      "sha256": "5289614e399c53b82956f229bdbc97b26663e7c304f6f5cf056583d1009e0752"
+    },
+    "linux-headers": {
+      "bytes": 9527408,
+      "sha256": "462bde2cbedd4dffec26215f9ea831fb8e31d568ca2bd7412f6709dffc0d3fc3"
+    },
+    "linux-batch": {
+      "bytes": 9593424,
+      "sha256": "78534a6dfc4342a9b55cf1e366619c967b89c10ed814e20aea5e3247dd96327a"
+    },
+    "linux-pgo-generate": {
+      "bytes": 27041712,
+      "sha256": "397b054f65e11d2756a79504795f5c32595266d605480fb8eb329c8a821cf677"
+    },
+    "linux-before": {
+      "bytes": 9528072,
+      "sha256": "d64af794136ce1bdcaad3842545e37be337394efa0f63bcd79cb73749e022e03"
+    },
+    "linux-traversal": {
+      "bytes": 9593336,
+      "sha256": "81ad7e83da1a27d13379826816c4db0256a329fed8f2b97a0b970d9f363b4f41"
+    },
+    "linux-slice": {
+      "bytes": 9593720,
+      "sha256": "bea06b74c1a65a3de202485fe6b1d6ec886d17b3650ef98870df2de3e553d0ad"
+    },
+    "linux-pgo-control": {
+      "bytes": 9594248,
+      "sha256": "cecb96ac241b8fb9632d9f1b871b0fbfb820c88b3b3ccdcd472bf2a97e072ad4"
+    },
+    "linux-encoding": {
+      "bytes": 9594144,
+      "sha256": "442928c24604425ddb17b7502b17ecdd67dae96a09928ac9a96d77b84e5bfe9c"
+    },
+    "linux-scheduled": {
+      "bytes": 9594336,
+      "sha256": "e8dcc88ef754eb64ba97bc25030568daae08c000bc5fed434c4b4b4b691e80cc"
+    }
+  },
+  "compiler": "rustc 1.96.1 (31fca3adb 2026-06-26)\nbinary: rustc\ncommit-hash: 31fca3adb283cc9dfd56b49cdee9a96eb9c96ffd\ncommit-date: 2026-06-26\nhost: aarch64-unknown-linux-gnu\nrelease: 1.96.1\nLLVM version: 22.1.2",
+  "runtime_prefix_sha256": {
+    "crates/http2/src/lib.rs": "2ad8138d8bc7ed500d292dce3d3029b3c41997bd5963c1310615066cd267bea8",
+    "crates/http2/src/hpack.rs": "22b248376c18d1f171c110e66e01ad5135a855f83459bb37c65d5b34aebf1bf2"
+  },
+  "final_binary_equals_measured_candidate": true,
+  "final_source_sha256": {
+    "crates/http2/src/lib.rs": "40e28faf943ee5288be0d7980ce1931dc7a47fedb9a16357d5dc6c33168ef379",
+    "crates/http2/src/hpack.rs": "b5ca0b43cf48d0f2d1daedc3fab0ccdf2f1887b6afb125a9a3da19104e4631fb"
+  },
+  "trial_csv_sha256": "4c17638c2dcfc7616d2491a90df7537da9dd4d5342edc81779af03b8daf49634",
+  "trial_totals": {
+    "trials": 87,
+    "requests": 22164685,
+    "http_failures": 0,
+    "check_failures": 0,
+    "dropped_arrivals": 3661,
+    "threshold_failures": 17
+  },
+  "complete_iterations": true,
+  "environment": {
+    "docker": "29.4.0",
+    "kernel": "Linux c79e30e594e7 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+    "cpus": "3",
+    "images": {
+      "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+      "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+    },
+    "workload_sha256": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376"
+  },
+  "phase_arguments": {
+    "h1-large-environment": {
+      "engines": "before,combined",
+      "paths": "/echo",
+      "rates": "1000",
+      "body_bytes": 131072,
+      "workers": 1,
+      "duration": "20s",
+      "repeats": 3,
+      "vus": 32,
+      "label": "h1-large",
+      "client_cpus": "1,2",
+      "sample_seconds": 0,
+      "protocol": "plain"
+    },
+    "final-large-environment": {
+      "engines": "before,encoding",
+      "paths": "/echo",
+      "rates": "0",
+      "body_bytes": 131072,
+      "workers": 1,
+      "duration": "20s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "final-large",
+      "client_cpus": "1,2",
+      "sample_seconds": 0,
+      "protocol": "h2"
+    },
+    "encoding-ablation-environment": {
+      "engines": "before,slice,encoding",
+      "paths": "/echo",
+      "rates": "0",
+      "body_bytes": 1024,
+      "workers": 1,
+      "duration": "20s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "encoding-ablation",
+      "client_cpus": "1,2",
+      "sample_seconds": 0,
+      "protocol": "h2"
+    },
+    "qualified-h2-small-steady-environment": {
+      "engines": "before,batch",
+      "paths": "/echo",
+      "rates": "0",
+      "body_bytes": 1024,
+      "workers": 1,
+      "duration": "30s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "qualified-h2-small-steady",
+      "client_cpus": "1,2",
+      "sample_seconds": 0,
+      "protocol": "h2"
+    },
+    "h2-large-environment": {
+      "engines": "before,combined",
+      "paths": "/echo",
+      "rates": "1000",
+      "body_bytes": 131072,
+      "workers": 1,
+      "duration": "20s",
+      "repeats": 3,
+      "vus": 32,
+      "label": "h2-large",
+      "client_cpus": "1,2",
+      "sample_seconds": 0,
+      "protocol": "h2"
+    },
+    "qualified-h2-small-environment": {
+      "engines": "before,batch",
+      "paths": "/plaintext,/echo",
+      "rates": "500",
+      "body_bytes": 1024,
+      "workers": 1,
+      "duration": "15s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "qualified-h2-small",
+      "client_cpus": "1,2",
+      "sample_seconds": 0,
+      "protocol": "h2"
+    },
+    "final-small-headroom-environment": {
+      "engines": "before,encoding",
+      "paths": "/echo",
+      "rates": "5000",
+      "body_bytes": 1024,
+      "workers": 1,
+      "duration": "20s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "final-small-headroom",
+      "client_cpus": "1,2",
+      "sample_seconds": 0,
+      "protocol": "h2"
+    },
+    "pgo-h1-route-environment": {
+      "engines": "pgo-control,pgo-use",
+      "paths": "/users/42",
+      "rates": "500",
+      "body_bytes": 1024,
+      "workers": 1,
+      "duration": "10s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "pgo-h1-route",
+      "client_cpus": "1,2",
+      "sample_seconds": 0,
+      "protocol": "plain"
+    },
+    "pgo-h2-large-environment": {
+      "engines": "pgo-control,pgo-use",
+      "paths": "/echo",
+      "rates": "0",
+      "body_bytes": 131072,
+      "workers": 1,
+      "duration": "20s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "pgo-h2-large",
+      "client_cpus": "1,2",
+      "sample_seconds": 0,
+      "protocol": "h2"
+    },
+    "h2-small-environment": {
+      "engines": "before,combined",
+      "paths": "/plaintext,/echo",
+      "rates": "1000",
+      "body_bytes": 1024,
+      "workers": 1,
+      "duration": "20s",
+      "repeats": 3,
+      "vus": 32,
+      "label": "h2-small",
+      "client_cpus": "1,2",
+      "sample_seconds": 0,
+      "protocol": "h2"
+    },
+    "qualified-h1-control-environment": {
+      "engines": "before,batch",
+      "paths": "/plaintext",
+      "rates": "500",
+      "body_bytes": 1024,
+      "workers": 1,
+      "duration": "10s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "qualified-h1-control",
+      "client_cpus": "1,2",
+      "sample_seconds": 0,
+      "protocol": "plain"
+    },
+    "qualified-h2-large-environment": {
+      "engines": "before,batch",
+      "paths": "/echo",
+      "rates": "0",
+      "body_bytes": 131072,
+      "workers": 1,
+      "duration": "20s",
+      "repeats": 3,
+      "vus": 64,
+      "label": "qualified-h2-large",
+      "client_cpus": "1,2",
+      "sample_seconds": 0,
+      "protocol": "h2"
+    }
+  },
+  "phase_started_utc": {
+    "h1-large-environment": "2026-10-17T05:26:30Z",
+    "final-large-environment": "2026-10-17T06:25:09Z",
+    "encoding-ablation-environment": "2026-10-17T06:16:17Z",
+    "qualified-h2-small-steady-environment": "2026-10-17T06:09:27Z",
+    "h2-large-environment": "2026-10-17T05:29:00Z",
+    "qualified-h2-small-environment": "2026-10-17T05:56:04Z",
+    "final-small-headroom-environment": "2026-10-17T06:22:39Z",
+    "pgo-h1-route-environment": "2026-10-17T06:06:35Z",
+    "pgo-h2-large-environment": "2026-10-17T06:04:04Z",
+    "h2-small-environment": "2026-10-17T05:31:30Z",
+    "qualified-h1-control-environment": "2026-10-17T06:02:35Z",
+    "qualified-h2-large-environment": "2026-10-17T06:00:04Z"
+  },
+  "environment_log_sha256": {
+    "h1-large-environment.json": "629ca470d997de04401052872ec87db443145f67008676c06fafb177cf1f20df",
+    "final-large-environment.json": "7328e0fc3abd8adf70d3683242b6dccb109865d3443525093b9bee4dd483c776",
+    "encoding-ablation-environment.json": "18c9523c0da73d8e1efcdae5a9db694801d44b776442451fa044a021b3a827ae",
+    "qualified-h2-small-steady-environment.json": "2c2670e9e3480f060bbba9fb403ff56af4409d24e4eb49b5c1dc2bab8f8cbf26",
+    "h2-large-environment.json": "b342fad6622bdbbd708bf3883c03e6bfb80a495cd96c53a9631ccd581a52c490",
+    "qualified-h2-small-environment.json": "13c91f0d1d9247976daf3318d0b9f3c8030227e7bd4c6178d21f0ffc06365641",
+    "final-small-headroom-environment.json": "d0f136d34256b81236a2097662ac16bc24ddc4fb248c6a2cbbae10a00c4b081f",
+    "pgo-h1-route-environment.json": "c198e5f374935ed02f6367133257cd873f56de36e3c024e045b5865576645bda",
+    "pgo-h2-large-environment.json": "aef167b3fd85c4857454659ba52a99937993be28fb938fa066dc4c1a9598032d",
+    "h2-small-environment.json": "e4c7f34f2f7e0442fb8a7451860b76c664bb38a71bb913be179302f07f917fe5",
+    "qualified-h1-control-environment.json": "e0d6f999268aa63f115f3f496117b51ed3a324821a689ec41633d6143792bf86",
+    "qualified-h2-large-environment.json": "f46732df995893fc4b056c51b2455ba79e1649326fb53332b005d0711d8adc22"
+  },
+  "multiplex_probe": [
+    {
+      "log": "multiplex-batch-0.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 795.43
+    },
+    {
+      "log": "multiplex-batch-0.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 739.48
+    },
+    {
+      "log": "multiplex-batch-0.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 713.9
+    },
+    {
+      "log": "multiplex-batch-0.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 755.05
+    },
+    {
+      "log": "multiplex-batch-0.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 32.27
+    },
+    {
+      "log": "multiplex-batch-0.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 33.45
+    },
+    {
+      "log": "multiplex-batch-0.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 40.71
+    },
+    {
+      "log": "multiplex-batch-0.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 55.72
+    },
+    {
+      "log": "multiplex-batch-1.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 806.2
+    },
+    {
+      "log": "multiplex-batch-1.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 737.89
+    },
+    {
+      "log": "multiplex-batch-1.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 741.34
+    },
+    {
+      "log": "multiplex-batch-1.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 835.33
+    },
+    {
+      "log": "multiplex-batch-1.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 38.97
+    },
+    {
+      "log": "multiplex-batch-1.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 32.93
+    },
+    {
+      "log": "multiplex-batch-1.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 40.99
+    },
+    {
+      "log": "multiplex-batch-1.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 55.53
+    },
+    {
+      "log": "multiplex-batch-2.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 738.95
+    },
+    {
+      "log": "multiplex-batch-2.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 723.31
+    },
+    {
+      "log": "multiplex-batch-2.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 759.59
+    },
+    {
+      "log": "multiplex-batch-2.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 694.01
+    },
+    {
+      "log": "multiplex-batch-2.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 32.85
+    },
+    {
+      "log": "multiplex-batch-2.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 33.02
+    },
+    {
+      "log": "multiplex-batch-2.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 40.2
+    },
+    {
+      "log": "multiplex-batch-2.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 54.85
+    },
+    {
+      "log": "multiplex-batch-3.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 753.21
+    },
+    {
+      "log": "multiplex-batch-3.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 754.98
+    },
+    {
+      "log": "multiplex-batch-3.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 697.61
+    },
+    {
+      "log": "multiplex-batch-3.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 692.9
+    },
+    {
+      "log": "multiplex-batch-3.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 31.89
+    },
+    {
+      "log": "multiplex-batch-3.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 32.67
+    },
+    {
+      "log": "multiplex-batch-3.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 40.74
+    },
+    {
+      "log": "multiplex-batch-3.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 56.33
+    },
+    {
+      "log": "multiplex-batch-4.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 839.43
+    },
+    {
+      "log": "multiplex-batch-4.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 737.74
+    },
+    {
+      "log": "multiplex-batch-4.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 705.75
+    },
+    {
+      "log": "multiplex-batch-4.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 717.24
+    },
+    {
+      "log": "multiplex-batch-4.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 31.85
+    },
+    {
+      "log": "multiplex-batch-4.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 32.71
+    },
+    {
+      "log": "multiplex-batch-4.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 40.24
+    },
+    {
+      "log": "multiplex-batch-4.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 55.83
+    },
+    {
+      "log": "multiplex-before-0.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 807.76
+    },
+    {
+      "log": "multiplex-before-0.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 859.46
+    },
+    {
+      "log": "multiplex-before-0.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 852.78
+    },
+    {
+      "log": "multiplex-before-0.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 801.5
+    },
+    {
+      "log": "multiplex-before-0.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 33.97
+    },
+    {
+      "log": "multiplex-before-0.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 36.83
+    },
+    {
+      "log": "multiplex-before-0.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 43.51
+    },
+    {
+      "log": "multiplex-before-0.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 60.52
+    },
+    {
+      "log": "multiplex-before-1.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 856.23
+    },
+    {
+      "log": "multiplex-before-1.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 834.76
+    },
+    {
+      "log": "multiplex-before-1.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 875.04
+    },
+    {
+      "log": "multiplex-before-1.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 812.42
+    },
+    {
+      "log": "multiplex-before-1.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 34.16
+    },
+    {
+      "log": "multiplex-before-1.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 36.89
+    },
+    {
+      "log": "multiplex-before-1.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 42.81
+    },
+    {
+      "log": "multiplex-before-1.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 60.03
+    },
+    {
+      "log": "multiplex-before-2.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 904.21
+    },
+    {
+      "log": "multiplex-before-2.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 849.27
+    },
+    {
+      "log": "multiplex-before-2.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 805.46
+    },
+    {
+      "log": "multiplex-before-2.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 803.37
+    },
+    {
+      "log": "multiplex-before-2.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 33.29
+    },
+    {
+      "log": "multiplex-before-2.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 37.05
+    },
+    {
+      "log": "multiplex-before-2.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 44.14
+    },
+    {
+      "log": "multiplex-before-2.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 60.75
+    },
+    {
+      "log": "multiplex-before-3.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 985.29
+    },
+    {
+      "log": "multiplex-before-3.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 1067.01
+    },
+    {
+      "log": "multiplex-before-3.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 976.58
+    },
+    {
+      "log": "multiplex-before-3.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 867.03
+    },
+    {
+      "log": "multiplex-before-3.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 34.74
+    },
+    {
+      "log": "multiplex-before-3.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 36.97
+    },
+    {
+      "log": "multiplex-before-3.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 49.04
+    },
+    {
+      "log": "multiplex-before-3.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 67.56
+    },
+    {
+      "log": "multiplex-before-4.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 835.54
+    },
+    {
+      "log": "multiplex-before-4.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 865.85
+    },
+    {
+      "log": "multiplex-before-4.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 858.31
+    },
+    {
+      "log": "multiplex-before-4.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 817.58
+    },
+    {
+      "log": "multiplex-before-4.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 34.88
+    },
+    {
+      "log": "multiplex-before-4.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 37.1
+    },
+    {
+      "log": "multiplex-before-4.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 43.82
+    },
+    {
+      "log": "multiplex-before-4.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 61.32
+    },
+    {
+      "log": "multiplex-headers-0.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 779.04
+    },
+    {
+      "log": "multiplex-headers-0.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 731.18
+    },
+    {
+      "log": "multiplex-headers-0.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 695.68
+    },
+    {
+      "log": "multiplex-headers-0.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 710.85
+    },
+    {
+      "log": "multiplex-headers-0.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 25.3
+    },
+    {
+      "log": "multiplex-headers-0.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 39.85
+    },
+    {
+      "log": "multiplex-headers-0.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 48.99
+    },
+    {
+      "log": "multiplex-headers-0.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 63.77
+    },
+    {
+      "log": "multiplex-headers-1.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 764.92
+    },
+    {
+      "log": "multiplex-headers-1.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 736.4
+    },
+    {
+      "log": "multiplex-headers-1.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 731.48
+    },
+    {
+      "log": "multiplex-headers-1.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 720.62
+    },
+    {
+      "log": "multiplex-headers-1.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 24.57
+    },
+    {
+      "log": "multiplex-headers-1.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 38.46
+    },
+    {
+      "log": "multiplex-headers-1.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 49.48
+    },
+    {
+      "log": "multiplex-headers-1.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 66.5
+    },
+    {
+      "log": "multiplex-headers-2.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 764.67
+    },
+    {
+      "log": "multiplex-headers-2.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 746.78
+    },
+    {
+      "log": "multiplex-headers-2.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 679.76
+    },
+    {
+      "log": "multiplex-headers-2.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 716.46
+    },
+    {
+      "log": "multiplex-headers-2.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 25.05
+    },
+    {
+      "log": "multiplex-headers-2.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 39.35
+    },
+    {
+      "log": "multiplex-headers-2.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 49.13
+    },
+    {
+      "log": "multiplex-headers-2.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 65.06
+    },
+    {
+      "log": "multiplex-headers-3.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 750.5
+    },
+    {
+      "log": "multiplex-headers-3.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 731.7
+    },
+    {
+      "log": "multiplex-headers-3.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 728.15
+    },
+    {
+      "log": "multiplex-headers-3.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 687.92
+    },
+    {
+      "log": "multiplex-headers-3.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 24.31
+    },
+    {
+      "log": "multiplex-headers-3.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 39.14
+    },
+    {
+      "log": "multiplex-headers-3.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 50.63
+    },
+    {
+      "log": "multiplex-headers-3.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 70.84
+    },
+    {
+      "log": "multiplex-headers-4.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 746.32
+    },
+    {
+      "log": "multiplex-headers-4.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 712.34
+    },
+    {
+      "log": "multiplex-headers-4.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 729.07
+    },
+    {
+      "log": "multiplex-headers-4.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 760.99
+    },
+    {
+      "log": "multiplex-headers-4.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 24.8
+    },
+    {
+      "log": "multiplex-headers-4.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 38.66
+    },
+    {
+      "log": "multiplex-headers-4.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 48.34
+    },
+    {
+      "log": "multiplex-headers-4.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 64.2
+    },
+    {
+      "log": "native-multiplex-batch-0.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 786.07
+    },
+    {
+      "log": "native-multiplex-batch-0.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 761.5
+    },
+    {
+      "log": "native-multiplex-batch-0.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 711.44
+    },
+    {
+      "log": "native-multiplex-batch-0.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 757.21
+    },
+    {
+      "log": "native-multiplex-batch-0.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 33.1
+    },
+    {
+      "log": "native-multiplex-batch-0.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 33.27
+    },
+    {
+      "log": "native-multiplex-batch-0.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 42.15
+    },
+    {
+      "log": "native-multiplex-batch-0.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 54.04
+    },
+    {
+      "log": "native-multiplex-batch-1.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 723.3
+    },
+    {
+      "log": "native-multiplex-batch-1.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 662.15
+    },
+    {
+      "log": "native-multiplex-batch-1.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 677.59
+    },
+    {
+      "log": "native-multiplex-batch-1.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 683.98
+    },
+    {
+      "log": "native-multiplex-batch-1.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 32.23
+    },
+    {
+      "log": "native-multiplex-batch-1.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 31.84
+    },
+    {
+      "log": "native-multiplex-batch-1.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 39.8
+    },
+    {
+      "log": "native-multiplex-batch-1.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 53.31
+    },
+    {
+      "log": "native-multiplex-batch-2.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 717.19
+    },
+    {
+      "log": "native-multiplex-batch-2.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 677.08
+    },
+    {
+      "log": "native-multiplex-batch-2.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 639.06
+    },
+    {
+      "log": "native-multiplex-batch-2.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 728.25
+    },
+    {
+      "log": "native-multiplex-batch-2.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 31.62
+    },
+    {
+      "log": "native-multiplex-batch-2.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 31.75
+    },
+    {
+      "log": "native-multiplex-batch-2.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 39.12
+    },
+    {
+      "log": "native-multiplex-batch-2.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 53.97
+    },
+    {
+      "log": "native-multiplex-batch-3.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 733.03
+    },
+    {
+      "log": "native-multiplex-batch-3.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 645.31
+    },
+    {
+      "log": "native-multiplex-batch-3.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 655.63
+    },
+    {
+      "log": "native-multiplex-batch-3.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 692.76
+    },
+    {
+      "log": "native-multiplex-batch-3.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 31.84
+    },
+    {
+      "log": "native-multiplex-batch-3.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 31.84
+    },
+    {
+      "log": "native-multiplex-batch-3.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 39.97
+    },
+    {
+      "log": "native-multiplex-batch-3.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 53.9
+    },
+    {
+      "log": "native-multiplex-batch-4.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 865.73
+    },
+    {
+      "log": "native-multiplex-batch-4.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 703.59
+    },
+    {
+      "log": "native-multiplex-batch-4.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 710.8
+    },
+    {
+      "log": "native-multiplex-batch-4.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 772.89
+    },
+    {
+      "log": "native-multiplex-batch-4.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 33.23
+    },
+    {
+      "log": "native-multiplex-batch-4.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 33.31
+    },
+    {
+      "log": "native-multiplex-batch-4.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 40.73
+    },
+    {
+      "log": "native-multiplex-batch-4.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 56.76
+    },
+    {
+      "log": "native-multiplex-before-0.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 872.58
+    },
+    {
+      "log": "native-multiplex-before-0.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 822.21
+    },
+    {
+      "log": "native-multiplex-before-0.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 826.89
+    },
+    {
+      "log": "native-multiplex-before-0.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 816.55
+    },
+    {
+      "log": "native-multiplex-before-0.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 34.14
+    },
+    {
+      "log": "native-multiplex-before-0.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 37.32
+    },
+    {
+      "log": "native-multiplex-before-0.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 47.51
+    },
+    {
+      "log": "native-multiplex-before-0.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 55.45
+    },
+    {
+      "log": "native-multiplex-before-1.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 868.71
+    },
+    {
+      "log": "native-multiplex-before-1.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 884.55
+    },
+    {
+      "log": "native-multiplex-before-1.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 961.84
+    },
+    {
+      "log": "native-multiplex-before-1.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 846.33
+    },
+    {
+      "log": "native-multiplex-before-1.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 34.01
+    },
+    {
+      "log": "native-multiplex-before-1.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 34.62
+    },
+    {
+      "log": "native-multiplex-before-1.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 40.66
+    },
+    {
+      "log": "native-multiplex-before-1.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 53.87
+    },
+    {
+      "log": "native-multiplex-before-2.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 805.7
+    },
+    {
+      "log": "native-multiplex-before-2.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 838.09
+    },
+    {
+      "log": "native-multiplex-before-2.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 824.97
+    },
+    {
+      "log": "native-multiplex-before-2.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 777.49
+    },
+    {
+      "log": "native-multiplex-before-2.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 32.12
+    },
+    {
+      "log": "native-multiplex-before-2.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 34.6
+    },
+    {
+      "log": "native-multiplex-before-2.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 40.41
+    },
+    {
+      "log": "native-multiplex-before-2.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 53.14
+    },
+    {
+      "log": "native-multiplex-before-3.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 1253.63
+    },
+    {
+      "log": "native-multiplex-before-3.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 1421.22
+    },
+    {
+      "log": "native-multiplex-before-3.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 1242.23
+    },
+    {
+      "log": "native-multiplex-before-3.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 788.34
+    },
+    {
+      "log": "native-multiplex-before-3.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 32.19
+    },
+    {
+      "log": "native-multiplex-before-3.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 34.16
+    },
+    {
+      "log": "native-multiplex-before-3.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 40.33
+    },
+    {
+      "log": "native-multiplex-before-3.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 53.44
+    },
+    {
+      "log": "native-multiplex-before-4.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 791.72
+    },
+    {
+      "log": "native-multiplex-before-4.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 804.78
+    },
+    {
+      "log": "native-multiplex-before-4.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 788.99
+    },
+    {
+      "log": "native-multiplex-before-4.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 807.71
+    },
+    {
+      "log": "native-multiplex-before-4.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 32.56
+    },
+    {
+      "log": "native-multiplex-before-4.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 34.53
+    },
+    {
+      "log": "native-multiplex-before-4.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 40.0
+    },
+    {
+      "log": "native-multiplex-before-4.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 53.36
+    },
+    {
+      "log": "native-multiplex-headers-0.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 817.82
+    },
+    {
+      "log": "native-multiplex-headers-0.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 682.73
+    },
+    {
+      "log": "native-multiplex-headers-0.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 676.5
+    },
+    {
+      "log": "native-multiplex-headers-0.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 720.28
+    },
+    {
+      "log": "native-multiplex-headers-0.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 24.16
+    },
+    {
+      "log": "native-multiplex-headers-0.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 38.72
+    },
+    {
+      "log": "native-multiplex-headers-0.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 52.09
+    },
+    {
+      "log": "native-multiplex-headers-0.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 65.22
+    },
+    {
+      "log": "native-multiplex-headers-1.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 938.09
+    },
+    {
+      "log": "native-multiplex-headers-1.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 660.69
+    },
+    {
+      "log": "native-multiplex-headers-1.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 656.23
+    },
+    {
+      "log": "native-multiplex-headers-1.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 686.77
+    },
+    {
+      "log": "native-multiplex-headers-1.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 23.39
+    },
+    {
+      "log": "native-multiplex-headers-1.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 37.36
+    },
+    {
+      "log": "native-multiplex-headers-1.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 46.88
+    },
+    {
+      "log": "native-multiplex-headers-1.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 62.62
+    },
+    {
+      "log": "native-multiplex-headers-2.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 749.48
+    },
+    {
+      "log": "native-multiplex-headers-2.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 664.16
+    },
+    {
+      "log": "native-multiplex-headers-2.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 678.73
+    },
+    {
+      "log": "native-multiplex-headers-2.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 673.17
+    },
+    {
+      "log": "native-multiplex-headers-2.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 23.09
+    },
+    {
+      "log": "native-multiplex-headers-2.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 37.18
+    },
+    {
+      "log": "native-multiplex-headers-2.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 47.26
+    },
+    {
+      "log": "native-multiplex-headers-2.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 61.32
+    },
+    {
+      "log": "native-multiplex-headers-3.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 762.35
+    },
+    {
+      "log": "native-multiplex-headers-3.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 1082.33
+    },
+    {
+      "log": "native-multiplex-headers-3.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 789.56
+    },
+    {
+      "log": "native-multiplex-headers-3.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 669.02
+    },
+    {
+      "log": "native-multiplex-headers-3.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 24.37
+    },
+    {
+      "log": "native-multiplex-headers-3.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 38.0
+    },
+    {
+      "log": "native-multiplex-headers-3.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 47.91
+    },
+    {
+      "log": "native-multiplex-headers-3.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 63.36
+    },
+    {
+      "log": "native-multiplex-headers-4.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 790.6
+    },
+    {
+      "log": "native-multiplex-headers-4.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 710.71
+    },
+    {
+      "log": "native-multiplex-headers-4.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 937.9
+    },
+    {
+      "log": "native-multiplex-headers-4.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 751.84
+    },
+    {
+      "log": "native-multiplex-headers-4.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 25.33
+    },
+    {
+      "log": "native-multiplex-headers-4.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 40.15
+    },
+    {
+      "log": "native-multiplex-headers-4.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 48.01
+    },
+    {
+      "log": "native-multiplex-headers-4.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 61.08
+    },
+    {
+      "log": "native-multiplex-slice-0.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 712.22
+    },
+    {
+      "log": "native-multiplex-slice-0.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 713.16
+    },
+    {
+      "log": "native-multiplex-slice-0.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 643.06
+    },
+    {
+      "log": "native-multiplex-slice-0.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 698.22
+    },
+    {
+      "log": "native-multiplex-slice-0.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 27.15
+    },
+    {
+      "log": "native-multiplex-slice-0.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 31.52
+    },
+    {
+      "log": "native-multiplex-slice-0.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 38.98
+    },
+    {
+      "log": "native-multiplex-slice-0.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 51.16
+    },
+    {
+      "log": "native-multiplex-slice-1.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 7346.08
+    },
+    {
+      "log": "native-multiplex-slice-1.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 698.72
+    },
+    {
+      "log": "native-multiplex-slice-1.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 642.71
+    },
+    {
+      "log": "native-multiplex-slice-1.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 690.95
+    },
+    {
+      "log": "native-multiplex-slice-1.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 28.57
+    },
+    {
+      "log": "native-multiplex-slice-1.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 33.54
+    },
+    {
+      "log": "native-multiplex-slice-1.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 41.51
+    },
+    {
+      "log": "native-multiplex-slice-1.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 52.33
+    },
+    {
+      "log": "native-multiplex-slice-2.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 727.12
+    },
+    {
+      "log": "native-multiplex-slice-2.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 680.36
+    },
+    {
+      "log": "native-multiplex-slice-2.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 666.21
+    },
+    {
+      "log": "native-multiplex-slice-2.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 672.8
+    },
+    {
+      "log": "native-multiplex-slice-2.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 28.77
+    },
+    {
+      "log": "native-multiplex-slice-2.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 32.79
+    },
+    {
+      "log": "native-multiplex-slice-2.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 41.14
+    },
+    {
+      "log": "native-multiplex-slice-2.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 54.64
+    },
+    {
+      "log": "native-multiplex-slice-3.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 714.95
+    },
+    {
+      "log": "native-multiplex-slice-3.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 696.3
+    },
+    {
+      "log": "native-multiplex-slice-3.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 680.24
+    },
+    {
+      "log": "native-multiplex-slice-3.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 726.51
+    },
+    {
+      "log": "native-multiplex-slice-3.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 27.35
+    },
+    {
+      "log": "native-multiplex-slice-3.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 31.5
+    },
+    {
+      "log": "native-multiplex-slice-3.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 40.03
+    },
+    {
+      "log": "native-multiplex-slice-3.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 51.66
+    },
+    {
+      "log": "native-multiplex-slice-4.log",
+      "blocked": false,
+      "streams": 1,
+      "ns_per_stream_poll": 836.77
+    },
+    {
+      "log": "native-multiplex-slice-4.log",
+      "blocked": false,
+      "streams": 32,
+      "ns_per_stream_poll": 755.18
+    },
+    {
+      "log": "native-multiplex-slice-4.log",
+      "blocked": false,
+      "streams": 128,
+      "ns_per_stream_poll": 938.67
+    },
+    {
+      "log": "native-multiplex-slice-4.log",
+      "blocked": false,
+      "streams": 1024,
+      "ns_per_stream_poll": 749.1
+    },
+    {
+      "log": "native-multiplex-slice-4.log",
+      "blocked": true,
+      "streams": 1,
+      "ns_per_stream_poll": 30.7
+    },
+    {
+      "log": "native-multiplex-slice-4.log",
+      "blocked": true,
+      "streams": 32,
+      "ns_per_stream_poll": 33.75
+    },
+    {
+      "log": "native-multiplex-slice-4.log",
+      "blocked": true,
+      "streams": 128,
+      "ns_per_stream_poll": 40.52
+    },
+    {
+      "log": "native-multiplex-slice-4.log",
+      "blocked": true,
+      "streams": 1024,
+      "ns_per_stream_poll": 53.9
+    }
+  ],
+  "allocation_probe": {
+    "allocation-encoding-1.log": {
+      "calls": 67,
+      "requested_bytes": 319706,
+      "peak_live_bytes": 268780,
+      "live_after_bytes": 0
+    },
+    "allocation-encoding-2.log": {
+      "calls": 67,
+      "requested_bytes": 319706,
+      "peak_live_bytes": 268780,
+      "live_after_bytes": 0
+    },
+    "allocation-encoding-3.log": {
+      "calls": 67,
+      "requested_bytes": 319706,
+      "peak_live_bytes": 268780,
+      "live_after_bytes": 0
+    },
+    "allocation-slice-1.log": {
+      "calls": 45,
+      "requested_bytes": 319354,
+      "peak_live_bytes": 268764,
+      "live_after_bytes": 0
+    },
+    "allocation-slice-2.log": {
+      "calls": 45,
+      "requested_bytes": 319354,
+      "peak_live_bytes": 268764,
+      "live_after_bytes": 0
+    },
+    "allocation-slice-3.log": {
+      "calls": 45,
+      "requested_bytes": 319354,
+      "peak_live_bytes": 268764,
+      "live_after_bytes": 0
+    },
+    "multiplex-batch-0.log": {
+      "calls": 45,
+      "requested_bytes": 319354,
+      "peak_live_bytes": 268764,
+      "live_after_bytes": 0
+    },
+    "multiplex-batch-1.log": {
+      "calls": 45,
+      "requested_bytes": 319354,
+      "peak_live_bytes": 268764,
+      "live_after_bytes": 0
+    },
+    "multiplex-batch-2.log": {
+      "calls": 45,
+      "requested_bytes": 319354,
+      "peak_live_bytes": 268764,
+      "live_after_bytes": 0
+    },
+    "multiplex-batch-3.log": {
+      "calls": 45,
+      "requested_bytes": 319354,
+      "peak_live_bytes": 268764,
+      "live_after_bytes": 0
+    },
+    "multiplex-batch-4.log": {
+      "calls": 45,
+      "requested_bytes": 319354,
+      "peak_live_bytes": 268764,
+      "live_after_bytes": 0
+    },
+    "multiplex-before-0.log": {
+      "calls": 70,
+      "requested_bytes": 319816,
+      "peak_live_bytes": 268780,
+      "live_after_bytes": 0
+    },
+    "multiplex-before-1.log": {
+      "calls": 70,
+      "requested_bytes": 319816,
+      "peak_live_bytes": 268780,
+      "live_after_bytes": 0
+    },
+    "multiplex-before-2.log": {
+      "calls": 70,
+      "requested_bytes": 319816,
+      "peak_live_bytes": 268780,
+      "live_after_bytes": 0
+    },
+    "multiplex-before-3.log": {
+      "calls": 70,
+      "requested_bytes": 319816,
+      "peak_live_bytes": 268780,
+      "live_after_bytes": 0
+    },
+    "multiplex-before-4.log": {
+      "calls": 70,
+      "requested_bytes": 319816,
+      "peak_live_bytes": 268780,
+      "live_after_bytes": 0
+    },
+    "multiplex-headers-0.log": {
+      "calls": 45,
+      "requested_bytes": 319354,
+      "peak_live_bytes": 268764,
+      "live_after_bytes": 0
+    },
+    "multiplex-headers-1.log": {
+      "calls": 45,
+      "requested_bytes": 319354,
+      "peak_live_bytes": 268764,
+      "live_after_bytes": 0
+    },
+    "multiplex-headers-2.log": {
+      "calls": 45,
+      "requested_bytes": 319354,
+      "peak_live_bytes": 268764,
+      "live_after_bytes": 0
+    },
+    "multiplex-headers-3.log": {
+      "calls": 45,
+      "requested_bytes": 319354,
+      "peak_live_bytes": 268764,
+      "live_after_bytes": 0
+    },
+    "multiplex-headers-4.log": {
+      "calls": 45,
+      "requested_bytes": 319354,
+      "peak_live_bytes": 268764,
+      "live_after_bytes": 0
+    }
+  },
+  "flow_probe": [
+    {
+      "window": 262144,
+      "rtt_ms": 0,
+      "trial": 0,
+      "upload_seconds": 0.0041603899881010875,
+      "complete_seconds": 0.006492420987342484,
+      "stalls": 60,
+      "bytes": 4194304
+    },
+    {
+      "window": 262144,
+      "rtt_ms": 0,
+      "trial": 1,
+      "upload_seconds": 0.0013052260037511587,
+      "complete_seconds": 0.003000374010298401,
+      "stalls": 60,
+      "bytes": 4194304
+    },
+    {
+      "window": 262144,
+      "rtt_ms": 0,
+      "trial": 2,
+      "upload_seconds": 0.0011216819984838367,
+      "complete_seconds": 0.002667786000529304,
+      "stalls": 60,
+      "bytes": 4194304
+    },
+    {
+      "window": 65535,
+      "rtt_ms": 0,
+      "trial": 0,
+      "upload_seconds": 0.004244098992785439,
+      "complete_seconds": 0.006098081998061389,
+      "stalls": 204,
+      "bytes": 4194304
+    },
+    {
+      "window": 65535,
+      "rtt_ms": 0,
+      "trial": 1,
+      "upload_seconds": 0.004259099005139433,
+      "complete_seconds": 0.006025248003425077,
+      "stalls": 204,
+      "bytes": 4194304
+    },
+    {
+      "window": 65535,
+      "rtt_ms": 0,
+      "trial": 2,
+      "upload_seconds": 0.003445463997195475,
+      "complete_seconds": 0.004461268996237777,
+      "stalls": 204,
+      "bytes": 4194304
+    },
+    {
+      "window": 262144,
+      "rtt_ms": 20,
+      "trial": 0,
+      "upload_seconds": 0.5145704340102384,
+      "complete_seconds": 2.0210536930098897,
+      "stalls": 60,
+      "bytes": 4194304
+    },
+    {
+      "window": 262144,
+      "rtt_ms": 20,
+      "trial": 1,
+      "upload_seconds": 0.8875033350050217,
+      "complete_seconds": 1.2882090260100085,
+      "stalls": 60,
+      "bytes": 4194304
+    },
+    {
+      "window": 262144,
+      "rtt_ms": 20,
+      "trial": 2,
+      "upload_seconds": 1.004190991006908,
+      "complete_seconds": 1.9034340670041274,
+      "stalls": 60,
+      "bytes": 4194304
+    },
+    {
+      "window": 65535,
+      "rtt_ms": 20,
+      "trial": 0,
+      "upload_seconds": 2.3559672739938833,
+      "complete_seconds": 3.4813812759966822,
+      "stalls": 204,
+      "bytes": 4194304
+    },
+    {
+      "window": 65535,
+      "rtt_ms": 20,
+      "trial": 1,
+      "upload_seconds": 2.305291402997682,
+      "complete_seconds": 3.7898759829986375,
+      "stalls": 204,
+      "bytes": 4194304
+    },
+    {
+      "window": 65535,
+      "rtt_ms": 20,
+      "trial": 2,
+      "upload_seconds": 2.3055115310125984,
+      "complete_seconds": 2.823760747007327,
+      "stalls": 204,
+      "bytes": 4194304
+    },
+    {
+      "window": 262144,
+      "rtt_ms": 80,
+      "trial": 0,
+      "upload_seconds": 3.057693971990375,
+      "complete_seconds": 8.655940408993047,
+      "stalls": 60,
+      "bytes": 4194304
+    },
+    {
+      "window": 262144,
+      "rtt_ms": 80,
+      "trial": 1,
+      "upload_seconds": 5.24330078199273,
+      "complete_seconds": 10.528524795998237,
+      "stalls": 60,
+      "bytes": 4194304
+    },
+    {
+      "window": 262144,
+      "rtt_ms": 80,
+      "trial": 2,
+      "upload_seconds": 1.8286657949938672,
+      "complete_seconds": 4.596193941993988,
+      "stalls": 60,
+      "bytes": 4194304
+    },
+    {
+      "window": 65535,
+      "rtt_ms": 80,
+      "trial": 0,
+      "upload_seconds": 8.820094016002258,
+      "complete_seconds": 10.888992003994645,
+      "stalls": 204,
+      "bytes": 4194304
+    },
+    {
+      "window": 65535,
+      "rtt_ms": 80,
+      "trial": 1,
+      "upload_seconds": 8.830939267005306,
+      "complete_seconds": 10.892062692000763,
+      "stalls": 204,
+      "bytes": 4194304
+    },
+    {
+      "window": 65535,
+      "rtt_ms": 80,
+      "trial": 2,
+      "upload_seconds": 8.875533783007995,
+      "complete_seconds": 12.58039209600247,
+      "stalls": 204,
+      "bytes": 4194304
+    }
+  ],
+  "flow_method": {
+    "variant": "batch (rejected owned-array traversal prototype)",
+    "payload_bytes": 4194304,
+    "stream_windows": [
+      65535,
+      262144
+    ],
+    "connection_window": 1048576,
+    "response_window": 8388608,
+    "server_cpu": 0,
+    "client_cpu": 1,
+    "rtt_ms": [
+      0,
+      20,
+      80
+    ],
+    "scope": "Private Docker network namespace; tc netem on loopback; half the nominal RTT per direction; no bandwidth shaping. Three sequential connections per setting; window order reversed at 20 ms."
+  },
+  "pgo": {
+    "profile_sha256": "cd48ac048abcbc9cd515578846f3718f7dc7a98f7f837d7a233be76a244c0aa7",
+    "training": "H1 and TLS/H2; four routes; 64 KiB echo; 16 VUs, 4s each; graceful application exit. Training data is not comparative performance evidence.",
+    "variant": "batch (rejected owned-array traversal prototype)",
+    "source_hook_sha256": "c3ccc585cd2b0a9d9427a6aa1c175caf4f3142e131f465b8e211ae17879fbb2f",
+    "generate_flags": "-Cprofile-generate=/results/pgo-data",
+    "use_flags": "-Cprofile-use=/results/pgo.profdata -Cllvm-args=-pgo-warn-missing-function",
+    "target": "aarch64-unknown-linux-gnu",
+    "control": "Same temporary application source, implicit native target, no PGO flags. Product source is identical."
+  },
+  "script_sha256": {
+    "flow-client.py": "24f8c7c176bc02eee478dd720cf03929ab59002588130d234c237026f7807151",
+    "qualify-load.sh": "811eaa68b3339652a95902653259a82e0f1678e6ba799ed5fa68b8f74d21e2d3",
+    "allocation-source-headers.rs": "1e3ddb2eb807284ddbfdd76b1c544c6b46d0291d0944ccc455aa285d9a4b7b6a",
+    "allocation-source-slice.rs": "4046baabbba38f84ef23bc734d2bd3fef5bc8a6b526d749b91e8a779a6d57deb",
+    "allocation-source-encoding.rs": "02b0d59767c4cf71d7f83157d20e21cd7a353c4a9e2c6ddfc29113006fb035b3",
+    "flow-server.rs": "b5b54d7aed94209b390fdf7b50b197368dedd3d30a7083d0c7883f792a332f20",
+    "write-progress-test.rs": "2d86104e6ebc929b35c0f6cc49a15b54ff3f8b129bfe4d58de2baed8156689b5",
+    "multiplex-probe.rs": "38b5da2261cc4a7b3377c034b7eb0f9a6bdd2f67ca8419a93ca5b73cd802d6bb",
+    "native-probes.sh": "43d56096438579c47ae40e3a71ef8d01857556cedb242d3264f93e250bcad61d",
+    "build-batch-probe.sh": "782647208a87927b611aae98ace68fd1d12e260e841f48c09edc0bf0e906d2c6",
+    "allocation-source-batch.rs": "28225a29f2e099214220bf6b49efb504ebfc3fbd07692bf0f3498695f804ac1c",
+    "run-load.py": "3207053fb29d6d498b4a80bcc7138382b1979e6d8bdc3d97190b8f5ae8b95830",
+    "measure-allocations.sh": "b43628763b5d2aae0e4ce10a1ce5c1956baf198e5b5ede138dc79210041c8cb8",
+    "allocation-source-before.rs": "74a4a33fd966ea96d2667922eadcac8986657311c52f67eff39b081b83f74cb5",
+    "run-allocations.sh": "8dd206489bbefc5ce204d575f12fbbe25eae1200eed7cc16c880d6dfc0e58dca",
+    "summary.py": "fd1256b12fe8636443b0490f1091a9e4a05131abceaa9c855acdbea00b95faec",
+    "build.sh": "8ca7cda1e09d1b7f62108dc85c3bf532c31805a577691dd65fced73e2a3d870c",
+    "apply-next.py": "72c554cb612a261f78ac59ee209ba20e238b88efb8775bbfb04b2d030d4db5d0",
+    "screen.sh": "55a6c6597d78541b2ed6bb7aa41d2916798e072df0d63e711bc7b290245ab70b",
+    "insert-next-tests.py": "e1cc0ac06ded671d004a0bd9cbbf711e1b8e9c703b30040f292b582bbbd6b1e0",
+    "rejected-scheduler.rs": "977e45c5523ef2c3e829b96e3437f41cb0a16f9585809ab2a45f564c3c2e5aaa",
+    "run-flow.py": "b91a68d68acb3652d3e5ddda4af441f2e472597b59056fa27b3fcd5bf27361ab",
+    "pgo-build.sh": "3ffcc489999370c681e7d88b2fb0ebaeb0b987a5a01a3e3db3909f47d42ba93b",
+    "header-tests.rs": "a2be516f155406daac3aa84ee306e197f1b914a6c1822a0f6efe1026ff43030a",
+    "evidence.py": "8f6fbfdd24a5913b7feb321b7f0ec9ca3ddec3f34c5fa8a7759b7d038c0f8931",
+    "build-slice-probe.sh": "b5f16d6b1f5786b98e35748d000ddc9ab351026a3a37dc7b53f5bb62c4dd77c1",
+    "build-encoding-probe.sh": "c402d231647d98763e2a45d1d0a34dc7a418731bdf90fb2ef1ab04eca72a0268",
+    "train-pgo.py": "b026d9ea038192f0bca12d2514700b4858642be93581fe937e24dd4afee3947b"
+  },
+  "log_sha256": {
+    "fuzz-batch.log": "247424428038c34c48d69cc82da8b546b924bd18217ad10169d35bef6d170bda",
+    "qualified-load.log": "7d414e153bba0ceaaac4877ed70dde83711012391298602c0c422b41b2c983d3",
+    "build-pgo-control.log": "0e7e299ac58d444a6559b22820e1bf87330a28affd916b0851f7410d4ed8643a",
+    "slice-focused.log": "e61cbe44f423e960beec40986117aaa692d4035c684eba6b5fa51948f2f40ce2",
+    "interop-qualified.log": "1a4f4381efba49a360525baf95544a382c4979b775e1ac51816082a176ab78af",
+    "final-load.log": "4ee88ff488d6dad82ec3875a1659043a07e6ffee5c81a86603cb03490a96e3e0",
+    "candidate-focused.log": "8f78fecb49c5e9e10aa7264251a062a89e6188a9ac9b5fb5981d68e7273b46ee",
+    "check-slice.log": "b4fb8f7717ddb3b37ec46b0dfff0c24e6bb0afeb6e7f278ccd8d224067414b5b",
+    "native-multiplex-batch-4.log": "3b40faf87a88833b22d881293a7a01c7d211a5be3159b0417b9e88a23bf1ae39",
+    "native-probes.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build-headers.log": "cd7ce170534c19e472a2191456fa9a36e9a336717cf61df191ae573f978806c7",
+    "conformance-build.log": "e4ed41eb687ed8d6ed2b1d1f1bc9db4725ea86421ea533f4fffb30eefc191abd",
+    "multiplex-before-4.log": "a16f5c3f439bfe7d267ed9afa35a8c1e0ed7be4461536ae54ef1b6915ea89319",
+    "multiplex-headers-4.log": "ae8e6cb4185cd937d58d7e6a7372e80f36b12021fb7714b8727c99fe3d18ac4b",
+    "allocation-build-batch.log": "0b582f2fb0a272f53c3ce5b22d33c4a795290ceb8b7ff3d6f4568ec853007dbc",
+    "native-multiplex-batch-3.log": "f1b1c0d2495116a92c4f692f70c57940969e4b88ca0c8c7f4b34a72b5f3b03b5",
+    "downstream.log": "9e10948d221ab0af66d95fa823d7b38fa146b201b60a8bfdf619095062d7eb52",
+    "conformance-final.log": "bf62d2d4df26e311608e1b2b5e6afb4781e42869c99fdd5609f46a6ca2f51593",
+    "multiplex-before-0.log": "6c2cd47e73b8861a84e27f33ae389e96aca2326e81d83a1ec5794d83f1433b66",
+    "multiplex-headers-0.log": "c49e9b18c6505e52a795224aac8c50265316328b6af38b2e00bbb5e717440226",
+    "downstream-final.log": "cfdcd2a4bfac61481d34ab680556c620c312e095e5223da70da799ce613b4a6c",
+    "multiplex-headers-1.log": "226e843d050e4e8ec6e5a2ce4aed62ed6f08bfeb1ea7dfb79aa7005520a853e6",
+    "multiplex-before-1.log": "0355fe6929e2e312fa2a4216c7dd0f851d41f092b387901a92069c4070693e82",
+    "linux-encoding.log": "4e6e1a1ffb718dc7c2aab7e8fb5bf2f27e5616026193d550e9fa86c3005e36ed",
+    "interop-slice.log": "d91b888c7590aab7805e56d5c3aa7ac3c10d8827597bfe3e2c9b9bc759e268ff",
+    "native-multiplex-batch-2.log": "5539bfd9c23ff65ef02ba0333ce4ba2b723dfda19ee86243175c46d3045b1a2a",
+    "native-multiplex-batch-0.log": "f12553a8f73a2fb18890297610a57f66cdd830518027eb1421c148d64a6fd6b1",
+    "new-tests-baseline.log": "dd11305d716767182a2eb32406e1600cc9f3fffe2f11fc73e489cb4754aa33f2",
+    "batch-boundary.log": "ffb1d0427db7d4d8b9082f2ecba41a94961c94d28462c9a120b024ff2587a456",
+    "drain-red.log": "d960b9a6819f909ea9e4e39a6e8f0688bcd4473af6bda892a39078860c2b35c1",
+    "multiplex-before-3.log": "bfeb9cff8dbbe8b798b0703e0fd466f728ece3e5e72e4c248a13c5979c3a3d88",
+    "multiplex-headers-3.log": "4cf81881f847f34ca1cd76c4d895f5f7206cb7f7985ffc6071df9277a756126c",
+    "allocation-red.log": "7ac5f7ab76b9167ef38fa26e2032e38bbe466b1e83254bb91572045ef1e4f2f6",
+    "multiplex-headers-2.log": "c3e9d26d5e9cee21411f253ea5b64193aedca1f4c66df486fb53f1402c8a8cb6",
+    "multiplex-before-2.log": "8e6e33acb6562a24c59d4ced3f1ed64ad1b3161d576591902176a399f5775487",
+    "native-multiplex-batch-1.log": "89cda66f1065c59786ae614e5c71befe5240093873f6eb876d58725de0a18b58",
+    "native-multiplex-headers-4.log": "7e8d8144439079b425f1c2a87cfa02d82d78e15576ffad195215904a3237c0fc",
+    "check-encoding.log": "3bfb53cc45139f2eec7927baf55b19c652b9a61a3bafa9c68b7356cdf9721006",
+    "fuzz-hpack.log": "c619a7f25a6733e85a4ca2e2b9064a4dc5ff057a7433443d47af557ebbca97a5",
+    "h3-slice.log": "7146bef93ac5adcc8abab18feb0780da1582f913753f3ed8c8915132ec1cceb2",
+    "screen.log": "5127760dfa049fbd8c23ce17a142201d2ab4a21366061606032f1b9cca510808",
+    "allocation-build-before.log": "c26dd8d697a043c1f3cec606d4950f4a2eee8c398b610732b6bf1e407ab9ea84",
+    "allocation-green.log": "4f392129bdc66279e334a6923d1f1be3cdf462c3852e48d4cb797b3c14209eb9",
+    "native-multiplex-slice-4.log": "57df5d8079246422803685b6cc73cd17e20d4c32c4c2fb7edc79c6e4bd8429c2",
+    "clippy.log": "566e7ecfe8bfba78e8713f66d6a59e27472edc54067bdd3f2a610b7024d529a3",
+    "linux-slice.log": "0a9ea04e265adeb0f02372b10ece41398a87838ebf90aba0612da97c857d50ed",
+    "h3.log": "ca568d0e13431dcfddee3f0e4956cc189568d0ef97bbaf26018af81bd0512796",
+    "allocation-build-encoding.log": "79b9b01b8669afd0395ed57641f47e183ab9791dc1d5ecd9aecd453186e2f3a3",
+    "native-multiplex-slice-0.log": "79ab7386233ee564e24519e8e394deda58954ed7ced6b9a24a8f857fd7ccd218",
+    "native-multiplex-headers-3.log": "c506a061a3f5a31d2aeb94cfe473151f6fadf4baba97a03aad7c5ccfd0924402",
+    "native-multiplex-headers-2.log": "60e8567ff3a778ddf78401cd589118ec348ac77a68de550349d83ec44f711380",
+    "interop.log": "3e5ff323fa838e832d1fefc9551035296c31132b7eff5abd56d24373a7974afb",
+    "native-multiplex-slice-1.log": "1ce8079eda0dec3b1e2322520c1626ee7137d0990c380e44c008d47927a22edd",
+    "h2-candidate-tests.log": "017eb584b183546b2f87550c092f64224039e2ef5b1d0ef7a4b05ab3559281d1",
+    "train-pgo.log": "52f96c26a39ed25108a6db43d6e11c6051eba8a498a5baab1891adfa7ac7c262",
+    "build-traversal.log": "c34499374948962e3abb4e0259402ca1c9b75768c48d7533828a1d1105bf55fb",
+    "native-build-before.log": "2aa836ab06197538e4b6538b4b60106e1eb2580c230446c5aa9d33aa2da44d80",
+    "native-multiplex-slice-3.log": "1990d30639b84004bf60e8c520e54c58359b6ef68123a987eb437bc3edd9966a",
+    "native-build-slice.log": "11ef8edf2869e121a4288179ba373c0febc38fd95a8b88b65f40803167b4e86a",
+    "native-multiplex-headers-0.log": "062bb9f29a86fd52a13fc8aaa87a4ddc060b1f4230602096379fcedb75b10bf2",
+    "build-batch.log": "00ab778ede579f06b51b92b44fdc25c56eacd9ddd81f73731a8787ee1b574f63",
+    "native-multiplex-headers-1.log": "72dac4e49f315f7a83f7589f06cd3288e02481073dce242a1153fa723c71932b",
+    "native-multiplex-slice-2.log": "63de8b9048a86ddd3e46d32ad1a51d8a1b380924003b3877815a304b268c2c30",
+    "build-combined.log": "41766f0a1a5e169e1679e67d718f305f574caa77e9d147bed39df1df8d1e1fbb",
+    "build-final.log": "e6a3fffde50050574f496555cccd52e37205793752734ca7c14fc5059a6deacb",
+    "pgo-build-use.log": "e2a8b6dd11d138295136c05a44f35d937b27bbb3aac11e116cdbfed14115622f",
+    "h1-red.log": "929e85dadacffc043aa0cbc01843c90cd9dfd8362c79244813a028c5befc7db0",
+    "build-encoding.log": "94cab94a53664e6bffa2813664f1f603e7b7315c0f9856cc9f49dfce6e4cf1c7",
+    "fuzz-http2.log": "46ed6edd31a65ecac5ca302a324272ab9f4d7f84a6484d36f82cf7357303c410",
+    "fuzz-final-http2.log": "760b08d3673f76cba6a31a81a23f06a677d23efdb87568e9444fc59c6ae177da",
+    "allocation-slice-3.log": "46ef67227cc4f1ec437b2a1533d36d30d139a34dde1007a773ff83d8eb4faef0",
+    "check-final.log": "f1d92412c09c0cd8dc16f474b9a4042792a749824114a2d5dece07e60af1a9cf",
+    "multiplex-batch-1.log": "0534a04f6225d1b86af3db0e786baf19422fc3d18c0433a70663b08bd9ccce2b",
+    "allocation-headers-2.log": "9703cb7702c233b1b8de66a862f5074de1c26855aa292b45c361f66f54d80f64",
+    "check-batch.log": "63d8a16a59d5f828a2439bbb25c6b9b2c17e973d48c89e7151cf4344050d0dd7",
+    "allocation-build-headers.log": "08ff1e21ff41478d62502aa762743877a3b0e22a3fc456e3cea52d2f0b4f1e79",
+    "build-before.log": "9ec50dd7cc53c80f957f1eb8426c4c55d614f06889bd94eb12ba1a52eb832c94",
+    "allocation-encoding-1.log": "20287ea830f3fbea8328b569138dfb4dc1cf0757b30d47bc8ea3a5584f25e668",
+    "native-multiplex-before-4.log": "6451d9ad04c02ae873df859fe6c951f9314b021e3931f60b2d9fc423898c1d14",
+    "allocation-headers-3.log": "8487995e5ac252f82f8cd05afe381bfc4b5be65d63273348ca602bc6e5e94c4b",
+    "multiplex-batch-0.log": "da2b6cbbb182a7be10cef5fd1b0f917a72fe5a7de1a4e04d8b1d1951ddca849b",
+    "allocation-slice-2.log": "46ef67227cc4f1ec437b2a1533d36d30d139a34dde1007a773ff83d8eb4faef0",
+    "h2spec-batch-tls.log": "5f8384a445da01f4271d223c83ce2134113a0d73a60c0884bbfa65752e428d8a",
+    "read-bound-red.log": "538bafc0a1aaba49e0901173a16af9827e8fc76f7b52c20531718c8ca3917e37",
+    "multiplex-batch-2.log": "d9f43d4a29428897a4e03c3a361064b354b354e13e030ce8f0a738fba1c8a70c",
+    "allocation-build-slice.log": "08ec5efb4c4e129cc256bd251e8759d1a634cf143102db8226b17a9b8ad8ffc8",
+    "allocation-headers-1.log": "6bbe9351d0c102d3bd3087311addfe05ac1e3061a33153c39e7c5330d0201ee2",
+    "allocation-encoding-3.log": "20287ea830f3fbea8328b569138dfb4dc1cf0757b30d47bc8ea3a5584f25e668",
+    "h2spec-plain.log": "7008f23d69ca62ee3172536d4d2cf98ae0b252cd84dc414f26118d094d37bdca",
+    "netem-build.log": "f3fd02674a0cb95d24e99da6b1302acd251a3f844356cf129020c1bfb1cf48d9",
+    "allocation-encoding-2.log": "20287ea830f3fbea8328b569138dfb4dc1cf0757b30d47bc8ea3a5584f25e668",
+    "encoding-ablation.log": "59f1f8c9bd8dcf72e6b674cb48dd40ff0d7749b64264a95fafc69d8035d1b973",
+    "multiplex-batch-3.log": "c7aa12768e18d0503ff53395a4e00bc83e07df9ce1efec8941186ab093634afa",
+    "allocation-slice-1.log": "46ef67227cc4f1ec437b2a1533d36d30d139a34dde1007a773ff83d8eb4faef0",
+    "interop-final.log": "06b3b8118b312e3de182a093da4a90de2e81097dc7611c9b12f3ae950cad432b",
+    "linux-qualified.log": "c2176ddc5413a37274d5cde0ec43d2fec71454e39772189ba00a3880c4e91b46",
+    "h2spec-tls.log": "5f8384a445da01f4271d223c83ce2134113a0d73a60c0884bbfa65752e428d8a",
+    "native-multiplex-before-3.log": "37bf8cf84a379d312d507aaf2b98e6ed39baeba017bb9ca810408288c3d7a5fa",
+    "small-steady.log": "750b622f10c39f7b0ff13261e305659e29589e7087057606b08d816e98d2d284",
+    "allocation-headers-4.log": "215a308dd5929aacd6102c13132641ff0d66667f1f34bdcc9b41319ae168c80c",
+    "linux.log": "c456d24e8eca2fec30dec267f02786c3d7657252631c38de61e6bb366fc8fa39",
+    "scheduling-green.log": "2003a730412bd1f0ea96e87e27698fd2cb365b307a3adefef877787b0632492f",
+    "h2spec-batch-plain.log": "7008f23d69ca62ee3172536d4d2cf98ae0b252cd84dc414f26118d094d37bdca",
+    "downstream-slice.log": "6fdd15b6454df070f5df7e36109a0393c620b77b3818092cb9c00912da457775",
+    "check-qualified.log": "6e84a82d0f219d3ee027a739c297efedcfcafeb7b84d25911583c494e2a75c65",
+    "allocation-headers-5.log": "962653581c8e942e7dc183c0b2713a2aefe2c825dc47338251d4abac513368d5",
+    "native-multiplex-before-2.log": "082e9fec0aa508a5366292b78722c4d1fef188c6a0b918e33fe33e5e42c97a67",
+    "flow-build.log": "013575ddbfda73578016821aefc173ee479486ad88aa68e3c02e65e364381994",
+    "final-focused.log": "e4c6e9919a0b202c566ac54bbda900c1d59fb3950bc9be217517aa32ec84941b",
+    "pgo-merge.log": "fb4562bf999148ffcae6ca67cc6213e519d3fdd3c752a25f96cf7638369293aa",
+    "multiplex-batch-4.log": "4fdb312f3ff42ae5d3e671a42e3dacdfecad4831830a1032e39a888a6332b9ba",
+    "fuzz-final-hpack.log": "e2f2169c1492106613b6053712d1b15520597106479539b9c5cd188e604ae285",
+    "native-multiplex-before-0.log": "43a9d80e80eca907864763e809eda82e11b717cbd66877805d1cd8bf618ce6b7",
+    "build-scheduled.log": "649314f99fc1e84a5f9a9571db8e6c4e8024e6e350bc4db7cabdfc403d959191",
+    "header-allocation-green.log": "360cbdd2f5ee308c142eacb8064c925bde2a56863f6c89ce18edd35dd2a226ca",
+    "scheduling-red.log": "5e0abefa595a428cafe34fbaa2a570f0408bde1c4d5e8fd25a4f28b74eb33789",
+    "native-multiplex-before-1.log": "4f1a6d16794f367a99e27f90f0537513ff20760fadc32fd1a58acde41597a819",
+    "batch-boundary-final.log": "6e1b75df878004796272b55e8d8f8017b415a80a12716425119f0072c1bb1dfd",
+    "baseline-tests.log": "d92c8b4892a26cf17f858456b7893f9668faf05799117bf612db69536cb1de7d",
+    "conformance-build-batch.log": "a1b480fab4a162ee88c7212b8849278e0dc286d3046188723e80300cf2edfbf8",
+    "check.log": "7cb37b2674e1a00a3033730730fa2675b726bfd213c7bb696c4f328ca62e8bb7",
+    "interop-encoding.log": "71e9e1260fbb5d0db0300a85d0cfec40b793b2ca08e39b307edc7a7168684b17",
+    "bounded-write-test.log": "dd6e6dc09853b343044277fa7b61add7c1f3a612319f983b037a82db89b4189f",
+    "allocation-before-1.log": "a341a000e3fba9a9ce7296356e53d65c02787246757b848bdbd2019739797162",
+    "pgo-build-generate.log": "28540a1dda0d2dd088832c5fc8fb710b78e5aae40de67773e0d2865c4504bbd9",
+    "allocation-before-3.log": "6bcf4d699ae95dd14516137103782a27f07db6557821912792460e81dbdefc27",
+    "drain-green.log": "824de9b46209746e4263c06df410ea956c45bb7e6e0d33022093742a258169a0",
+    "allocation-dispatch.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "h2spec-final-tls.log": "5f8384a445da01f4271d223c83ce2134113a0d73a60c0884bbfa65752e428d8a",
+    "allocation-before-2.log": "2045842809019f64f3576329fa437841509d36fc89493939b8ffb27e0a65cb12",
+    "batch-focused.log": "a1c98d2bc3f2a7db3b1e12f8268140d2df15354a3a7dd624c16cec53e823970b",
+    "flow-build-qualified.log": "9ffb6d9a646db9ec7da98c7dd14728b6a88e8bcd74c17a2850292eba78ec0dd1",
+    "elf-sections.log": "26cbd7fe31259e63d08f893f4e3749b49be779bc3c31b5f32a65f3ea61124b2c",
+    "header-allocation-red.log": "404c4cc080c683568caf066eecf9bc4ddca2361738cd5f372510a8edbda05c49",
+    "h2spec-final-plain.log": "7008f23d69ca62ee3172536d4d2cf98ae0b252cd84dc414f26118d094d37bdca",
+    "linux-final.log": "060bdb088414a0c64e419e8a378839c352dc5d51baf152b3ca0573592c454f07",
+    "build-slice.log": "e5ddd03d586aa59687379306f5356eb705c97cfbf6c6524fa24c0ea2ca940a52",
+    "allocation-before-5.log": "f4ec4697cd1b2d5e26d00e7aab7b1fe64866194008b53736adfc42d72166dc72",
+    "native-build-headers.log": "9fcbde6930a460c1585f3ef613bad023e52dfc8bd74062333da50e91776142ee",
+    "flow-build-final.log": "6484e6e60198af1ab68e2c88e232b151f549896580732a978c99a3672cfedc5b",
+    "allocation-before-4.log": "6afc634217474ba3ff86470ba8f789bca935db1d171dac56f6f5d346bc839136",
+    "native-build-batch.log": "63cd713dfcbd188016d406996ad531033068d3cc5f7c8098462f7c3262c291e5"
+  },
+  "limitations": [
+    "Shared three-CPU VM with unrelated service containers.",
+    "Socket CPU includes a broader cgroup interval than request timing. RSS is sampled, not a continuous peak.",
+    "Rejected trials remain in the CSV. Lower allocation counts do not guarantee lower RSS or faster sockets.",
+    "Full raw instrumentation, source copies and logs remain local ignored artifacts."
+  ]
+}
