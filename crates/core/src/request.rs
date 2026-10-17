@@ -62,6 +62,11 @@ impl Request {
             .map_err(|_| Error::bad_request("invalid query parameter"))
     }
     pub fn header<T: FromStr>(&self, name: &str) -> Result<T> {
+        self.header_str(name)?
+            .parse()
+            .map_err(|_| Error::bad_request("invalid header"))
+    }
+    pub(crate) fn header_str(&self, name: &str) -> Result<&str> {
         let mut values = self.headers().get_all(name).iter();
         let first = values
             .next()
@@ -71,8 +76,6 @@ impl Request {
         }
         first
             .to_str()
-            .map_err(|_| Error::bad_request("invalid header"))?
-            .parse()
             .map_err(|_| Error::bad_request("invalid header"))
     }
 }

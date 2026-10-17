@@ -25,7 +25,7 @@ impl<T: serde::Serialize> IntoResponse for Json<T> {
 #[cfg(feature = "json")]
 impl Request {
     pub async fn json<T: serde::de::DeserializeOwned>(self) -> Result<T> {
-        let content_type = self.header::<String>("content-type")?;
+        let content_type = self.header_str("content-type")?;
         let media = content_type.split(';').next().unwrap_or("").trim();
         if !(media.eq_ignore_ascii_case("application/json")
             || media.starts_with("application/") && media.ends_with("+json"))
@@ -47,7 +47,7 @@ impl Request {
         total_bytes: u64,
         field_bytes: u64,
     ) -> Result<multer::Multipart<'static>> {
-        let content_type = self.header::<String>("content-type")?;
+        let content_type = self.header_str("content-type")?;
         let boundary = multer::parse_boundary(content_type)
             .map_err(|_| Error::bad_request("invalid multipart boundary"))?;
         let constraints = multer::Constraints::new().size_limit(

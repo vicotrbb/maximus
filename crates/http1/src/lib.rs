@@ -787,7 +787,10 @@ async fn write_response<W: WriteIo>(
         if length.is_some_and(|n| n != sent) {
             return Err(io::Error::other("response shorter than Content-Length"));
         }
-        if chunked {
+        if chunked && trailers.is_none() {
+            output.extend_from_slice(b"0\r\n\r\n");
+            send_output(write, output, activity).await?;
+        } else if chunked {
             let mut final_chunk = b"0\r\n".to_vec();
             if let Some(trailers) = trailers {
                 for (name, value) in &trailers {
