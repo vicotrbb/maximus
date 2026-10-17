@@ -1,0 +1,2007 @@
+{
+  "baseline_commit": "fe4129c95fc8a728f9b970087f43286b60a209fb",
+  "variant": "option: single-pass lookup using Option<usize>",
+  "prior_rejected_evidence": "https://github.com/vicotrbb/maximus/tree/25589aee52d8eeba86354dd2dd16a0a6c5513aa7/benches/results",
+  "source_sha256": {
+    "crates/http2/src/hpack.rs": "2dc7e69bdc41ca7c7120b51fea9ff3cd23d2c7b719fe6b631689d98f6700affa",
+    "crates/http2/src/lib.rs": "aae4eed0a5039a62490960bbb0057ebbcf24d0838e948635d10cc75bf9a4f95a"
+  },
+  "binaries": {
+    "arm64-before": {
+      "bytes": 9528072,
+      "sha256": "d64af794136ce1bdcaad3842545e37be337394efa0f63bcd79cb73749e022e03"
+    },
+    "arm64-option": {
+      "bytes": 9528072,
+      "sha256": "bb61582055efa321493e18e8a243c8037e596c4463ebbe8678fbd49228a1238e"
+    },
+    "arm64-final-gains": {
+      "bytes": 9528072,
+      "sha256": "bb61582055efa321493e18e8a243c8037e596c4463ebbe8678fbd49228a1238e"
+    },
+    "amd64-before": {
+      "bytes": 9884456,
+      "sha256": "eea2eff38cf4c267614354599c06ac93bbc6e8e88f31fbab5ca4550d0d437cfa"
+    },
+    "amd64-option": {
+      "bytes": 9884328,
+      "sha256": "c41ae958230395cfd9b2531ca213f6430a5cd177e18d4149e08f1627f960c0ab"
+    }
+  },
+  "arm64_final_matches_measured": true,
+  "environment": {
+    "image_ids": [
+      "client docker.io/grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532",
+      "server docker.io/library/rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663"
+    ],
+    "cpu": "AMD Ryzen 7 5825U, 8 cores / 16 threads",
+    "kernel": "Linux 6.6.68",
+    "compiler": "rustc 1.96.1 (31fca3adb 2026-06-26), LLVM 22.1.2",
+    "profile": "thin LTO, one codegen unit, locked dependencies",
+    "server_cpu": [
+      2
+    ],
+    "client_cpus": [
+      4,
+      6
+    ],
+    "container_cpu_limits": 2,
+    "client": "k6 1.6.0",
+    "protocol": "TLS 1.3 / HTTP/2",
+    "scope": "Temporary Kubernetes pod on shared homelab worker. Different physical cores for server and client; not exclusive core ownership."
+  },
+  "measurement": {
+    "repeats": 5,
+    "order": "Alternates baseline/candidate order for each pair",
+    "duration_seconds": 25,
+    "warmup_seconds": 5,
+    "cpu": "Process user+system ticks divided by all completed requests, 100 Hz clock. Includes warmup.",
+    "latency": "Custom k6 trend records responses completing after five seconds.",
+    "rss": "Process RSS after run, not peak.",
+    "rps": "Whole-run rate includes the fixed-rate ramp. steady_requests covers the final 20 seconds.",
+    "pilot": "10s, no ramp, 64 VUs. Failed thresholds retained.",
+    "fixed": "Five-second ramp from 100/s to 5000/s, followed by 20s at 5000/s. First phase 64 VUs; admitted follow-up 96 VUs. The 256-VU diagnostic exceeded admission and was aborted."
+  },
+  "totals": {
+    "trials": 42,
+    "requests": 8834687,
+    "http_failures": 0,
+    "check_failures": 0,
+    "dropped_arrivals": 515,
+    "failed_threshold_trials": 8
+  },
+  "admission_diagnostic": {
+    "variant": "before",
+    "vus": 256,
+    "configured_connection_allowance": 117,
+    "started": 112739,
+    "completed": 112600,
+    "incomplete": 139,
+    "dropped": 0,
+    "http_failures": 0,
+    "check_failures": 0,
+    "accepted": false,
+    "reason": "Pool exceeds configured connection allowance. Count equality failed; stopped before running the candidate. Not a performance comparison."
+  },
+  "sections": {
+    "arm64_before": {
+      "text": 6972789,
+      "data": 371392,
+      "bss": 3136
+    },
+    "arm64_option": {
+      "text": 6972593,
+      "data": 371392,
+      "bss": 3136
+    },
+    "amd64_before": {
+      "text": 7867135,
+      "data": 384784,
+      "bss": 6249
+    },
+    "amd64_option": {
+      "text": 7867007,
+      "data": 384784,
+      "bss": 6377
+    }
+  },
+  "allocation_probe": {
+    "calls": 70,
+    "requested_bytes": 319816,
+    "peak_live_bytes": 268780,
+    "live_after_bytes": 0,
+    "comparison": "Identical to baseline; three final Linux release runs"
+  },
+  "arm64_hpack_probe": {
+    "before": {
+      "0": {
+        "ns": [
+          13.691,
+          16.606,
+          14.325,
+          24.998,
+          26.652,
+          26.76,
+          18.437,
+          20.476,
+          27.803
+        ],
+        "median_ns": 20.476
+      },
+      "1": {
+        "ns": [
+          6.302,
+          7.397,
+          8.154,
+          13.081,
+          8.142,
+          7.409,
+          6.395,
+          7.084,
+          6.878
+        ],
+        "median_ns": 7.397
+      },
+      "2": {
+        "ns": [
+          76.932,
+          87.406,
+          71.59,
+          73.253,
+          75.143,
+          68.966,
+          68.629,
+          68.646,
+          68.821
+        ],
+        "median_ns": 71.59
+      },
+      "3": {
+        "ns": [
+          37.239,
+          53.569,
+          34.081,
+          35.336,
+          34.218,
+          33.923,
+          34.403,
+          35.175,
+          34.08
+        ],
+        "median_ns": 34.403
+      },
+      "4": {
+        "ns": [
+          54.74,
+          43.024,
+          36.254,
+          36.595,
+          36.614,
+          36.046,
+          36.823,
+          36.358,
+          35.844
+        ],
+        "median_ns": 36.595
+      },
+      "5": {
+        "ns": [
+          53.95,
+          60.238,
+          51.927,
+          51.508,
+          52.349,
+          50.507,
+          50.746,
+          50.665,
+          51.052
+        ],
+        "median_ns": 51.508
+      },
+      "6": {
+        "ns": [
+          50.075,
+          53.975,
+          48.389,
+          48.984,
+          49.836,
+          48.224,
+          49.899,
+          48.505,
+          50.155
+        ],
+        "median_ns": 49.836
+      },
+      "7": {
+        "ns": [
+          50.147,
+          52.943,
+          50.941,
+          49.294,
+          48.737,
+          49.692,
+          51.371,
+          49.599,
+          50.93
+        ],
+        "median_ns": 50.147
+      },
+      "8": {
+        "ns": [
+          8.893,
+          9.403,
+          8.266,
+          8.695,
+          8.897,
+          8.476,
+          8.881,
+          8.966,
+          8.791
+        ],
+        "median_ns": 8.881
+      }
+    },
+    "option": {
+      "0": {
+        "ns": [
+          13.532,
+          16.053,
+          15.369,
+          17.388,
+          22.741,
+          13.592,
+          14.23,
+          15.438,
+          13.086
+        ],
+        "median_ns": 15.369
+      },
+      "1": {
+        "ns": [
+          6.37,
+          7.882,
+          6.133,
+          7.733,
+          6.979,
+          6.493,
+          7.218,
+          7.131,
+          6.607
+        ],
+        "median_ns": 6.979
+      },
+      "2": {
+        "ns": [
+          63.105,
+          66.042,
+          62.218,
+          71.314,
+          66.975,
+          63.914,
+          58.848,
+          61.675,
+          58.194
+        ],
+        "median_ns": 63.105
+      },
+      "3": {
+        "ns": [
+          26.548,
+          25.613,
+          25.932,
+          26.048,
+          24.806,
+          24.264,
+          24.288,
+          25.078,
+          26.677
+        ],
+        "median_ns": 25.613
+      },
+      "4": {
+        "ns": [
+          25.56,
+          25.547,
+          25.718,
+          25.912,
+          25.581,
+          25.591,
+          25.378,
+          25.698,
+          25.312
+        ],
+        "median_ns": 25.581
+      },
+      "5": {
+        "ns": [
+          30.958,
+          30.124,
+          28.499,
+          29.844,
+          29.676,
+          29.437,
+          29.656,
+          28.044,
+          30.082
+        ],
+        "median_ns": 29.676
+      },
+      "6": {
+        "ns": [
+          26.571,
+          26.56,
+          26.804,
+          26.17,
+          26.243,
+          26.233,
+          26.192,
+          25.748,
+          26.81
+        ],
+        "median_ns": 26.243
+      },
+      "7": {
+        "ns": [
+          28.202,
+          29.031,
+          28.285,
+          28.172,
+          27.594,
+          27.353,
+          28.389,
+          28.707,
+          28.444
+        ],
+        "median_ns": 28.285
+      },
+      "8": {
+        "ns": [
+          8.733,
+          8.56,
+          8.591,
+          8.824,
+          8.932,
+          8.82,
+          9.443,
+          8.716,
+          9.048
+        ],
+        "median_ns": 8.82
+      }
+    }
+  },
+  "arm64_static_matrix": {
+    "iterations_per_case": 200000,
+    "repetitions": 7,
+    "positions": 61,
+    "distinct_names": 52,
+    "observations": {
+      "0:exact": {
+        "before": {
+          "median_ns": 4.811,
+          "min_ns": 4.533,
+          "max_ns": 5.72
+        },
+        "option": {
+          "median_ns": 5.24,
+          "min_ns": 4.552,
+          "max_ns": 5.598
+        }
+      },
+      "0:literal": {
+        "before": {
+          "median_ns": 27.739,
+          "min_ns": 25.655,
+          "max_ns": 42.064
+        },
+        "option": {
+          "median_ns": 28.225,
+          "min_ns": 24.244,
+          "max_ns": 36.14
+        }
+      },
+      "1:exact": {
+        "before": {
+          "median_ns": 5.49,
+          "min_ns": 4.667,
+          "max_ns": 6.774
+        },
+        "option": {
+          "median_ns": 5.196,
+          "min_ns": 4.82,
+          "max_ns": 6.334
+        }
+      },
+      "1:literal": {
+        "before": {
+          "median_ns": 47.942,
+          "min_ns": 43.18,
+          "max_ns": 53.779
+        },
+        "option": {
+          "median_ns": 46.493,
+          "min_ns": 43.742,
+          "max_ns": 57.51
+        }
+      },
+      "2:exact": {
+        "before": {
+          "median_ns": 7.639,
+          "min_ns": 5.942,
+          "max_ns": 11.526
+        },
+        "option": {
+          "median_ns": 7.002,
+          "min_ns": 6.777,
+          "max_ns": 8.151
+        }
+      },
+      "2:literal": {
+        "before": {
+          "median_ns": 49.802,
+          "min_ns": 45.384,
+          "max_ns": 53.267
+        },
+        "option": {
+          "median_ns": 47.541,
+          "min_ns": 39.892,
+          "max_ns": 54.654
+        }
+      },
+      "3:exact": {
+        "before": {
+          "median_ns": 6.023,
+          "min_ns": 5.41,
+          "max_ns": 6.39
+        },
+        "option": {
+          "median_ns": 6.979,
+          "min_ns": 5.839,
+          "max_ns": 9.438
+        }
+      },
+      "3:literal": {
+        "before": {
+          "median_ns": 33.726,
+          "min_ns": 32.949,
+          "max_ns": 34.029
+        },
+        "option": {
+          "median_ns": 30.936,
+          "min_ns": 28.791,
+          "max_ns": 34.265
+        }
+      },
+      "4:exact": {
+        "before": {
+          "median_ns": 7.461,
+          "min_ns": 7.036,
+          "max_ns": 8.549
+        },
+        "option": {
+          "median_ns": 7.193,
+          "min_ns": 6.424,
+          "max_ns": 30.797
+        }
+      },
+      "4:literal": {
+        "before": {
+          "median_ns": 33.869,
+          "min_ns": 32.366,
+          "max_ns": 35.487
+        },
+        "option": {
+          "median_ns": 32.212,
+          "min_ns": 30.046,
+          "max_ns": 43.902
+        }
+      },
+      "5:exact": {
+        "before": {
+          "median_ns": 9.176,
+          "min_ns": 8.453,
+          "max_ns": 9.373
+        },
+        "option": {
+          "median_ns": 8.679,
+          "min_ns": 8.129,
+          "max_ns": 10.047
+        }
+      },
+      "5:literal": {
+        "before": {
+          "median_ns": 52.344,
+          "min_ns": 49.871,
+          "max_ns": 54.445
+        },
+        "option": {
+          "median_ns": 48.092,
+          "min_ns": 45.734,
+          "max_ns": 75.801
+        }
+      },
+      "6:exact": {
+        "before": {
+          "median_ns": 10.895,
+          "min_ns": 9.467,
+          "max_ns": 11.519
+        },
+        "option": {
+          "median_ns": 10.371,
+          "min_ns": 9.926,
+          "max_ns": 11.922
+        }
+      },
+      "6:literal": {
+        "before": {
+          "median_ns": 52.512,
+          "min_ns": 50.74,
+          "max_ns": 57.333
+        },
+        "option": {
+          "median_ns": 46.59,
+          "min_ns": 44.15,
+          "max_ns": 48.487
+        }
+      },
+      "7:exact": {
+        "before": {
+          "median_ns": 14.955,
+          "min_ns": 13.372,
+          "max_ns": 18.688
+        },
+        "option": {
+          "median_ns": 12.633,
+          "min_ns": 11.57,
+          "max_ns": 13.694
+        }
+      },
+      "7:literal": {
+        "before": {
+          "median_ns": 58.211,
+          "min_ns": 51.415,
+          "max_ns": 61.932
+        },
+        "option": {
+          "median_ns": 45.646,
+          "min_ns": 42.033,
+          "max_ns": 64.492
+        }
+      },
+      "8:exact": {
+        "before": {
+          "median_ns": 17.089,
+          "min_ns": 15.199,
+          "max_ns": 19.911
+        },
+        "option": {
+          "median_ns": 17.035,
+          "min_ns": 15.399,
+          "max_ns": 18.084
+        }
+      },
+      "8:literal": {
+        "before": {
+          "median_ns": 56.796,
+          "min_ns": 52.208,
+          "max_ns": 59.455
+        },
+        "option": {
+          "median_ns": 44.4,
+          "min_ns": 41.568,
+          "max_ns": 97.088
+        }
+      },
+      "9:exact": {
+        "before": {
+          "median_ns": 20.904,
+          "min_ns": 17.735,
+          "max_ns": 25.056
+        },
+        "option": {
+          "median_ns": 19.93,
+          "min_ns": 17.62,
+          "max_ns": 21.619
+        }
+      },
+      "9:literal": {
+        "before": {
+          "median_ns": 55.838,
+          "min_ns": 52.235,
+          "max_ns": 66.413
+        },
+        "option": {
+          "median_ns": 43.202,
+          "min_ns": 42.058,
+          "max_ns": 48.118
+        }
+      },
+      "10:exact": {
+        "before": {
+          "median_ns": 24.88,
+          "min_ns": 21.895,
+          "max_ns": 26.594
+        },
+        "option": {
+          "median_ns": 22.52,
+          "min_ns": 21.353,
+          "max_ns": 25.054
+        }
+      },
+      "10:literal": {
+        "before": {
+          "median_ns": 53.24,
+          "min_ns": 50.582,
+          "max_ns": 72.623
+        },
+        "option": {
+          "median_ns": 43.902,
+          "min_ns": 42.04,
+          "max_ns": 45.918
+        }
+      },
+      "11:exact": {
+        "before": {
+          "median_ns": 26.575,
+          "min_ns": 24.904,
+          "max_ns": 37.19
+        },
+        "option": {
+          "median_ns": 25.004,
+          "min_ns": 23.327,
+          "max_ns": 27.819
+        }
+      },
+      "11:literal": {
+        "before": {
+          "median_ns": 54.009,
+          "min_ns": 50.948,
+          "max_ns": 61.632
+        },
+        "option": {
+          "median_ns": 44.298,
+          "min_ns": 43.095,
+          "max_ns": 45.991
+        }
+      },
+      "12:exact": {
+        "before": {
+          "median_ns": 31.779,
+          "min_ns": 28.247,
+          "max_ns": 34.678
+        },
+        "option": {
+          "median_ns": 29.99,
+          "min_ns": 29.55,
+          "max_ns": 32.961
+        }
+      },
+      "12:literal": {
+        "before": {
+          "median_ns": 54.668,
+          "min_ns": 53.798,
+          "max_ns": 58.77
+        },
+        "option": {
+          "median_ns": 44.598,
+          "min_ns": 42.583,
+          "max_ns": 46.634
+        }
+      },
+      "13:exact": {
+        "before": {
+          "median_ns": 33.964,
+          "min_ns": 31.347,
+          "max_ns": 36.354
+        },
+        "option": {
+          "median_ns": 31.961,
+          "min_ns": 30.467,
+          "max_ns": 36.545
+        }
+      },
+      "13:literal": {
+        "before": {
+          "median_ns": 54.332,
+          "min_ns": 53.099,
+          "max_ns": 57.115
+        },
+        "option": {
+          "median_ns": 42.866,
+          "min_ns": 40.717,
+          "max_ns": 46.757
+        }
+      },
+      "14:exact": {
+        "before": {
+          "median_ns": 9.426,
+          "min_ns": 8.999,
+          "max_ns": 10.111
+        },
+        "option": {
+          "median_ns": 9.021,
+          "min_ns": 8.93,
+          "max_ns": 13.395
+        }
+      },
+      "14:literal": {
+        "before": {
+          "median_ns": 29.719,
+          "min_ns": 29.234,
+          "max_ns": 30.569
+        },
+        "option": {
+          "median_ns": 24.675,
+          "min_ns": 23.548,
+          "max_ns": 26.315
+        }
+      },
+      "15:exact": {
+        "before": {
+          "median_ns": 8.383,
+          "min_ns": 7.683,
+          "max_ns": 9.497
+        },
+        "option": {
+          "median_ns": 8.334,
+          "min_ns": 8.075,
+          "max_ns": 10.073
+        }
+      },
+      "15:literal": {
+        "before": {
+          "median_ns": 29.062,
+          "min_ns": 27.038,
+          "max_ns": 30.122
+        },
+        "option": {
+          "median_ns": 22.977,
+          "min_ns": 22.313,
+          "max_ns": 55.298
+        }
+      },
+      "16:exact": {
+        "before": {
+          "median_ns": 11.022,
+          "min_ns": 10.3,
+          "max_ns": 12.267
+        },
+        "option": {
+          "median_ns": 11.044,
+          "min_ns": 9.706,
+          "max_ns": 26.722
+        }
+      },
+      "16:literal": {
+        "before": {
+          "median_ns": 29.706,
+          "min_ns": 29.032,
+          "max_ns": 30.796
+        },
+        "option": {
+          "median_ns": 23.121,
+          "min_ns": 22.052,
+          "max_ns": 32.888
+        }
+      },
+      "17:exact": {
+        "before": {
+          "median_ns": 10.236,
+          "min_ns": 9.392,
+          "max_ns": 11.03
+        },
+        "option": {
+          "median_ns": 9.957,
+          "min_ns": 9.59,
+          "max_ns": 11.2
+        }
+      },
+      "17:literal": {
+        "before": {
+          "median_ns": 38.143,
+          "min_ns": 37.718,
+          "max_ns": 38.794
+        },
+        "option": {
+          "median_ns": 31.235,
+          "min_ns": 29.986,
+          "max_ns": 33.556
+        }
+      },
+      "18:exact": {
+        "before": {
+          "median_ns": 10.253,
+          "min_ns": 9.383,
+          "max_ns": 12.037
+        },
+        "option": {
+          "median_ns": 10.096,
+          "min_ns": 9.437,
+          "max_ns": 11.139
+        }
+      },
+      "18:literal": {
+        "before": {
+          "median_ns": 36.419,
+          "min_ns": 35.293,
+          "max_ns": 37.716
+        },
+        "option": {
+          "median_ns": 30.108,
+          "min_ns": 28.412,
+          "max_ns": 30.89
+        }
+      },
+      "19:exact": {
+        "before": {
+          "median_ns": 9.766,
+          "min_ns": 9.548,
+          "max_ns": 12.188
+        },
+        "option": {
+          "median_ns": 9.862,
+          "min_ns": 9.443,
+          "max_ns": 10.749
+        }
+      },
+      "19:literal": {
+        "before": {
+          "median_ns": 28.022,
+          "min_ns": 27.177,
+          "max_ns": 28.976
+        },
+        "option": {
+          "median_ns": 22.088,
+          "min_ns": 21.278,
+          "max_ns": 23.21
+        }
+      },
+      "20:exact": {
+        "before": {
+          "median_ns": 11.615,
+          "min_ns": 10.572,
+          "max_ns": 12.254
+        },
+        "option": {
+          "median_ns": 10.972,
+          "min_ns": 10.456,
+          "max_ns": 11.73
+        }
+      },
+      "20:literal": {
+        "before": {
+          "median_ns": 31.982,
+          "min_ns": 31.174,
+          "max_ns": 32.86
+        },
+        "option": {
+          "median_ns": 25.301,
+          "min_ns": 23.942,
+          "max_ns": 26.442
+        }
+      },
+      "21:exact": {
+        "before": {
+          "median_ns": 14.951,
+          "min_ns": 12.964,
+          "max_ns": 15.818
+        },
+        "option": {
+          "median_ns": 14.914,
+          "min_ns": 13.815,
+          "max_ns": 15.729
+        }
+      },
+      "21:literal": {
+        "before": {
+          "median_ns": 41.122,
+          "min_ns": 40.404,
+          "max_ns": 41.8
+        },
+        "option": {
+          "median_ns": 29.666,
+          "min_ns": 28.29,
+          "max_ns": 32.198
+        }
+      },
+      "22:exact": {
+        "before": {
+          "median_ns": 13.243,
+          "min_ns": 12.419,
+          "max_ns": 13.754
+        },
+        "option": {
+          "median_ns": 13.237,
+          "min_ns": 11.744,
+          "max_ns": 14.048
+        }
+      },
+      "22:literal": {
+        "before": {
+          "median_ns": 41.706,
+          "min_ns": 39.655,
+          "max_ns": 44.277
+        },
+        "option": {
+          "median_ns": 31.097,
+          "min_ns": 29.492,
+          "max_ns": 34.406
+        }
+      },
+      "23:exact": {
+        "before": {
+          "median_ns": 13.978,
+          "min_ns": 13.643,
+          "max_ns": 15.383
+        },
+        "option": {
+          "median_ns": 14.553,
+          "min_ns": 13.743,
+          "max_ns": 34.986
+        }
+      },
+      "23:literal": {
+        "before": {
+          "median_ns": 42.754,
+          "min_ns": 40.957,
+          "max_ns": 44.103
+        },
+        "option": {
+          "median_ns": 30.591,
+          "min_ns": 28.287,
+          "max_ns": 33.044
+        }
+      },
+      "24:exact": {
+        "before": {
+          "median_ns": 11.665,
+          "min_ns": 11.019,
+          "max_ns": 12.453
+        },
+        "option": {
+          "median_ns": 11.65,
+          "min_ns": 10.733,
+          "max_ns": 12.597
+        }
+      },
+      "24:literal": {
+        "before": {
+          "median_ns": 34.076,
+          "min_ns": 32.516,
+          "max_ns": 34.79
+        },
+        "option": {
+          "median_ns": 26.829,
+          "min_ns": 25.157,
+          "max_ns": 27.299
+        }
+      },
+      "25:exact": {
+        "before": {
+          "median_ns": 11.439,
+          "min_ns": 11.206,
+          "max_ns": 12.761
+        },
+        "option": {
+          "median_ns": 11.427,
+          "min_ns": 11.137,
+          "max_ns": 11.807
+        }
+      },
+      "25:literal": {
+        "before": {
+          "median_ns": 35.431,
+          "min_ns": 33.187,
+          "max_ns": 37.243
+        },
+        "option": {
+          "median_ns": 26.294,
+          "min_ns": 24.576,
+          "max_ns": 27.21
+        }
+      },
+      "26:exact": {
+        "before": {
+          "median_ns": 12.812,
+          "min_ns": 12.663,
+          "max_ns": 13.095
+        },
+        "option": {
+          "median_ns": 13.04,
+          "min_ns": 12.325,
+          "max_ns": 13.953
+        }
+      },
+      "26:literal": {
+        "before": {
+          "median_ns": 34.501,
+          "min_ns": 33.504,
+          "max_ns": 36.648
+        },
+        "option": {
+          "median_ns": 25.507,
+          "min_ns": 24.539,
+          "max_ns": 26.361
+        }
+      },
+      "27:exact": {
+        "before": {
+          "median_ns": 15.241,
+          "min_ns": 14.475,
+          "max_ns": 16.17
+        },
+        "option": {
+          "median_ns": 15.475,
+          "min_ns": 14.614,
+          "max_ns": 16.9
+        }
+      },
+      "27:literal": {
+        "before": {
+          "median_ns": 35.19,
+          "min_ns": 34.489,
+          "max_ns": 37.481
+        },
+        "option": {
+          "median_ns": 24.952,
+          "min_ns": 23.307,
+          "max_ns": 26.203
+        }
+      },
+      "28:exact": {
+        "before": {
+          "median_ns": 15.002,
+          "min_ns": 13.82,
+          "max_ns": 15.839
+        },
+        "option": {
+          "median_ns": 14.467,
+          "min_ns": 13.904,
+          "max_ns": 15.598
+        }
+      },
+      "28:literal": {
+        "before": {
+          "median_ns": 35.994,
+          "min_ns": 35.474,
+          "max_ns": 36.887
+        },
+        "option": {
+          "median_ns": 25.856,
+          "min_ns": 24.876,
+          "max_ns": 28.8
+        }
+      },
+      "29:exact": {
+        "before": {
+          "median_ns": 18.571,
+          "min_ns": 16.98,
+          "max_ns": 20.109
+        },
+        "option": {
+          "median_ns": 19.28,
+          "min_ns": 17.649,
+          "max_ns": 19.784
+        }
+      },
+      "29:literal": {
+        "before": {
+          "median_ns": 46.893,
+          "min_ns": 45.663,
+          "max_ns": 47.841
+        },
+        "option": {
+          "median_ns": 32.465,
+          "min_ns": 30.602,
+          "max_ns": 34.093
+        }
+      },
+      "30:exact": {
+        "before": {
+          "median_ns": 14.007,
+          "min_ns": 12.641,
+          "max_ns": 14.299
+        },
+        "option": {
+          "median_ns": 13.016,
+          "min_ns": 12.176,
+          "max_ns": 13.563
+        }
+      },
+      "30:literal": {
+        "before": {
+          "median_ns": 34.58,
+          "min_ns": 32.617,
+          "max_ns": 36.337
+        },
+        "option": {
+          "median_ns": 24.803,
+          "min_ns": 24.163,
+          "max_ns": 26.278
+        }
+      },
+      "31:exact": {
+        "before": {
+          "median_ns": 16.67,
+          "min_ns": 16.007,
+          "max_ns": 17.801
+        },
+        "option": {
+          "median_ns": 16.638,
+          "min_ns": 15.385,
+          "max_ns": 17.902
+        }
+      },
+      "31:literal": {
+        "before": {
+          "median_ns": 42.168,
+          "min_ns": 41.686,
+          "max_ns": 42.895
+        },
+        "option": {
+          "median_ns": 29.611,
+          "min_ns": 27.845,
+          "max_ns": 30.651
+        }
+      },
+      "32:exact": {
+        "before": {
+          "median_ns": 14.03,
+          "min_ns": 13.236,
+          "max_ns": 14.453
+        },
+        "option": {
+          "median_ns": 13.924,
+          "min_ns": 13.33,
+          "max_ns": 14.334
+        }
+      },
+      "32:literal": {
+        "before": {
+          "median_ns": 44.379,
+          "min_ns": 40.942,
+          "max_ns": 46.214
+        },
+        "option": {
+          "median_ns": 34.632,
+          "min_ns": 32.52,
+          "max_ns": 35.636
+        }
+      },
+      "33:exact": {
+        "before": {
+          "median_ns": 15.542,
+          "min_ns": 14.519,
+          "max_ns": 16.804
+        },
+        "option": {
+          "median_ns": 15.676,
+          "min_ns": 15.534,
+          "max_ns": 17.07
+        }
+      },
+      "33:literal": {
+        "before": {
+          "median_ns": 45.483,
+          "min_ns": 44.271,
+          "max_ns": 45.704
+        },
+        "option": {
+          "median_ns": 33.961,
+          "min_ns": 31.336,
+          "max_ns": 39.579
+        }
+      },
+      "34:exact": {
+        "before": {
+          "median_ns": 18.828,
+          "min_ns": 17.26,
+          "max_ns": 19.084
+        },
+        "option": {
+          "median_ns": 19.241,
+          "min_ns": 17.502,
+          "max_ns": 19.888
+        }
+      },
+      "34:literal": {
+        "before": {
+          "median_ns": 43.967,
+          "min_ns": 41.673,
+          "max_ns": 44.507
+        },
+        "option": {
+          "median_ns": 29.205,
+          "min_ns": 28.077,
+          "max_ns": 30.877
+        }
+      },
+      "35:exact": {
+        "before": {
+          "median_ns": 32.925,
+          "min_ns": 30.162,
+          "max_ns": 34.325
+        },
+        "option": {
+          "median_ns": 33.134,
+          "min_ns": 31.638,
+          "max_ns": 35.287
+        }
+      },
+      "35:literal": {
+        "before": {
+          "median_ns": 77.023,
+          "min_ns": 75.97,
+          "max_ns": 78.424
+        },
+        "option": {
+          "median_ns": 46.26,
+          "min_ns": 43.823,
+          "max_ns": 48.685
+        }
+      },
+      "36:exact": {
+        "before": {
+          "median_ns": 18.237,
+          "min_ns": 17.062,
+          "max_ns": 19.21
+        },
+        "option": {
+          "median_ns": 18.689,
+          "min_ns": 18.151,
+          "max_ns": 19.169
+        }
+      },
+      "36:literal": {
+        "before": {
+          "median_ns": 47.811,
+          "min_ns": 44.008,
+          "max_ns": 48.507
+        },
+        "option": {
+          "median_ns": 32.58,
+          "min_ns": 32.001,
+          "max_ns": 33.83
+        }
+      },
+      "37:exact": {
+        "before": {
+          "median_ns": 20.451,
+          "min_ns": 19.424,
+          "max_ns": 20.899
+        },
+        "option": {
+          "median_ns": 20.572,
+          "min_ns": 20.116,
+          "max_ns": 22.28
+        }
+      },
+      "37:literal": {
+        "before": {
+          "median_ns": 50.655,
+          "min_ns": 48.329,
+          "max_ns": 51.046
+        },
+        "option": {
+          "median_ns": 33.915,
+          "min_ns": 32.284,
+          "max_ns": 34.71
+        }
+      },
+      "38:exact": {
+        "before": {
+          "median_ns": 14.756,
+          "min_ns": 14.442,
+          "max_ns": 16.7
+        },
+        "option": {
+          "median_ns": 15.85,
+          "min_ns": 14.687,
+          "max_ns": 16.729
+        }
+      },
+      "38:literal": {
+        "before": {
+          "median_ns": 36.176,
+          "min_ns": 35.554,
+          "max_ns": 37.662
+        },
+        "option": {
+          "median_ns": 25.064,
+          "min_ns": 24.047,
+          "max_ns": 27.356
+        }
+      },
+      "39:exact": {
+        "before": {
+          "median_ns": 14.91,
+          "min_ns": 14.462,
+          "max_ns": 15.804
+        },
+        "option": {
+          "median_ns": 14.727,
+          "min_ns": 14.541,
+          "max_ns": 15.558
+        }
+      },
+      "39:literal": {
+        "before": {
+          "median_ns": 35.249,
+          "min_ns": 33.044,
+          "max_ns": 36.272
+        },
+        "option": {
+          "median_ns": 24.511,
+          "min_ns": 22.395,
+          "max_ns": 24.785
+        }
+      },
+      "40:exact": {
+        "before": {
+          "median_ns": 23.471,
+          "min_ns": 21.453,
+          "max_ns": 25.794
+        },
+        "option": {
+          "median_ns": 23.538,
+          "min_ns": 22.882,
+          "max_ns": 24.655
+        }
+      },
+      "40:literal": {
+        "before": {
+          "median_ns": 51.651,
+          "min_ns": 51.031,
+          "max_ns": 53.039
+        },
+        "option": {
+          "median_ns": 32.498,
+          "min_ns": 30.433,
+          "max_ns": 34.984
+        }
+      },
+      "41:exact": {
+        "before": {
+          "median_ns": 16.731,
+          "min_ns": 16.253,
+          "max_ns": 18.236
+        },
+        "option": {
+          "median_ns": 17.099,
+          "min_ns": 16.72,
+          "max_ns": 19.49
+        }
+      },
+      "41:literal": {
+        "before": {
+          "median_ns": 38.928,
+          "min_ns": 37.845,
+          "max_ns": 39.629
+        },
+        "option": {
+          "median_ns": 25.508,
+          "min_ns": 24.128,
+          "max_ns": 26.494
+        }
+      },
+      "42:exact": {
+        "before": {
+          "median_ns": 17.927,
+          "min_ns": 17.382,
+          "max_ns": 18.931
+        },
+        "option": {
+          "median_ns": 18.452,
+          "min_ns": 17.76,
+          "max_ns": 19.861
+        }
+      },
+      "42:literal": {
+        "before": {
+          "median_ns": 40.492,
+          "min_ns": 39.691,
+          "max_ns": 41.957
+        },
+        "option": {
+          "median_ns": 25.508,
+          "min_ns": 25.286,
+          "max_ns": 26.761
+        }
+      },
+      "43:exact": {
+        "before": {
+          "median_ns": 25.493,
+          "min_ns": 23.885,
+          "max_ns": 26.912
+        },
+        "option": {
+          "median_ns": 26.009,
+          "min_ns": 24.211,
+          "max_ns": 27.684
+        }
+      },
+      "43:literal": {
+        "before": {
+          "median_ns": 53.817,
+          "min_ns": 53.464,
+          "max_ns": 55.44
+        },
+        "option": {
+          "median_ns": 30.852,
+          "min_ns": 30.645,
+          "max_ns": 31.594
+        }
+      },
+      "44:exact": {
+        "before": {
+          "median_ns": 24.837,
+          "min_ns": 23.881,
+          "max_ns": 25.456
+        },
+        "option": {
+          "median_ns": 25.15,
+          "min_ns": 23.773,
+          "max_ns": 29.16
+        }
+      },
+      "44:literal": {
+        "before": {
+          "median_ns": 54.796,
+          "min_ns": 54.145,
+          "max_ns": 56.964
+        },
+        "option": {
+          "median_ns": 34.434,
+          "min_ns": 32.467,
+          "max_ns": 35.001
+        }
+      },
+      "45:exact": {
+        "before": {
+          "median_ns": 21.015,
+          "min_ns": 18.859,
+          "max_ns": 26.222
+        },
+        "option": {
+          "median_ns": 20.394,
+          "min_ns": 19.562,
+          "max_ns": 20.743
+        }
+      },
+      "45:literal": {
+        "before": {
+          "median_ns": 41.645,
+          "min_ns": 39.485,
+          "max_ns": 47.147
+        },
+        "option": {
+          "median_ns": 25.271,
+          "min_ns": 24.007,
+          "max_ns": 26.722
+        }
+      },
+      "46:exact": {
+        "before": {
+          "median_ns": 20.215,
+          "min_ns": 19.165,
+          "max_ns": 21.42
+        },
+        "option": {
+          "median_ns": 20.139,
+          "min_ns": 18.92,
+          "max_ns": 21.554
+        }
+      },
+      "46:literal": {
+        "before": {
+          "median_ns": 41.597,
+          "min_ns": 39.815,
+          "max_ns": 42.379
+        },
+        "option": {
+          "median_ns": 24.906,
+          "min_ns": 23.644,
+          "max_ns": 25.835
+        }
+      },
+      "47:exact": {
+        "before": {
+          "median_ns": 16.683,
+          "min_ns": 16.166,
+          "max_ns": 17.934
+        },
+        "option": {
+          "median_ns": 17.049,
+          "min_ns": 16.311,
+          "max_ns": 17.315
+        }
+      },
+      "47:literal": {
+        "before": {
+          "median_ns": 34.558,
+          "min_ns": 33.558,
+          "max_ns": 38.697
+        },
+        "option": {
+          "median_ns": 21.888,
+          "min_ns": 20.671,
+          "max_ns": 23.657
+        }
+      },
+      "48:exact": {
+        "before": {
+          "median_ns": 21.543,
+          "min_ns": 20.26,
+          "max_ns": 22.891
+        },
+        "option": {
+          "median_ns": 20.606,
+          "min_ns": 19.819,
+          "max_ns": 21.51
+        }
+      },
+      "48:literal": {
+        "before": {
+          "median_ns": 42.724,
+          "min_ns": 40.22,
+          "max_ns": 44.127
+        },
+        "option": {
+          "median_ns": 25.228,
+          "min_ns": 24.493,
+          "max_ns": 26.007
+        }
+      },
+      "49:exact": {
+        "before": {
+          "median_ns": 24.678,
+          "min_ns": 23.931,
+          "max_ns": 26.412
+        },
+        "option": {
+          "median_ns": 25.662,
+          "min_ns": 24.945,
+          "max_ns": 26.57
+        }
+      },
+      "49:literal": {
+        "before": {
+          "median_ns": 51.628,
+          "min_ns": 48.466,
+          "max_ns": 64.076
+        },
+        "option": {
+          "median_ns": 29.025,
+          "min_ns": 28.837,
+          "max_ns": 30.376
+        }
+      },
+      "50:exact": {
+        "before": {
+          "median_ns": 40.512,
+          "min_ns": 39.427,
+          "max_ns": 44.645
+        },
+        "option": {
+          "median_ns": 40.561,
+          "min_ns": 39.527,
+          "max_ns": 43.327
+        }
+      },
+      "50:literal": {
+        "before": {
+          "median_ns": 84.075,
+          "min_ns": 81.616,
+          "max_ns": 87.638
+        },
+        "option": {
+          "median_ns": 45.511,
+          "min_ns": 44.797,
+          "max_ns": 48.114
+        }
+      },
+      "51:exact": {
+        "before": {
+          "median_ns": 43.074,
+          "min_ns": 41.43,
+          "max_ns": 44.28
+        },
+        "option": {
+          "median_ns": 42.383,
+          "min_ns": 40.432,
+          "max_ns": 68.862
+        }
+      },
+      "51:literal": {
+        "before": {
+          "median_ns": 85.197,
+          "min_ns": 81.298,
+          "max_ns": 87.072
+        },
+        "option": {
+          "median_ns": 46.985,
+          "min_ns": 45.357,
+          "max_ns": 47.674
+        }
+      },
+      "52:exact": {
+        "before": {
+          "median_ns": 18.804,
+          "min_ns": 17.656,
+          "max_ns": 19.679
+        },
+        "option": {
+          "median_ns": 18.269,
+          "min_ns": 17.584,
+          "max_ns": 19.473
+        }
+      },
+      "52:literal": {
+        "before": {
+          "median_ns": 37.03,
+          "min_ns": 35.217,
+          "max_ns": 38.617
+        },
+        "option": {
+          "median_ns": 21.594,
+          "min_ns": 21.228,
+          "max_ns": 23.861
+        }
+      },
+      "53:exact": {
+        "before": {
+          "median_ns": 26.932,
+          "min_ns": 25.546,
+          "max_ns": 28.429
+        },
+        "option": {
+          "median_ns": 26.247,
+          "min_ns": 25.696,
+          "max_ns": 27.344
+        }
+      },
+      "53:literal": {
+        "before": {
+          "median_ns": 52.782,
+          "min_ns": 48.425,
+          "max_ns": 54.187
+        },
+        "option": {
+          "median_ns": 29.305,
+          "min_ns": 27.197,
+          "max_ns": 30.856
+        }
+      },
+      "54:exact": {
+        "before": {
+          "median_ns": 20.904,
+          "min_ns": 19.644,
+          "max_ns": 21.767
+        },
+        "option": {
+          "median_ns": 20.224,
+          "min_ns": 19.048,
+          "max_ns": 21.85
+        }
+      },
+      "54:literal": {
+        "before": {
+          "median_ns": 40.944,
+          "min_ns": 40.185,
+          "max_ns": 41.777
+        },
+        "option": {
+          "median_ns": 24.927,
+          "min_ns": 24.267,
+          "max_ns": 26.267
+        }
+      },
+      "55:exact": {
+        "before": {
+          "median_ns": 19.093,
+          "min_ns": 18.655,
+          "max_ns": 21.426
+        },
+        "option": {
+          "median_ns": 18.668,
+          "min_ns": 18.38,
+          "max_ns": 20.414
+        }
+      },
+      "55:literal": {
+        "before": {
+          "median_ns": 35.703,
+          "min_ns": 35.048,
+          "max_ns": 37.151
+        },
+        "option": {
+          "median_ns": 20.983,
+          "min_ns": 20.351,
+          "max_ns": 21.928
+        }
+      },
+      "56:exact": {
+        "before": {
+          "median_ns": 21.405,
+          "min_ns": 20.528,
+          "max_ns": 22.949
+        },
+        "option": {
+          "median_ns": 20.947,
+          "min_ns": 20.48,
+          "max_ns": 22.485
+        }
+      },
+      "56:literal": {
+        "before": {
+          "median_ns": 41.6,
+          "min_ns": 39.982,
+          "max_ns": 48.104
+        },
+        "option": {
+          "median_ns": 23.472,
+          "min_ns": 22.291,
+          "max_ns": 24.911
+        }
+      },
+      "57:exact": {
+        "before": {
+          "median_ns": 22.467,
+          "min_ns": 21.479,
+          "max_ns": 43.331
+        },
+        "option": {
+          "median_ns": 22.429,
+          "min_ns": 21.43,
+          "max_ns": 23.86
+        }
+      },
+      "57:literal": {
+        "before": {
+          "median_ns": 42.984,
+          "min_ns": 40.95,
+          "max_ns": 95.271
+        },
+        "option": {
+          "median_ns": 24.33,
+          "min_ns": 23.493,
+          "max_ns": 25.541
+        }
+      },
+      "58:exact": {
+        "before": {
+          "median_ns": 31.312,
+          "min_ns": 30.293,
+          "max_ns": 33.973
+        },
+        "option": {
+          "median_ns": 32.444,
+          "min_ns": 31.089,
+          "max_ns": 35.162
+        }
+      },
+      "58:literal": {
+        "before": {
+          "median_ns": 61.228,
+          "min_ns": 57.811,
+          "max_ns": 63.367
+        },
+        "option": {
+          "median_ns": 33.895,
+          "min_ns": 31.081,
+          "max_ns": 37.009
+        }
+      },
+      "59:exact": {
+        "before": {
+          "median_ns": 24.144,
+          "min_ns": 22.494,
+          "max_ns": 25.502
+        },
+        "option": {
+          "median_ns": 23.342,
+          "min_ns": 21.983,
+          "max_ns": 25.239
+        }
+      },
+      "59:literal": {
+        "before": {
+          "median_ns": 44.012,
+          "min_ns": 43.261,
+          "max_ns": 48.511
+        },
+        "option": {
+          "median_ns": 24.56,
+          "min_ns": 23.903,
+          "max_ns": 25.212
+        }
+      },
+      "60:exact": {
+        "before": {
+          "median_ns": 24.977,
+          "min_ns": 23.955,
+          "max_ns": 29.443
+        },
+        "option": {
+          "median_ns": 25.003,
+          "min_ns": 24.666,
+          "max_ns": 25.984
+        }
+      },
+      "60:literal": {
+        "before": {
+          "median_ns": 47.709,
+          "min_ns": 46.386,
+          "max_ns": 54.627
+        },
+        "option": {
+          "median_ns": 26.119,
+          "min_ns": 24.665,
+          "max_ns": 26.431
+        }
+      }
+    }
+  },
+  "reproduction": {
+    "focused_source": "#![allow(dead_code)]\n#[path = \"codec.rs\"] mod hpack;\nuse std::{hint::black_box, time::Instant};\nfn main() {\n    let fields: &[(&[u8], &[u8])] = &[(b\":status\",b\"200\"),(b\":method\",b\"POST\"),(b\":status\",b\"418\"),(b\"content-type\",b\"application/json\"),(b\"content-length\",b\"1024\"),(b\"server\",b\"maximus\"),(b\"www-authenticate\",b\"Basic\"),(b\"x-custom\",b\"opaque\"),(b\"accept-encoding\",b\"gzip, deflate\")];\n    for (i, &(n,v)) in fields.iter().enumerate() {\n        let mut out=Vec::with_capacity(256);\n        hpack::encode([(n,v)],&mut out);\n        assert_eq!(hpack::Decoder::new(0,4096,10).decode(&out).unwrap(),[(n.to_vec(),v.to_vec())]);\n        let wire=out.clone();\n        let t=Instant::now();\n        for _ in 0..1000000 {out.clear();hpack::encode(black_box([(n,v)]),black_box(&mut out));black_box(&out);}\n        println!(\"case={i} ns={:.3} wire={wire:x?}\",t.elapsed().as_nanos() as f64/1000000.0);\n    }\n}\n",
+    "matrix_source": "#![allow(dead_code)]\n#[path=\"codec.rs\"] mod hpack;\nuse std::{hint::black_box,time::Instant};\nfn main(){\n for (i,&(n,v)) in hpack::probe_table().iter().enumerate(){\n  for (mode,v) in [(\"exact\",v),(\"literal\",b\"probe-value\".as_slice())] {\n   let mut out=Vec::with_capacity(256);hpack::encode([(n,v)],&mut out);\n   assert_eq!(hpack::Decoder::new(0,4096,1).decode(&out).unwrap(),[(n.to_vec(),v.to_vec())]);\n   let t=Instant::now();\n   for _ in 0..200000 {out.clear();hpack::encode(black_box([(n,v)]),black_box(&mut out));black_box(&out);}\n   println!(\"{i},{mode},{:.3}\",t.elapsed().as_nanos() as f64/200000.0);\n  }\n }\n}\n",
+    "codec_append": "\npub fn probe_table() -> &'static [(&'static [u8], &'static [u8])] { STATIC }\n",
+    "compile": [
+      "rustc",
+      "--edition=2024",
+      "-Copt-level=3",
+      "-Clto=thin",
+      "-Ccodegen-units=1",
+      "probe.rs",
+      "-o",
+      "probe"
+    ],
+    "run": [
+      "taskset",
+      "-c",
+      "0",
+      "./probe"
+    ],
+    "k6_workload": "import http from 'k6/http';\nimport exec from 'k6/execution';\nimport { check } from 'k6';\nimport { Counter, Trend } from 'k6/metrics';\nconst starts = new Counter('starts');\nconst steady = new Counter('steady_requests');\nconst latency = new Trend('steady_latency', true);\nconst path = __ENV.PATHNAME || '/echo';\nconst body = 'x'.repeat(Number(__ENV.BODY_BYTES || 1024));\nconst expected = path === '/echo' ? body : path === '/json' ? '{\"message\":\"Hello, World!\"}' : path.startsWith('/users/') ? '42' : 'Hello, World!';\nconst duration = __ENV.DURATION || '35s';\nconst vus = Number(__ENV.VUS || 64);\nexport const options = {\n  scenarios: { load: __ENV.RATE ? { executor: 'ramping-arrival-rate', startRate: 100, timeUnit: '1s', stages: [{duration: '5s', target: Number(__ENV.RATE)}, {duration: `${parseInt(duration) - 5}s`, target: Number(__ENV.RATE)}], preAllocatedVUs: vus } : {executor: 'constant-vus', vus, duration}},\n  tlsVersion: { min: 'tls1.3', max: 'tls1.3' },\n  summaryTrendStats: ['med', 'p(99)', 'p(99.9)', 'max'],\n  thresholds: {http_req_failed: ['rate==0'], checks: ['rate==1'], ...(__ENV.RATE ? {dropped_iterations: ['count==0']} : {})},\n};\nexport default function () {\n  starts.add(1);\n  const r = path === '/echo' ? http.post('https://localhost:8080' + path, body) : http.get('https://localhost:8080' + path);\n  check(r, {'status/body/H2': r => r.status === 200 && r.body === expected && r.proto === 'HTTP/2.0'});\n  if (exec.instance.currentTestRunDuration >= 5000) {steady.add(1);latency.add(r.timings.duration);}\n}\nexport function handleSummary(data) {return {[__ENV.RESULT]: JSON.stringify(data)};}\n",
+    "homelab_runner": "import subprocess, pathlib, json, time, csv, argparse\nout=pathlib.Path('artifacts/lean-gains');base=['kubectl','--context','homelab','-n','maximus-perf-gains','exec','measure']\ndef cmd(container,*args):return base+['-c',container,'--',*args]\ndef read(container,*args):return subprocess.check_output(cmd(container,*args),text=True)\ndef stats():\n return json.loads(read('server','python3','-c',\"import json,os,pathlib;pid=pathlib.Path('/work/server.pid').read_text().strip();s=pathlib.Path('/proc/'+pid+'/stat').read_text().split(')')[1].split();print(json.dumps(dict(ticks=int(s[11])+int(s[12]),rss=int(s[21])*os.sysconf('SC_PAGE_SIZE'),hz=os.sysconf('SC_CLK_TCK'))))\"))\np=argparse.ArgumentParser();p.add_argument('--vus',type=int,default=64);p.add_argument('--variants',default='before,lookup');p.add_argument('--label',required=True);p.add_argument('--repeats',type=int,default=5);p.add_argument('--body',default='1024');p.add_argument('--rate',default='0');p.add_argument('--path',default='/echo');p.add_argument('--duration',default='35s');a=p.parse_args()\nrows=[];variants=a.variants.split(',')\nfor n in range(a.repeats):\n for v in variants[n%len(variants):]+variants[:n%len(variants)]:\n  key=f'{a.label}-{v}-{n}'\n  read('server','sh','-c',f'MAXIMUS_CERT=/work/cert.pem MAXIMUS_KEY=/work/key.pem PROTOCOL=h2 WORKERS=1 /work/results/pin 4 /work/results/server-{v} maximus >/work/server.log 2>&1 & echo $! >/work/server.pid')\n  try:\n   for _ in range(50):\n    if 'ready' in read('server','cat','/work/server.log'):break\n    time.sleep(.1)\n   else:raise RuntimeError('server not ready')\n   before=stats()\n   env=['env',f'PATHNAME={a.path}',f'BODY_BYTES={a.body}',f'DURATION={a.duration}',f'VUS={a.vus}','SSL_CERT_FILE=/work/cert.pem',f'RESULT=/work/results/{key}.json']\n   if a.rate!='0':env.append(f'RATE={a.rate}')\n   t=time.monotonic()\n   with (out/f'{key}.log').open('w') as f:r=subprocess.run(cmd('client',*env,'/work/results/pin','80','k6','run','--quiet','/work/load.js'),stdout=f,stderr=subprocess.STDOUT)\n   elapsed=time.monotonic()-t;after=stats()\n   s=json.loads(read('server','cat',f'/work/results/{key}.json'));(out/f'{key}.json').write_text(json.dumps(s))\n   m=s['metrics'];val=lambda k,f,default=0:m.get(k,{}).get('values',{}).get(f,default)\n   count=val('http_reqs','count');assert count==val('starts','count')==val('iterations','count') and count>0\n   row=dict(phase=a.label,variant=v,repeat=n,path=a.path,body=int(a.body),rate=int(a.rate),requests=count,rps=val('http_reqs','rate'),cpu_us=(after['ticks']-before['ticks'])/before['hz']*1e6/count,steady_requests=val('steady_requests','count'),p99_ms=val('steady_latency','p(99)'),p999_ms=val('steady_latency','p(99.9)'),rss=after['rss'],failures=val('http_req_failed','passes'),checks_failed=val('checks','fails'),dropped=val('dropped_iterations','count'),exit=r.returncode,wall_seconds=elapsed)\n   rows.append(row)\n   with (out/f'{a.label}.csv').open('w') as f:w=csv.DictWriter(f,fieldnames=list(row),lineterminator='\\n');w.writeheader();w.writerows(rows)\n   print(json.dumps(row),flush=True)\n  finally:read('server','sh','-c','kill $(cat /work/server.pid); sleep 0.2')\n"
+  },
+  "trial_csv_sha256": "27d8e9ea53927025ce41af2ccee667f519a3ee43e51cc7e6a33adf300cc63940",
+  "logs_sha256": {
+    "small-fixed-option-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "option-before-8.log": "2c30db0fec4d16ca08e22fcdc511ae038393a7544a84aaa18a3295746e1615f2",
+    "arm64-size.log": "7c9aa0d9f617e6fb3c64508539cb35467dbd4853c2802741622734f2049952c5",
+    "downstream.log": "8749846311c4c8cf0114edf5c1c17b0b96d727e66b0ab300ec7b72e623dcefe6",
+    "allocation-1.log": "3cba35262580730fa28fb1e331719a10c55af90240c7cce8670e8d9156a75d0b",
+    "small-fixed-option-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "small-fixed-option-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "allocation-0.log": "3cba35262580730fa28fb1e331719a10c55af90240c7cce8670e8d9156a75d0b",
+    "allocation-2.log": "95d8855f01a574d2dc808ff85f0d9e29410436761b7a9b202bac89adea144ff6",
+    "small-fixed-option-1.log": "2cc73d2b66d91e04ba2f84fd018bab3f87c8adeb5fb49ca5aec1f301c6292e9d",
+    "pilot-before-0.log": "ef43fb7e13bfdbecae5d4f4066bfb30b327a92943c1af3f3b4b3e39d09b3afb2",
+    "small-fixed-option-0.log": "5dbde0187ab7b0bb96ac3d7a23e4c857b8923ff0c89cadbab12c40afe6e4cb12",
+    "plaintext-before-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "large-before-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "option-option-1.log": "4036ae132e9e7c48f1ef9e4a618ac9aae5d4539656677490efacb8eced0fb5cb",
+    "fuzz-hpack.log": "f82cad895f1bffc5d5d9f482db7fbbe2a1f98c8cdf3f8c1c8fabc370b9461a8d",
+    "option-option-0.log": "65c21eda0e5dc1e97a627a12b23c61f2d9ddab702092ffaf2f7166a5bb755fc5",
+    "large-before-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-before-6.log": "827da46d3f03d167f634b9fcea122cbe3c59c7618e79baa478ca9d74d41c9a9d",
+    "matrix-before-4.log": "55b028d09b4768b8d35015cb07c01061af94efcf3a3a90e343c222e217cb8b1a",
+    "fixed-admitted-option-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "large-before-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "option-option-2.log": "b809ec9ddaac9eb85c059a1da545ea6d7ec28b8d6fd07626d6d7c972b6490a30",
+    "homelab-environment.log": "66c87b6288a8897ef56123777f941641f67f96fda26ac22f8cd1b1f81d0dd2af",
+    "homelab-build.log": "649988cc62f52d64eef73230f0d4ac158e3888e1ad1c88accb53c9b0b66331a1",
+    "option-option-3.log": "bb184be97a19fc4a56a5233d47df9bfb424987af9e5cd650625fe34b9a0cb48b",
+    "large-before-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-before-5.log": "64ce6aa6eff60b02dd56911987c06108ee638102da82fdc1753b51980ecadc44",
+    "matrix-before-1.log": "35b6484d3cada20c0a6d0f008f18ff20eefd05b94ada45b73f60fed1baf51153",
+    "fixed-admitted-option-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "large-before-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plaintext-before-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "homelab-images.log": "f9132dbb29c417246505796311c154246c5b2d819716f456043080d1302ff6e7",
+    "option-option-7.log": "25631172a648cd05ccec960f4eb4af74328566fe79bba73772b65b4545a9f498",
+    "homelab-final-identity.log": "926623ad40320cacb41c5d6a4a999192eb6aec6e420f53623141a362ea5b7343",
+    "interop.log": "acb8bbb6d838066b6de33edcd347d0f15c5cb3c99e077b454804d2f8bfa4ece4",
+    "option-option-6.log": "89c8504209e2c9b683e4c2414a13fa3c858c02c2f2ddc21d2de09f669b192cd1",
+    "plaintext-before-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "fixed-admitted-option-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-before-0.log": "5948b041c13e5f42670a4e7ef675a1a7bd6e1a75b26920ab798a69a73de40de3",
+    "fixed-headroom-before-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-before-2.log": "9d3dbd561fa4d2f1676571ffd686784a0f4140f02038c68bcc32d81d16ba20b8",
+    "fixed-admitted-option-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plaintext-before-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "option-option-4.log": "04d9fe31be4b411f34da189a6abe931fa04a96a3d764204e2696fd0243219bed",
+    "homelab-build-complete.log": "f51851b32c2fd9c008a5c434755a2cc7f452c6ead6f949a51b11f6f5cacdecb9",
+    "homelab-final-bytes.log": "ca058ab8aea983a6d9bcb5049b45ed78a456660b37f83aaff7b74f679802c3f5",
+    "homelab-build-offline.log": "bdf8e4c2d220a413766dcc4734a5908933b3f022501aad4e3f36664d979e25d5",
+    "option-option-5.log": "cf77f8452edfbc347bdbeaf51b10a88bd64e62a6d37f85bd64fa528514d852ee",
+    "plaintext-before-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "fuzz-http2.log": "5f386b48d3e59c7709f359283df772e440c560c6392ebb054aaa46578d03cfcb",
+    "fixed-admitted-option-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-before-3.log": "7322c9f8e18d63c317afb292b0b740bf840eef6c4d07e3fcd94a50b88835b978",
+    "option-option-8.log": "155d396d894c5e06706b86359cec64c8633a953ffcc47726f1318eb668f62242",
+    "small-fixed-before-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "homelab-option-build.log": "1effd86867840dcf55d12a5378a414cab475120df54779ee1c80156d626d0615",
+    "h2spec-plain.log": "7008f23d69ca62ee3172536d4d2cf98ae0b252cd84dc414f26118d094d37bdca",
+    "h2spec-tls.log": "5f8384a445da01f4271d223c83ce2134113a0d73a60c0884bbfa65752e428d8a",
+    "small-fixed-before-3.log": "a456f5b0b2c2cf5c79716a741b366cd325099aa0424f47da3e7a045d907791cc",
+    "linux.log": "d7437bf8407a25f1207bc4e5a305334044000d5b48356ef3fc577c5f147f7a93",
+    "small-fixed-before-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "unit.log": "bb53bb1259397204281abd561dfea78d53c460d280553d58f7f2e5abe3fe3c1e",
+    "small-fixed-before-0.log": "a7fabc534e763c99d7dcccc74ee17ee9aa77f5d5f53e68e4e68039fe2b92ed5e",
+    "small-fixed-before-1.log": "a723239a992121bbb9802e564e064d61f08fc46a5144e06660777d07055a0d30",
+    "pilot-option-0.log": "fd1b35d40687985416137ba935d82dc0b44d9dd3ebc03cdd2cfe5e85e244f5f4",
+    "option-before-0.log": "8fbff01a9b2ec0809e3f5c19edf51bc6dfbf9903513fcea924e6496980565241",
+    "homelab-load-before.log": "48bbb8dd523519797245d006d71a8ab8d6ba5f72e5f773e01fb1ed2a5ea1df6e",
+    "matrix-option-6.log": "57270ea96e5857b022ae88dca522460ed593ff01c13511bd0e88bbbb1a1e53b3",
+    "large-option-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plaintext-option-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "large-option-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "check.log": "8eac0006c2a6355091c080b97644e246d67abf39103becff129e7b87eb94dbe1",
+    "conformance.log": "b86ae4f81e036d6549f194539a1945c46cb82b36b7a8e56ba0e8887aa4f7081d",
+    "option-before-1.log": "ad3219791c3d7636ee32ce1edfdbbe358bd59f634d4b90823926a4bbcfb773c9",
+    "homelab-load-after.log": "f307df76aab8e6df0de3e5b42681e0198cfe2f69224545ac78d25d0fb4f03930",
+    "cert.log": "befbf332ab8ed2a9bed29e40bb3beab91d38480b8304dbd7f62c655df16a2f8f",
+    "option-before-3.log": "1fd7bed7909b4979e91fb5f8db0aef617374df37979efb62a4ae1ed145f78349",
+    "matrix-option-5.log": "feeb8f9e9e31fb2c149b595ae29aae8290184349c27c2e6cea100e058797f161",
+    "large-option-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "large-option-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-option-4.log": "2b737002ff6a1d71e9e309c9afebcfcc1d91c10a6d0a71b20a5c2495708f2d25",
+    "fixed-admitted-before-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "option-before-2.log": "e6d830868daf1664e62f01c2bd57fdbd0428162d9dd83c29c6a2acea50ab1591",
+    "option-before-6.log": "fa502fac1f7d6ad938e4e7f6328cf50a47e7ff382a77afdd86af366891e3886a",
+    "fixed-admitted-before-0.log": "074c3e358c8b501f97fc6f00a2a2c216d026c9cc77112082d8df4af47685a4c1",
+    "matrix-option-0.log": "59b778080b364513df22fda8af0b394d4c45e833d509fa7fe7230645611dc750",
+    "plaintext-option-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "large-option-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plaintext-option-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-option-1.log": "1bb0b15e581a725576b300b4d6e226957d9f634ffb43efed39448d31f8e91f8c",
+    "fixed-admitted-before-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "option-before-7.log": "30f167aac04fadef0ca5030634e5b578e04ec8ec27525ca392faa0825e6c0e41",
+    "parity.log": "473d4b25ac2724c3505e396d934cf91b229fe0db21a1fa5986653d45b614f7be",
+    "allocation-build.log": "e66b849ae9d7daf7ec9407fbfa9b8528f7fd519d6e3faf7327d680ac5ad208e3",
+    "option-before-5.log": "d32cc9f27249c470e8d58ba74e5ad7d8cfac0ed883ad54d07497d9bd3fe8e738",
+    "fixed-admitted-before-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-option-3.log": "02494206c9d21d09182a58c7f79e95bb28b265ab18efc09b0ec869eaf69003a6",
+    "plaintext-option-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "plaintext-option-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "matrix-option-2.log": "48617cefc9aac688cefdef4a4d7c1773842004ec54398a3adaf5e96a21c54934",
+    "fixed-admitted-before-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "option-before-4.log": "b9a39438abc005999355d5b86d50fb2dc265ccc45b816e29bd927beafb4ff13a"
+  },
+  "scripts_sha256": {
+    "probe-before.rs": "5accfd5fd5822a30fb467420c891eec8d9906d3896be40c17f68c7dea22bcb32",
+    "hpack-option.rs": "2dc7e69bdc41ca7c7120b51fea9ff3cd23d2c7b719fe6b631689d98f6700affa",
+    "finalize-report.py": "219f4bddb680c7838c7088e80fb14fd788369908a70b28f7ca933e537a8fd454",
+    "hpack-bounded.rs": "63396476dcc300a035ce82a9563ebc3fb15980df290933f90fe756ca185f3796",
+    "hpack-before.rs": "d0df939f7dff51d0cd98e246867219582e1b3c2a91182f3bf394afe134ee83db",
+    "probe-option.rs": "82d67cacf44c41d315401321f7a9c793700f056c83bae2c7ccea9d2ff3f77578",
+    "hpack-group.rs": "6b959d929ef852b577b9305df482624c6cf58edc20e70806805f4a0cf538842c",
+    "load-pilot.js": "eda437e14aa3ef7121ed172a645e807de8bc8e057d0ab115e93ee070a1e6c5eb",
+    "parity.rs": "0b29f8240404b4085428927dceb450457e9567e58e9575874354840271deb3eb",
+    "probe-single.rs": "cd78059d0dacc4e2e5f1f9e3532ba4f88426a52b5daa6ff2c1c3602f52360068",
+    "probe-lookup.rs": "e90526148329238cac07fbfee0f87c7358a09c8447c81e0a555046dc5a2b6475",
+    "hpack-probe.rs": "0c98dd29d8501cfc6c8ff58db2d58b1134177292dfff026ce62317aee3b2b346",
+    "pin.rs": "800b1139956322e8e57f7670297f369f4ec6465b1cdbc7ec6c89b436e43aab8e",
+    "hpack-single.rs": "9c7f2299d82a3af524555899ab4c2d8a089f9fe943751150a927444ff5b6a9a7",
+    "summarize.py": "421a65feb684d34b4bbac887ef156b1deecbd96baea5f6756a74f5759b48d201",
+    "homelab-load.py": "9554025ed20ffa96d332741fa30542e9cdeb3f0913adca3ab18e74dc8754319f",
+    "hpack-lookup.rs": "b5ca0b43cf48d0f2d1daedc3fab0ccdf2f1887b6afb125a9a3da19104e4631fb",
+    "load.js": "59dd68fa88b94751cead59fdbea52ebc64d9b039ab72d7b8ebb2e7272e3c5417",
+    "probe-bounded.rs": "f9de659b058f78e46174e24e5801375a259931513245ad7394a93a31aedd8bde",
+    "matrix-option.rs": "47975b5f4d5e3950a7da2e8c352edc5e186b3acac181e1a7c472f22af0797afb",
+    "matrix-codec-option.rs": "b2066620c793f581b078e97b20aa639878f3ae6cbe63b069f6fb0363f1ce0a8d",
+    "matrix-before.rs": "0e2b3c371f59ac6b99f18dfd4f49b6cb85fadea4561d44df979ad6e18cee21c8",
+    "probe-group.rs": "20794e6ce424eb022c0631388a40eb9f0ccd58f968114c7b30a5255d2c7d85fa",
+    "pod.yaml": "6d4b7391599a91354069abd040fe0153c148bdcd4070b72c93b999585202d423",
+    "publish.py": "680482ef2cbfd157c13547dbab5394eb230574bc85152cb1ce91606ef50d45b4",
+    "matrix-codec-before.rs": "e88c3c97047b76e8cc0eedebb86c7e0043706ac0b6113646fa2c182ac5237677"
+  },
+  "limitations": [
+    "Small repeated experiment, not a universal no-regression guarantee.",
+    "Shared hosts; task builds and competing load are excluded on the homelab during timed trials.",
+    "No framework-ranking or server-capacity claim.",
+    "Raw tooling, corpora, binaries, certificates and logs remain ignored local artifacts."
+  ]
+}
