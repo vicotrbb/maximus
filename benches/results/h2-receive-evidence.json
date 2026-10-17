@@ -1,0 +1,167 @@
+{
+  "baseline_commit": "cd66da45b8627a927dfe032b80ab3c957ecceee5",
+  "selected_variant": "credit-copy",
+  "candidate_http2_source_sha256": "aae4eed0a5039a62490960bbb0057ebbcf24d0838e948635d10cc75bf9a4f95a",
+  "runtime_prefix_sha256": {
+    "before": "9cb213eb93ade30553d9dd03af284f055255b58e50a02ff3d3802f05d8f2283f",
+    "credit": "6f74b4ceef57d292e6610e0486686980aaf1f79c7c659deed82958a2a61ea721",
+    "copy": "746d62cad0f8e92ede680fa6869608637949be6beaf0da12e8023dd19c8a4b6c",
+    "credit-copy": "173e8536ebaf3f41544493b9c27e360b5757c3a6808eaa7cf1b9c7348ee2daab"
+  },
+  "runtime_hash_scope": "crates/http2/src/lib.rs bytes preceding #[cfg(test)]; final prefix matches the frozen credit-copy source",
+  "comparison_executables": {
+    "linux-before": {
+      "bytes": 9528056,
+      "sha256": "57f5f3395b940fbbf11c28904a5085abda3b8846c8bab01928638abdfaa0472a"
+    },
+    "linux-credit-copy": {
+      "bytes": 9528072,
+      "sha256": "d64af794136ce1bdcaad3842545e37be337394efa0f63bcd79cb73749e022e03"
+    },
+    "linux-credit": {
+      "bytes": 9528080,
+      "sha256": "b2f94ffefb942891175a42e1f36cf61947ffc04db2263d503bf81f229d88c368"
+    },
+    "linux-copy": {
+      "bytes": 9594080,
+      "sha256": "e0cfb33f66873c50ca9d183fe1a1046f09a6a867350a53b91b24696266a304e9"
+    },
+    "linux-final": {
+      "bytes": 9528072,
+      "sha256": "d64af794136ce1bdcaad3842545e37be337394efa0f63bcd79cb73749e022e03"
+    }
+  },
+  "final_binary_equals_measured_candidate": true,
+  "compiler": "rustc 1.96.1 (31fca3adb 2026-06-26)\nbinary: rustc\ncommit-hash: 31fca3adb283cc9dfd56b49cdee9a96eb9c96ffd\ncommit-date: 2026-06-26\nhost: aarch64-unknown-linux-gnu\nrelease: 1.96.1\nLLVM version: 22.1.2",
+  "kernel": "Linux 6ac2cb81dbbf 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+  "docker": "29.4.0",
+  "vm_cpus": 3,
+  "images": {
+    "grafana/k6:1.6.0": [
+      "grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532"
+    ],
+    "rust:1.96-bookworm": [
+      "rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663"
+    ]
+  },
+  "placement": {
+    "server_cpus": "0",
+    "client_cpus": "1,2",
+    "workers": 1,
+    "warmup_seconds": 3,
+    "background": "11 unrelated service containers; additional transient qualification containers observed"
+  },
+  "phase_arguments": {
+    "large-screen": "--engines before,credit,credit-copy --paths /echo --rates 0 --body-bytes 131072 --workers 1 --duration 20s --repeats 3 --vus 64 --label large-screen --client-cpus 1,2 --sample-seconds 0 --protocol h2",
+    "large-ablation": "--engines before,copy,credit-copy --paths /echo --rates 0 --body-bytes 131072 --workers 1 --duration 30s --repeats 3 --vus 64 --label large-ablation --client-cpus 1,2 --sample-seconds 0 --protocol h2",
+    "large-target": "--engines before,credit-copy --paths /echo --rates 1000 --body-bytes 131072 --workers 1 --duration 20s --repeats 3 --vus 64 --label large-target --client-cpus 1,2 --sample-seconds 0 --protocol h2",
+    "small-capacity": "--engines before,credit-copy --paths /plaintext --rates 0 --body-bytes 1024 --workers 1 --duration 20s --repeats 3 --vus 64 --label small-capacity --client-cpus 1,2 --sample-seconds 0 --protocol h2",
+    "small-target": "--engines before,credit-copy --paths /echo --rates 1000 --body-bytes 1024 --workers 1 --duration 20s --repeats 3 --vus 64 --label small-target --client-cpus 1,2 --sample-seconds 0 --protocol h2",
+    "h1-control": "--engines before,credit-copy --paths /plaintext --rates 1000 --body-bytes 1024 --workers 1 --duration 10s --repeats 3 --vus 64 --label h1-control --client-cpus 1,2 --sample-seconds 0 --protocol plain",
+    "small-tail-confirm": "--engines before,credit-copy --paths /echo --rates 1000 --body-bytes 1024 --workers 1 --duration 30s --repeats 5 --vus 64 --label small-tail-confirm --client-cpus 1,2 --sample-seconds 0 --protocol h2"
+  },
+  "trial_csv_sha256": "09d01d77458490951fb0aa21282a8943718ba8e7c199300f3062ca318b0acb01",
+  "trial_totals": {
+    "trials": 52,
+    "responses": 9914036,
+    "http_failures": 0,
+    "bad_response_checks": 0,
+    "failed_threshold_trials": 3,
+    "dropped_arrivals": 186,
+    "all_started_iterations_completed": true
+  },
+  "allocation_probe": {
+    "iterations": 1000,
+    "warmup_iterations": 20,
+    "repetitions_per_variant": 3,
+    "scope": "Connection state and echo processing; no socket/TLS; System allocator instrumentation only in ignored source copies",
+    "before": {
+      "calls_per_request_integer_mean": 92,
+      "bytes_per_request_integer_mean": 418430,
+      "peak_live_bytes": 269100,
+      "live_bytes_after": 0
+    },
+    "credit-copy": {
+      "calls_per_request_integer_mean": 70,
+      "bytes_per_request_integer_mean": 319816,
+      "peak_live_bytes": 268780,
+      "live_bytes_after": 0
+    }
+  },
+  "fuzz": {
+    "target": "http2",
+    "engine": "libFuzzer/AddressSanitizer",
+    "seed": 3955765557,
+    "max_total_time_seconds": 60,
+    "max_len": 65536,
+    "reported_runs": 2438301,
+    "reported_seconds": 61,
+    "exit": 0
+  },
+  "h2spec": {
+    "binary_sha256": "ec6213422cece72f484e0dd3b6ee8d126e9eefd21f1f83c11c46b741f179dd9c",
+    "plain_and_tls": {
+      "raw_passed": 139,
+      "raw_total": 147,
+      "documented_policy_differences": 5,
+      "response_closure_races": 3,
+      "held_response_passed": 3,
+      "gate_exit": 0
+    }
+  },
+  "local_source_sha256": {
+    "probe.rs": "b2d61dfe05dfa0573e0458894a5bb56213274223537bf2bb28beefafd9129fa5",
+    "allocation-probe.rs": "4498b405adbef8891d1910ed3e9ac387e87b0dc15c9b58a61bfa3a15c77f6113",
+    "allocation-source-before.rs": "2021bd559dd7db458999ade91ee7885e8aca294a0d054e5e98ac5b712631c7c1",
+    "allocation-source-credit-copy.rs": "01a5fe3514bc4a1f651e71346c987cadb7cf98033ac78d40d4dcdd1ba0b670b9",
+    "run-load.py": "aae66139bad48c07bfe65632c1acc9f930647c5317295e8834096b86121d6ac0",
+    "build.sh": "0f0c020f523a42393f285e047d9dff2bfe0e8b5de1e6e4e4622a313a75d6b44e",
+    "run-allocations.sh": "b50fb5bf6939453664d99e3f5430c223c9d9d60f89dec884e6cd36935ed42410",
+    "summarize.py": "28bddc27d214031e315940a58239800361da69d1cc8ae776e31f10670ae00bcb"
+  },
+  "seed_sha256": {
+    "full-data": "66c2aa05f64592dbc667587fa9cce544bf0678927d4dafe671f3841e91e25b34",
+    "padded-data": "52420b38a0282e38b52f0596b39e4c925db6ddf4f0aeb11ef8ea42843bf2ea62",
+    "split-data": "0cdbb837bb68505d93aa7ef3daabd5f4a545aebfaf66f6bb19b0495d29614d25"
+  },
+  "log_sha256": {
+    "check.log": "26743cd7d154cf8656db781c3fbf4d98712d121a2b4564ca414831032537c332",
+    "linux.log": "27a0da5f227e125eb5c1ebd72a920ea7a8df70ddcaa6d7ff46a19f6154b616ec",
+    "interop.log": "5dac2f23497a67a34d719a529b8b0e87716db7092bcc213c35abc88bbd77fab4",
+    "downstream.log": "fe33a29d626ac39be972407e75288d7b98e75bafe7116a7fbc34c30c9fcfff51",
+    "h3.log": "6bb8e56afca449a0abc3dd7f12003858fad7cb68e96ee6875f06ab30773839f4",
+    "final-clippy.log": "dc746375d5435d6db95c7d1c9b0c8bef786ca774dc4af203cb518d4d50973ff6",
+    "final-h2.log": "b13d1e00733ae12c8658a83eee3af84cc5728d2c923b08e64728ad5dc90ab437",
+    "h2spec-plain.log": "7008f23d69ca62ee3172536d4d2cf98ae0b252cd84dc414f26118d094d37bdca",
+    "h2spec-tls.log": "5f8384a445da01f4271d223c83ce2134113a0d73a60c0884bbfa65752e428d8a",
+    "fuzz.log": "86344c2ca4e056b0c361f342c3c2cd1eb1b7e282118221786637a6b6779c6c8c",
+    "baseline-mutation-final.log": "975c881b9cf4f64436efc6940c6e066393ee3055a46d34bf7418e67855e060eb",
+    "probe-before.log": "26318ed4399c568bbd863e2591528a907e47469a45ea2b4386f218ec4aa28d50",
+    "probe-credit.log": "189b763ab50aa622512d1e4b456eb0af11357e82f8d07f64765b88ced23e3277",
+    "probe-copy.log": "3c0cfbb29bf0fdfd4c1c3307ba96019ec96c6bfec14d9611254e90ec9514fc62",
+    "probe-credit-copy.log": "78b3cf6002586fa9e5d467866e2009735beb4c09fe7720d40fa4f7f613b46b31",
+    "runner-invalid.log": "d11a9d52df0b6db22aded9a4a749a95fa367dd697ec21a655b699c093bcef6de",
+    "runner-smoke.log": "10bb61008a59dc13c4efd3a5c4e487e197f45d113b37ac043b61a50537aa4c9e",
+    "allocation-before-1.log": "9a3119f20e8a9f7e63219c211a78aebf0b491fe13065bb8f69db1cabbd5ad53c",
+    "allocation-before-2.log": "9a3119f20e8a9f7e63219c211a78aebf0b491fe13065bb8f69db1cabbd5ad53c",
+    "allocation-before-3.log": "9a3119f20e8a9f7e63219c211a78aebf0b491fe13065bb8f69db1cabbd5ad53c",
+    "allocation-credit-copy-1.log": "70c5e3c1283a3788cc1a922c335bc81fb797ba4da58886c36a2d9e3128b85ab3",
+    "allocation-credit-copy-2.log": "70c5e3c1283a3788cc1a922c335bc81fb797ba4da58886c36a2d9e3128b85ab3",
+    "allocation-credit-copy-3.log": "70c5e3c1283a3788cc1a922c335bc81fb797ba4da58886c36a2d9e3128b85ab3",
+    "build-before.log": "c3d6007a2876dd8a882fece7916060df9a44303dc19630c63ad38c49b09d1123",
+    "build-credit.log": "6cbb59ae1671d2f5f1f1a56fa29bed8b96b2d35c70e0b5c6d3b304460c16ea5f",
+    "build-credit-copy.log": "e6c4e888c0b04f8c1fe3671080d57c84d29d7742df06a0f595765ea79ec35277",
+    "build-copy.log": "9ceb99206e1e72557f4929fe13f3a29049f0922554cd18e1231bd04f9195bd79",
+    "build-final.log": "b4779fc33a777c3b1ea802cd33b40fd8f19b9940d3defbe82b6819d260c1dfe6"
+  },
+  "raw_trial_csv_sha256": {
+    "large-screen": "8b2eeefe5330dfcff7c698facd2e7962293a9d85b9ef80df29d434aa9145b00e",
+    "large-ablation": "5492b8f759a34eb8b815f1caa2a7e43710aaa5097fb4f9075fc342a1b895f115",
+    "large-target": "d43b6371283ad81a075431e01b7aa7171e0d433992e56e181a1fe1b43421224d",
+    "small-capacity": "17e33d28ac6dfb5c5b951d6370c75da7e406bf74b5c9943922a78b74d747964d",
+    "small-target": "c556f3eec918097fcb5fcd6868d72c7fa7a3762b5ffd0af6c6767be36ba4058f",
+    "h1-control": "55b0c34013165cb5cfec22b50bedf4dc9a33ad4606e7c74e822e39cf6be01362",
+    "small-tail-confirm": "d7a2ddda41267d1ac6eb0c6f220203806a383c23306307cb71c61ddcfa4400ef"
+  },
+  "archive": "Raw local evidence under ignored artifacts/h2-batching; not all source instrumentation or logs are published. Public CSV normalizes unused GET body_bytes to zero."
+}
