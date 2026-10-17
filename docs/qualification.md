@@ -54,7 +54,7 @@ Fuzzing exercises percent decoding, path validation, route matching, typed captu
 | --- | --- |
 | Local workers, io_uring/epoll, affinity, NUMA, shutdown | `runtime`, `io`; backend/runtime tests and Linux suite |
 | TCP/UDP reuseport and optional eBPF | `net`; socket tests; capability-enabled live BPF attachment/distribution test |
-| Bounded slabs/buffers and admission | `memory`, `Limits`, framework server; stale-key/pool tests, budget tests and 20,000-connection workload |
+| Bounded buffers and admission | `Limits`, framework server; budget tests and recorded 20,000-connection workload |
 | Incremental H1, pipeline, keepalive, streaming | Owned HTTP/1 engine; raw-wire server tests and mutation client |
 | TLS1.3, ALPN, resumption | `tls`; Rust resumption test and independently verified TLS client |
 | H2 multiplexing, HPACK, flow control | `http2`; concurrent large response test and HTTPX concurrent uploads |

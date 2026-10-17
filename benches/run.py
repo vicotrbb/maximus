@@ -43,6 +43,7 @@ def main():
     parser.add_argument('--engines', default='maximus,epoll,hyper,axum,actix')
     parser.add_argument('--paths', default='/plaintext,/json,/echo,/users/42')
     parser.add_argument('--rates', default='0', help='comma-separated rates; 0 is closed-loop saturation')
+    parser.add_argument('--body-bytes', type=int, default=1024, help='echo request body size')
     parser.add_argument('--workers', type=int, default=1)
     parser.add_argument('--duration', default='30s')
     parser.add_argument('--repeats', type=int, default=3)
@@ -52,6 +53,7 @@ def main():
     parser.add_argument('--sample-seconds', type=float, default=0, help='optional server memory sampling interval')
     parser.add_argument('--protocol', choices=['plain', 'h1', 'h2'], default='plain')
     args = parser.parse_args()
+    if args.body_bytes < 0: parser.error('--body-bytes must be nonnegative')
     OUT.mkdir(parents=True, exist_ok=True)
     environment = {'date_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'args': vars(args),
         'source_commit': capture('git', '-C', str(ROOT), 'rev-parse', 'HEAD'),
@@ -91,12 +93,13 @@ def main():
                     log = subprocess.check_output(['docker', 'logs', name], text=True, stderr=subprocess.STDOUT)
                     if 'ready' in log or engine == 'nginx': break
                     time.sleep(.1)
-                base = ['docker', 'run', '--rm', '--network', 'host', '--cpuset-cpus', args.client_cpus, '-u', '0', '-v', f'{ROOT / "benches/load.js"}:/load.js:ro', '-v', f'{OUT}:/results', '-e', f'PATHNAME={path}', '-e', f'VUS={args.vus}']
+                base = ['docker', 'run', '--rm', '--network', 'host', '--cpuset-cpus', args.client_cpus, '-u', '0', '-v', f'{ROOT / "benches/load.js"}:/load.js:ro', '-v', f'{OUT}:/results', '-e', f'PATHNAME={path}', '-e', f'VUS={args.vus}', '-e', f'BODY_BYTES={args.body_bytes}']
                 if args.protocol != 'plain':
                     base += ['-v', f'{OUT}/cert.pem:/cert.pem:ro', '-e', 'SSL_CERT_FILE=/cert.pem', '-e', 'URL=https://localhost:8080', '-e', f'PROTOCOL={args.protocol}']
                 with (OUT / f'{key}.log').open('w') as log:
                     run(*base, '-e', 'DURATION=3s', '-e', f'RESULT=/results/{key}-warmup.json', K6, 'run', '--quiet', '/load.js', stdout=log, stderr=subprocess.STDOUT)
                     validate_k6_iterations(json.loads((OUT / f'{key}-warmup.json').read_text()))
+                    interval_start = time.monotonic()
                     before = counters(name)
                     test = base + ['-e', f'DURATION={args.duration}', '-e', f'RESULT=/results/{key}.json']
                     if rate != '0': test += ['-e', f'RATE={rate}']
@@ -111,23 +114,23 @@ def main():
                         except subprocess.TimeoutExpired:
                             samples.append(dict(seconds=time.monotonic(), **counters(name)))
                     after = counters(name)
+                    interval_seconds = time.monotonic() - interval_start
                     if samples:
                         (OUT / f'{key}-memory.json').write_text(json.dumps(samples, indent=2))
                 summary = json.loads((OUT / f'{key}.json').read_text())
                 iterations_started, iterations_completed = validate_k6_iterations(summary)
                 data = summary['metrics']
-                elapsed_us = summary['state']['testRunDurationMs'] * 1000
                 client_cpu = dict(line.split() for line in (OUT / f'{key}-client-cpu.txt').read_text().splitlines())
                 metric = lambda name, field, default=0: data.get(name, {}).get('values', {}).get(field, default)
                 count = metric('http_reqs', 'count')
-                row = dict(engine=engine, path=path, workers=args.workers, protocol=args.protocol, offered_rps=int(rate), repeat=repeat,
+                row = dict(body_bytes=args.body_bytes if path == '/echo' else 0, engine=engine, path=path, workers=args.workers, protocol=args.protocol, offered_rps=int(rate), repeat=repeat,
                     requests=count, iterations_started=iterations_started, iterations_completed=iterations_completed,
                     rps=metric('http_reqs', 'rate'), p50_ms=metric('http_req_duration', 'med'), p99_ms=metric('http_req_duration', 'p(99)'), p999_ms=metric('http_req_duration', 'p(99.9)'),
                     failures=metric('http_req_failed', 'passes'), checks_failed=metric('checks', 'fails'), dropped=metric('dropped_iterations', 'count'),
                     cpu_us_per_request=(after['usage_usec'] - before['usage_usec']) / max(count, 1),
-                    server_cpu_percent=100 * (after['usage_usec'] - before['usage_usec']) / elapsed_us,
-                    client_cpu_percent=100 * int(client_cpu['usage_usec']) / elapsed_us,
-                    rss_kib=after['VmRSS'], peak_rss_kib=max(s['VmRSS'] for s in [before, after, *samples]), exit=result.returncode)
+                    server_cpu_percent=100 * (after['usage_usec'] - before['usage_usec']) / (interval_seconds * 1_000_000),
+                    client_cpu_percent=100 * int(client_cpu['usage_usec']) / (interval_seconds * 1_000_000),
+                    cpu_interval_seconds=interval_seconds, rss_kib=after['VmRSS'], peak_rss_kib=max(s['VmRSS'] for s in [before, after, *samples]), exit=result.returncode)
                 rows.append(row)
                 with (OUT / f'{args.label}.csv').open('w') as file:
                     writer = csv.DictWriter(file, fieldnames=list(row)); writer.writeheader(); writer.writerows(rows)

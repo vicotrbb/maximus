@@ -568,7 +568,9 @@ impl<H: Handler> Connection<H> {
                     return Err(Fault::Stream(h.stream, PROTOCOL));
                 }
                 let mut input = s.incoming.borrow_mut();
-                if !payload.is_empty() {
+                if payload.len() == MAX_FRAME && input.tail.is_empty() {
+                    input.queue.push_back(Frame::data(p.into()));
+                } else if !payload.is_empty() {
                     input.tail.extend_from_slice(payload);
                     if input.tail.len() >= MAX_FRAME {
                         let data = input.tail.split().freeze();
@@ -696,17 +698,7 @@ impl<H: Handler> Connection<H> {
             .collect();
         for id in ids {
             let s = self.streams.get_mut(&id).unwrap();
-            {
-                let mut input = s.incoming.borrow_mut();
-                input.connection = Some(cx.waker().clone());
-                let credit = std::mem::take(&mut input.credit);
-                self.recv += credit as i64;
-                s.recv += credit as i64;
-                update(out, 0, credit);
-                if !s.remote_end {
-                    update(out, id, credit);
-                }
-            }
+            s.incoming.borrow_mut().connection = Some(cx.waker().clone());
             if let Some(future) = s.handler.as_mut()
                 && let Poll::Ready(response) = future.as_mut().poll(cx)
             {
@@ -851,6 +843,24 @@ impl<H: Handler> Connection<H> {
                         }
                         s.deadline = Instant::now() + self.limits.request_timeout;
                     }
+                }
+            }
+            {
+                let mut input = s.incoming.borrow_mut();
+                // Batch consumed credit until either window is half empty; never hold it at EOF.
+                let credit = if s.remote_end
+                    || s.recv <= i64::from(self.limits.stream_window_bytes) / 2
+                    || self.recv <= i64::from(self.limits.connection_window_bytes.max(65535)) / 2
+                {
+                    std::mem::take(&mut input.credit)
+                } else {
+                    0
+                };
+                self.recv += credit as i64;
+                s.recv += credit as i64;
+                update(out, 0, credit);
+                if !s.remote_end {
+                    update(out, id, credit);
                 }
             }
             if s.local_end {
@@ -1251,6 +1261,243 @@ mod tests {
             )
             .await;
             assert!(matches!(expired, Err(ReadError::Protocol(PROTOCOL))));
+        });
+    }
+
+    fn inbound(kind: u8, flags: u8, stream: u32, payload: Vec<u8>) -> ReceivedFrame {
+        ReceivedFrame {
+            header: Header {
+                len: payload.len(),
+                kind,
+                flags,
+                stream,
+            },
+            payload,
+            header_deadline: (kind == 1).then(|| Instant::now() + Duration::from_secs(60)),
+        }
+    }
+
+    fn credits(mut bytes: &[u8]) -> Vec<(u32, u32)> {
+        let mut credits = Vec::new();
+        while !bytes.is_empty() {
+            let h = Header::decode(bytes[..9].try_into().unwrap(), MAX_FRAME).unwrap();
+            if h.kind == 8 {
+                credits.push((
+                    h.stream,
+                    u32::from_be_bytes(bytes[9..13].try_into().unwrap()),
+                ));
+            }
+            bytes = &bytes[9 + h.len..];
+        }
+        credits
+    }
+
+    fn echo_connection(limits: Limits) -> Connection<impl Handler> {
+        use http_body_util::BodyExt;
+        let mut connection = Connection::new(
+            Rc::new(|r: Request| async { r.into_body().collect().await.unwrap().to_bytes() }),
+            Rc::new(limits),
+        );
+        connection
+            .process(inbound(4, 0, 0, vec![]), &mut vec![])
+            .unwrap();
+        connection
+    }
+
+    #[test]
+    fn consumed_credit_waits_for_a_low_window_or_stream_end() {
+        compio::runtime::Runtime::new().unwrap().block_on(async {
+            for (window, ended) in [(16, false), (16, true), (1, false)] {
+                let mut connection = echo_connection(Limits {
+                    stream_window_bytes: window,
+                    ..Limits::default()
+                });
+                let mut output = Vec::new();
+                connection
+                    .process(
+                        inbound(1, 4, 1, b"\x83\x86\x84\x01\x09localhost".to_vec()),
+                        &mut output,
+                    )
+                    .unwrap();
+                let waker = futures_util::task::noop_waker();
+                let mut cx = Context::from_waker(&waker);
+                let chunk = (window / 4).max(1);
+                connection
+                    .process(
+                        inbound(0, u8::from(ended), 1, vec![b'x'; chunk as usize]),
+                        &mut output,
+                    )
+                    .unwrap();
+                let _ = connection.poll(&mut cx, &mut output);
+                assert_eq!(
+                    credits(&output),
+                    if ended {
+                        vec![(0, chunk)]
+                    } else if window == 1 {
+                        vec![(0, chunk), (1, chunk)]
+                    } else {
+                        vec![]
+                    }
+                );
+                if !ended && window > 1 {
+                    assert_eq!(
+                        connection.streams[&1].incoming.borrow().credit,
+                        chunk as usize
+                    );
+                    connection
+                        .process(inbound(0, 0, 1, vec![b'x'; chunk as usize]), &mut output)
+                        .unwrap();
+                    let _ = connection.poll(&mut cx, &mut output);
+                    assert_eq!(credits(&output), vec![(0, chunk * 2), (1, chunk * 2)]);
+                    assert_eq!(connection.streams[&1].recv, i64::from(window));
+                    assert_eq!(connection.streams[&1].incoming.borrow().credit, 0);
+                }
+            }
+        });
+    }
+
+    #[test]
+    fn connection_pressure_and_reset_release_deferred_credit_once() {
+        compio::runtime::Runtime::new().unwrap().block_on(async {
+            let mut connection = echo_connection(Limits {
+                connection_window_bytes: 65535,
+                ..Limits::default()
+            });
+            let mut output = Vec::new();
+            let waker = futures_util::task::noop_waker();
+            let mut cx = Context::from_waker(&waker);
+            for (id, size) in [(1, 16000), (3, 16000), (5, 1000)] {
+                connection
+                    .process(
+                        inbound(1, 4, id, b"\x83\x86\x84\x01\x09localhost".to_vec()),
+                        &mut output,
+                    )
+                    .unwrap();
+                connection
+                    .process(inbound(0, 0, id, vec![b'x'; size]), &mut output)
+                    .unwrap();
+                let _ = connection.poll(&mut cx, &mut output);
+                if id < 5 {
+                    assert!(output.is_empty());
+                }
+            }
+            let returned = credits(&output);
+            assert_eq!(returned.len(), 2);
+            assert_eq!(returned[0].0, 0);
+            assert!(returned[0].1 > 0);
+            assert!([1, 3, 5].contains(&returned[1].0));
+            assert_eq!(returned[0].1, returned[1].1);
+            for id in [1, 3, 5] {
+                connection
+                    .process(
+                        inbound(3, 0, id, CANCEL.to_be_bytes().to_vec()),
+                        &mut output,
+                    )
+                    .unwrap();
+            }
+            let total: u32 = credits(&output)
+                .iter()
+                .filter(|(stream, _)| *stream == 0)
+                .map(|(_, credit)| credit)
+                .sum();
+            assert_eq!(total, 33000);
+            assert_eq!(connection.recv, 65535);
+            output.clear();
+            connection
+                .process(inbound(3, 0, 3, CANCEL.to_be_bytes().to_vec()), &mut output)
+                .unwrap();
+            assert!(credits(&output).is_empty());
+        });
+    }
+
+    #[test]
+    fn early_response_returns_deferred_consumed_and_unread_credit() {
+        compio::runtime::Runtime::new().unwrap().block_on(async {
+            use http_body_util::BodyExt;
+            let mut connection = Connection::new(
+                Rc::new(|mut r: Request| async move {
+                    r.body_mut().frame().await.unwrap().unwrap();
+                    "done"
+                }),
+                Rc::new(Limits::default()),
+            );
+            let mut output = Vec::new();
+            connection
+                .process(inbound(4, 0, 0, vec![]), &mut output)
+                .unwrap();
+            output.clear();
+            connection
+                .process(
+                    inbound(1, 4, 1, b"\x83\x86\x84\x01\x09localhost".to_vec()),
+                    &mut output,
+                )
+                .unwrap();
+            connection
+                .process(inbound(0, 0, 1, vec![b'x'; MAX_FRAME]), &mut output)
+                .unwrap();
+            connection
+                .process(inbound(0, 0, 1, vec![b'y'; 3]), &mut output)
+                .unwrap();
+            let initial = i64::from(connection.limits.connection_window_bytes.max(65535));
+            let waker = futures_util::task::noop_waker();
+            let _ = connection.poll(&mut Context::from_waker(&waker), &mut output);
+            assert_eq!(credits(&output), vec![(0, (MAX_FRAME + 3) as u32)]);
+            assert_eq!(connection.recv, initial);
+            assert!(connection.streams.is_empty());
+        });
+    }
+
+    #[test]
+    fn incoming_data_preserves_ownership_order_and_padding() {
+        use futures_util::StreamExt;
+        compio::runtime::Runtime::new().unwrap().block_on(async {
+            for prefix in [0, 7] {
+                let mut connection = echo_connection(Limits::default());
+                let mut output = Vec::new();
+                connection
+                    .process(
+                        inbound(1, 4, 1, b"\x83\x86\x84\x01\x09localhost".to_vec()),
+                        &mut output,
+                    )
+                    .unwrap();
+                connection
+                    .process(inbound(0, 0, 1, vec![b'p'; prefix]), &mut output)
+                    .unwrap();
+                let payload: Vec<_> = (0..MAX_FRAME).map(|i| (i % 251) as u8).collect();
+                let pointer = payload.as_ptr();
+                let mut expected = vec![b'p'; prefix];
+                expected.extend_from_slice(&payload);
+                connection
+                    .process(inbound(0, 0, 1, payload), &mut output)
+                    .unwrap();
+                if prefix == 0 {
+                    assert_eq!(
+                        connection.streams[&1].incoming.borrow().queue[0]
+                            .data_ref()
+                            .unwrap()
+                            .as_ptr(),
+                        pointer
+                    );
+                }
+                let mut padded = vec![b'z'; MAX_FRAME];
+                padded[0] = 3;
+                padded[MAX_FRAME - 3..].fill(0);
+                expected.extend_from_slice(&padded[1..MAX_FRAME - 3]);
+                connection
+                    .process(inbound(0, 8, 1, padded), &mut output)
+                    .unwrap();
+                connection
+                    .process(inbound(0, 1, 1, b"end".to_vec()), &mut output)
+                    .unwrap();
+                expected.extend_from_slice(b"end");
+                let mut incoming = Incoming(connection.streams[&1].incoming.clone());
+                drop(connection);
+                let mut received = Vec::new();
+                while let Some(frame) = incoming.next().await {
+                    received.extend_from_slice(frame.unwrap().data_ref().unwrap());
+                }
+                assert_eq!(received, expected);
+            }
         });
     }
 
