@@ -32,3 +32,10 @@ for dependency in $dependencies; do
             ;;
     esac
 done
+
+# Plain HTTP uses owned completion buffers; readiness adapters belong to optional transports.
+features=$(cargo tree -p maximus --no-default-features --edges normal --prefix none --format '{p} {f}')
+if printf '%s\n' "$features" | grep '^compio v' | grep -q 'io-compat'; then
+    echo 'unexpected plain HTTP I/O compatibility feature' >&2
+    exit 1
+fi
