@@ -778,35 +778,32 @@ impl<H: Handler> Connection<H> {
                     && let Some(body) = s.body.as_mut()
                 {
                     match Pin::new(body).poll_frame(cx) {
-                        Poll::Ready(Some(Ok(frame))) => match frame.into_data() {
-                            Ok(data) => {
-                                s.pending = data;
-                                if s.pending.is_empty() {
+                        Poll::Ready(Some(Ok(frame))) => {
+                            if let Some(data) = frame.data_ref() {
+                                s.pending = data.clone();
+                                if data.is_empty() {
                                     cx.waker().wake_by_ref();
                                 }
-                            }
-                            Err(frame) => {
-                                if let Ok(trailers) = frame.into_trailers() {
-                                    if !valid_fields(&trailers, true, &self.limits)
-                                        || s.response_length.is_some_and(|n| n != s.sent)
-                                    {
-                                        reset.push((id, INTERNAL));
-                                    } else {
-                                        emit_headers(
-                                            out,
-                                            id,
-                                            trailers.iter().map(|(n, v)| {
-                                                (n.as_str().as_bytes(), v.as_bytes())
-                                            }),
-                                            true,
-                                            self.max_frame,
-                                        );
-                                        s.local_end = true;
-                                        s.body = None;
-                                    }
+                            } else if let Ok(trailers) = frame.into_trailers() {
+                                if !valid_fields(&trailers, true, &self.limits)
+                                    || s.response_length.is_some_and(|n| n != s.sent)
+                                {
+                                    reset.push((id, INTERNAL));
+                                } else {
+                                    emit_headers(
+                                        out,
+                                        id,
+                                        trailers
+                                            .iter()
+                                            .map(|(n, v)| (n.as_str().as_bytes(), v.as_bytes())),
+                                        true,
+                                        self.max_frame,
+                                    );
+                                    s.local_end = true;
+                                    s.body = None;
                                 }
                             }
-                        },
+                        }
                         Poll::Ready(None) => {
                             if s.response_length.is_some_and(|n| n != s.sent) {
                                 reset.push((id, INTERNAL));
