@@ -68,3 +68,25 @@ fn every_header_chunk_and_response_boundary_survives_one_byte_io() {
         assert!(wire.ends_with("1\r\na\r\n1\r\nb\r\n1\r\nc\r\n0\r\nx-check: yes\r\n\r\n"),"{wire}");
     });
 }
+
+#[test]
+fn chunked_completion_reuses_output_without_stale_bytes() {
+    compio::runtime::Runtime::new().unwrap().block_on(async {
+        let listener = compio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap();
+        let client = std::thread::spawn(move || {
+            let mut stream = std::net::TcpStream::connect(address).unwrap();
+            stream.set_read_timeout(Some(Duration::from_secs(3))).unwrap();
+            stream.write_all(b"POST / HTTP/1.1\r\nHost: a\r\nContent-Length: 1\r\n\r\naPOST / HTTP/1.1\r\nHost: a\r\nContent-Length: 1\r\nConnection: close\r\n\r\nb").unwrap();
+            let mut wire = String::new();
+            stream.read_to_string(&mut wire).unwrap();
+            wire
+        });
+        let (socket, _) = listener.accept().await.unwrap();
+        maximus_http1::serve(OneByte(socket), Rc::new(Echo), Rc::new(Limits::default()), Default::default()).await.unwrap();
+        let wire = client.join().unwrap();
+        assert_eq!(wire.matches("HTTP/1.1 200 OK").count(), 2, "{wire}");
+        assert!(wire.contains("1\r\na\r\n0\r\n\r\nHTTP/1.1 200 OK"), "{wire}");
+        assert!(wire.ends_with("1\r\nb\r\n0\r\n\r\n"), "{wire}");
+    });
+}
