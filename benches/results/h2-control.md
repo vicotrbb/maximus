@@ -107,5 +107,65 @@ socket probe remain under ignored `artifacts/h2-progress/`. Compare their hashes
 with the retained manifest. The comparator uses the workloads and counts above;
 it is a local diagnostic, not a reusable capacity qualification runner.
 
-No new hosted CI result, privileged BPF run, production soak, Linux performance
-comparison or broad performance qualification is attributed to this change.
+The local campaign above does not include privileged BPF, a production soak or
+broad performance qualification. The subsequent Linux merge gate is recorded below.
+
+
+## Linux merge qualification: not qualified
+
+The conditional merge campaign tested source revision
+`42bd61155f35789a4a6205ff6cef40f2b5937b66`. Its
+[frozen plan, build identities and environment](h2-control-linux-evidence.json)
+and [complete trial rows](h2-control-linux-trials.csv) preserve the failed target.
+
+The predefined gates require the paired 95% bootstrap interval to stay above
+-3% for throughput, below +3% for CPU/request and below +5% for p99/p99.9, with
+zero validity failures. Ten alternating baseline/candidate pairs were planned
+per workload, with 30-second fixed-arrival stages for H2 plaintext and 1 KiB echo
+at 5,000/s, H2 128 KiB echo at 500/s, and an H1 plaintext control at 5,000/s.
+No additional repetitions are permitted to obtain a pass. A validity failure
+stops the controller immediately.
+
+Both release builds use the same source path, lockfile, Rust 1.96.1 compiler,
+thin LTO and one codegen unit on the shared AMD Ryzen 7 5825U/Linux x86-64 host.
+The server uses one explicitly selected io_uring worker on CPU 2. k6 1.6.0 runs
+on CPUs 4/6, distinct physical cores; the controller uses CPU 0. Containers have
+two-CPU quotas. The powersave governor and other node workloads remain
+confounders; process affinity is not exclusive reservation of the host.
+Both executable files are 3,044,344 bytes, with identical reported text, data
+and BSS sizes. This does not substitute for runtime performance qualification.
+
+All eight preflights passed, including verified TLS1.3/ALPN H2 and complete
+large-body checks. The first measured **baseline** H2 plaintext trial completed
+149,854 valid responses but dropped **145 scheduled arrivals**. It had zero
+HTTP/check failures and exited 99 because the zero-drop threshold failed.
+The controller stopped. No measured candidate trial or statistical gate was
+completed, and the remaining workloads were not run. This is a failed offered
+load for the unchanged baseline, not evidence of a candidate regression.
+
+The result does **not** confirm performance non-regression and does not permit
+merge under the agreed acceptance conditions. The PR remains a draft. No extra
+trials were run to turn this result into a pass.
+
+The exact latency sample implemented by the frozen client is completions after
+five seconds through final drain of the 30-second arrival stage. The plan's
+`[5,30]` shorthand does not impose an upper bound on completion time. Latency is
+k6 HTTP request duration, excluding TLS setup, connection blocking and client
+scheduling. These definitions limit interpretation; no tail acceptance is
+claimed from this aborted campaign. Fixed-arrival completion rates also do not
+measure maximum sustainable throughput.
+
+Raw client summaries, logs, the harness lockfile and frozen scripts remain in
+ignored `artifacts/h2-final/`. A 51-file result archive was downloaded and its
+SHA-256 verified before the owned temporary namespace was deleted. Source and
+lockfile hashes were checked against the PR implementation and baseline.
+
+
+CI at implementation revision `42bd611` also remains mixed. The
+[push run](https://github.com/vicotrbb/maximus/actions/runs/39316605873) passed both
+jobs. The [PR run](https://github.com/vicotrbb/maximus/actions/runs/39316615029)
+passed Linux but failed the standalone vendored h3 test
+`tests::request::request_invalid_frame_after_data`: its client observed a local
+H3_NO_ERROR close instead of the expected remote application-close error.
+The vendored source is unchanged, and this standalone suite does not depend on
+Maximus HTTP/2. The failure remains recorded; one passing run does not erase it.
