@@ -1,0 +1,114 @@
+{
+  "/plaintext": {
+    "rps": {
+      "baseline_median": 37768.738297765485,
+      "candidate_median": 37255.92178802956,
+      "paired_median_change_percent": -0.07466815765356238,
+      "paired_bootstrap_95_percent": [
+        -2.337931603479043,
+        1.7395424704825357
+      ]
+    },
+    "cpu_us": {
+      "baseline_median": 14.368097826086979,
+      "candidate_median": 14.480923913043462,
+      "paired_median_change_percent": -0.16231702592190977,
+      "paired_bootstrap_95_percent": [
+        -0.9640367247648551,
+        1.492305066481192
+      ]
+    },
+    "p50_us": {
+      "baseline_median": 19.896,
+      "candidate_median": 19.7915,
+      "paired_median_change_percent": 0.5305030068884609,
+      "paired_bootstrap_95_percent": [
+        -1.9845550949352642,
+        1.1583864075900396
+      ]
+    },
+    "p99_us": {
+      "baseline_median": 93.4165,
+      "candidate_median": 101.7505,
+      "paired_median_change_percent": 4.634052526119936,
+      "paired_bootstrap_95_percent": [
+        -6.651625822861535,
+        9.978278383597806
+      ]
+    },
+    "p999_us": {
+      "baseline_median": 303.20799999999997,
+      "candidate_median": 281.75,
+      "paired_median_change_percent": -9.788867065214873,
+      "paired_bootstrap_95_percent": [
+        -12.949989260143186,
+        -2.158657041248385
+      ]
+    },
+    "rss_kib": {
+      "baseline_median": 3248.0,
+      "candidate_median": 3248.0,
+      "paired_median_change_percent": 0.0,
+      "paired_bootstrap_95_percent": [
+        -0.4914034579348969,
+        0.49261083743843415
+      ]
+    }
+  },
+  "/echo": {
+    "rps": {
+      "baseline_median": 32311.456999271293,
+      "candidate_median": 32720.448523096897,
+      "paired_median_change_percent": 0.12106538137317546,
+      "paired_bootstrap_95_percent": [
+        -0.5311041904829006,
+        1.1897994068710394
+      ]
+    },
+    "cpu_us": {
+      "baseline_median": 17.62353260869568,
+      "candidate_median": 17.50391304347822,
+      "paired_median_change_percent": -0.5920699316796341,
+      "paired_bootstrap_95_percent": [
+        -2.0909870639368555,
+        -0.3016894742471521
+      ]
+    },
+    "p50_us": {
+      "baseline_median": 23.4375,
+      "candidate_median": 23.4375,
+      "paired_median_change_percent": -0.0038303777658232896,
+      "paired_bootstrap_95_percent": [
+        -1.3243765036735522,
+        0.798159504694651
+      ]
+    },
+    "p99_us": {
+      "baseline_median": 110.4165,
+      "candidate_median": 101.6455,
+      "paired_median_change_percent": -3.1638353102884764,
+      "paired_bootstrap_95_percent": [
+        -13.327197717038564,
+        3.6780002971349535
+      ]
+    },
+    "p999_us": {
+      "baseline_median": 294.729,
+      "candidate_median": 311.52049999999997,
+      "paired_median_change_percent": 9.126245367436749,
+      "paired_bootstrap_95_percent": [
+        -1.4433532794595916,
+        15.420353391652952
+      ]
+    },
+    "rss_kib": {
+      "baseline_median": 3352.0,
+      "candidate_median": 3328.0,
+      "paired_median_change_percent": -0.952380952380949,
+      "paired_bootstrap_95_percent": [
+        -0.9592381302907627,
+        -0.4761904761904745
+      ]
+    }
+  }
+}
