@@ -1,7 +1,12 @@
 //! Owned RFC 7541 HPACK codec. Header names and values remain opaque bytes.
 
-use std::collections::VecDeque;
-type Fields = Vec<(Vec<u8>, Vec<u8>)>;
+use std::{borrow::Cow, collections::VecDeque};
+#[derive(Debug, PartialEq, Eq)]
+pub(super) struct Field {
+    pub(super) name: Cow<'static, [u8]>,
+    pub(super) value: Cow<'static, [u8]>,
+}
+type Fields = Vec<Field>;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Error {
@@ -73,18 +78,26 @@ impl Decoder {
                 if name.len() > budget || value.len() > budget - name.len() {
                     return Err(Error::HeaderListTooLarge);
                 }
-                (name.to_vec(), value.to_vec())
+                if let Some(&(name, value)) = STATIC.get(index - 1) {
+                    (Cow::Borrowed(name), Cow::Borrowed(value))
+                } else {
+                    (Cow::Owned(name.to_vec()), Cow::Owned(value.to_vec()))
+                }
             } else {
                 let name = if index == 0 {
-                    string(&mut block, budget)?
+                    Cow::Owned(string(&mut block, budget)?)
                 } else {
                     let (name, _) = self.lookup(index)?;
                     if name.len() > budget {
                         return Err(Error::HeaderListTooLarge);
                     }
-                    name.to_vec()
+                    if let Some(&(name, _)) = STATIC.get(index - 1) {
+                        Cow::Borrowed(name)
+                    } else {
+                        Cow::Owned(name.to_vec())
+                    }
                 };
-                let value = string(&mut block, budget - name.len())?;
+                let value = Cow::Owned(string(&mut block, budget - name.len())?);
                 (name, value)
             };
             let size = name.len() + value.len() + 32;
@@ -95,10 +108,10 @@ impl Decoder {
                 } else {
                     self.evict_to(self.table_limit - size);
                     self.table_bytes += size;
-                    self.dynamic.push_front((name.clone(), value.clone()));
+                    self.dynamic.push_front((name.to_vec(), value.to_vec()));
                 }
             }
-            headers.push((name, value));
+            headers.push(Field { name, value });
         }
         Ok(headers)
     }
@@ -618,6 +631,37 @@ const HUFFMAN: &[(u32, u8)] = &[
 #[cfg(test)]
 mod tests {
     use super::*;
+    type OwnedFields = Vec<(Vec<u8>, Vec<u8>)>;
+    impl Decoder {
+        fn decode_owned(&mut self, bytes: &[u8]) -> Result<OwnedFields, Error> {
+            self.decode(bytes).map(|fields| {
+                fields
+                    .into_iter()
+                    .map(|field| (field.name.into_owned(), field.value.into_owned()))
+                    .collect()
+            })
+        }
+    }
+    #[test]
+    fn static_fields_borrow_and_dynamic_output_survives_eviction() {
+        assert_eq!(
+            std::mem::size_of::<Field>(),
+            std::mem::size_of::<(Vec<u8>, Vec<u8>)>()
+        );
+        let mut decoder = Decoder::new(34, 1024, 10);
+        let fields = decoder
+            .decode(b"\x82\x04\x01/\x40\x01a\x01b\xbe\x40\x01c\x01d")
+            .unwrap();
+        assert!(matches!(fields[0].name, Cow::Borrowed(_)));
+        assert!(matches!(fields[0].value, Cow::Borrowed(_)));
+        assert!(matches!(fields[1].name, Cow::Borrowed(_)));
+        assert!(matches!(fields[1].value, Cow::Owned(_)));
+        assert!(matches!(fields[3].name, Cow::Owned(_)));
+        assert!(matches!(fields[3].value, Cow::Owned(_)));
+        assert_eq!(fields[3].name.as_ref(), b"a");
+        assert_eq!(fields[3].value.as_ref(), b"b");
+        assert_eq!(decoder.dynamic[0], (b"c".to_vec(), b"d".to_vec()));
+    }
 
     #[test]
     fn encoder_appends_static_and_never_indexed_fields() {
@@ -636,14 +680,14 @@ mod tests {
         );
         let mut decoder = Decoder::new(0, 1024, 10);
         assert_eq!(
-            decoder.decode(&output[1..]).unwrap(),
+            decoder.decode_owned(&output[1..]).unwrap(),
             headers(&[
                 (":method", "GET"),
                 ("custom-key", "custom-value"),
                 ("authorization", "secret")
             ])
         );
-        assert_eq!(decoder.decode(&[0xbe]), Err(Error::InvalidIndex));
+        assert_eq!(decoder.decode_owned(&[0xbe]), Err(Error::InvalidIndex));
     }
 
     #[test]
@@ -662,7 +706,7 @@ mod tests {
                 .map(|(n, v)| (n.as_str().as_bytes(), v.as_bytes())),
             &mut output,
         );
-        let decoded = Decoder::new(0, 1024, 3).decode(&output).unwrap();
+        let decoded = Decoder::new(0, 1024, 3).decode_owned(&output).unwrap();
         assert_eq!(
             decoded
                 .iter()
@@ -696,9 +740,9 @@ mod tests {
                 ("date", "Mon, 21 Oct 2013 20:13:21 GMT"),
                 ("location", "https://www.example.com"),
             ]);
-            assert_eq!(decoder.decode(&hex(blocks[0])).unwrap(), expected);
+            assert_eq!(decoder.decode_owned(&hex(blocks[0])).unwrap(), expected);
             expected[0].1 = b"307".to_vec();
-            assert_eq!(decoder.decode(&hex(blocks[1])).unwrap(), expected);
+            assert_eq!(decoder.decode_owned(&hex(blocks[1])).unwrap(), expected);
             expected[0].1 = b"200".to_vec();
             expected[2].1 = b"Mon, 21 Oct 2013 20:13:22 GMT".to_vec();
             expected.extend(headers(&[
@@ -708,16 +752,16 @@ mod tests {
                     "foo=ASDJKHQKBZXOQWEOPIUAXQWEOIU; max-age=3600; version=1",
                 ),
             ]));
-            assert_eq!(decoder.decode(&hex(blocks[2])).unwrap(), expected);
+            assert_eq!(decoder.decode_owned(&hex(blocks[2])).unwrap(), expected);
             assert_eq!(
-                decoder.decode(&[0xbe, 0xbf, 0xc0]).unwrap(),
+                decoder.decode_owned(&[0xbe, 0xbf, 0xc0]).unwrap(),
                 vec![
                     expected[5].clone(),
                     expected[4].clone(),
                     expected[2].clone()
                 ]
             );
-            assert_eq!(decoder.decode(&[0xc1]), Err(Error::InvalidIndex));
+            assert_eq!(decoder.decode_owned(&[0xc1]), Err(Error::InvalidIndex));
         }
     }
 
@@ -731,19 +775,21 @@ mod tests {
             "0001618100",
         ] {
             assert_eq!(
-                Decoder::new(4096, 1024, 10).decode(&hex(malformed)),
+                Decoder::new(4096, 1024, 10).decode_owned(&hex(malformed)),
                 Err(Error::InvalidHuffman),
                 "{malformed}"
             );
         }
         assert_eq!(
             Decoder::new(4096, 1024, 10)
-                .decode(&hex("000161811f"))
+                .decode_owned(&hex("000161811f"))
                 .unwrap(),
             headers(&[("a", "a")])
         );
         assert_eq!(
-            Decoder::new(4096, 1024, 10).decode(&hex("008080")).unwrap(),
+            Decoder::new(4096, 1024, 10)
+                .decode_owned(&hex("008080"))
+                .unwrap(),
             headers(&[("", "")])
         );
     }
@@ -752,14 +798,14 @@ mod tests {
     fn truncated_representations_and_invalid_indices_are_rejected() {
         for malformed in ["ff", "40", "000161", "000261", "00016182ff", "3f"] {
             assert_eq!(
-                Decoder::new(4096, 1024, 10).decode(&hex(malformed)),
+                Decoder::new(4096, 1024, 10).decode_owned(&hex(malformed)),
                 Err(Error::Truncated),
                 "{malformed}"
             );
         }
         for malformed in ["80", "be", "0f7f00"] {
             assert_eq!(
-                Decoder::new(4096, 1024, 10).decode(&hex(malformed)),
+                Decoder::new(4096, 1024, 10).decode_owned(&hex(malformed)),
                 Err(Error::InvalidIndex),
                 "{malformed}"
             );
@@ -767,14 +813,14 @@ mod tests {
         let mut overflow = vec![0xff; 24];
         overflow.push(0);
         assert_eq!(
-            Decoder::new(4096, 1024, 10).decode(&overflow),
+            Decoder::new(4096, 1024, 10).decode_owned(&overflow),
             Err(Error::IntegerOverflow)
         );
         let mut overlong = vec![0xff];
         overlong.extend_from_slice(&[0x80; 24]);
         overlong.push(0);
         assert_eq!(
-            Decoder::new(4096, 1024, 10).decode(&overlong),
+            Decoder::new(4096, 1024, 10).decode_owned(&overlong),
             Err(Error::IntegerOverflow)
         );
     }
@@ -782,37 +828,37 @@ mod tests {
     #[test]
     fn bounds_include_field_overhead_and_huffman_expansion() {
         assert_eq!(
-            Decoder::new(0, 42, 1).decode(&[0x82]).unwrap(),
+            Decoder::new(0, 42, 1).decode_owned(&[0x82]).unwrap(),
             headers(&[(":method", "GET")])
         );
         assert_eq!(
-            Decoder::new(0, 41, 1).decode(&[0x82]),
+            Decoder::new(0, 41, 1).decode_owned(&[0x82]),
             Err(Error::HeaderListTooLarge)
         );
         assert_eq!(
-            Decoder::new(0, 83, 2).decode(&[0x82, 0x82]),
+            Decoder::new(0, 83, 2).decode_owned(&[0x82, 0x82]),
             Err(Error::HeaderListTooLarge)
         );
         assert_eq!(
-            Decoder::new(0, 84, 1).decode(&[0x82, 0x82]),
+            Decoder::new(0, 84, 1).decode_owned(&[0x82, 0x82]),
             Err(Error::TooManyHeaders)
         );
-        assert_eq!(Decoder::new(0, 0, 0).decode(&[]).unwrap(), vec![]);
+        assert_eq!(Decoder::new(0, 0, 0).decode_owned(&[]).unwrap(), vec![]);
         let compressed = hex("0001618318c63f");
         assert_eq!(
-            Decoder::new(0, 37, 1).decode(&compressed).unwrap(),
+            Decoder::new(0, 37, 1).decode_owned(&compressed).unwrap(),
             headers(&[("a", "aaaa")])
         );
         assert_eq!(
-            Decoder::new(0, 36, 1).decode(&compressed),
+            Decoder::new(0, 36, 1).decode_owned(&compressed),
             Err(Error::HeaderListTooLarge)
         );
         assert_eq!(
-            Decoder::new(0, 33, 1).decode(&hex("0001610162")),
+            Decoder::new(0, 33, 1).decode_owned(&hex("0001610162")),
             Err(Error::HeaderListTooLarge)
         );
         assert_eq!(
-            Decoder::new(0, 32, 1).decode(&hex("00016100")),
+            Decoder::new(0, 32, 1).decode_owned(&hex("00016100")),
             Err(Error::HeaderListTooLarge)
         );
     }
@@ -821,25 +867,25 @@ mod tests {
     fn table_size_updates_evict_and_only_precede_fields() {
         let mut decoder = Decoder::new(34, 1024, 10);
         assert_eq!(
-            decoder.decode(&hex("4001610162be")).unwrap(),
+            decoder.decode_owned(&hex("4001610162be")).unwrap(),
             headers(&[("a", "b"), ("a", "b")])
         );
         // A dynamic name is copied before inserting its new value evicts it.
         assert_eq!(
-            decoder.decode(&hex("7e0163be")).unwrap(),
+            decoder.decode_owned(&hex("7e0163be")).unwrap(),
             headers(&[("a", "c"), ("a", "c")])
         );
         assert_eq!(
-            decoder.decode(&hex("203f034001640165be")).unwrap(),
+            decoder.decode_owned(&hex("203f034001640165be")).unwrap(),
             headers(&[("d", "e"), ("d", "e")])
         );
-        assert_eq!(decoder.decode(&hex("20be")), Err(Error::InvalidIndex));
+        assert_eq!(decoder.decode_owned(&hex("20be")), Err(Error::InvalidIndex));
         assert_eq!(
-            Decoder::new(34, 1024, 10).decode(&hex("3f04")),
+            Decoder::new(34, 1024, 10).decode_owned(&hex("3f04")),
             Err(Error::InvalidTableSize)
         );
         assert_eq!(
-            Decoder::new(34, 1024, 10).decode(&hex("8220")),
+            Decoder::new(34, 1024, 10).decode_owned(&hex("8220")),
             Err(Error::InvalidTableSize)
         );
     }
@@ -847,19 +893,19 @@ mod tests {
     #[test]
     fn oversized_table_entry_empties_the_table_and_still_emits_field() {
         let mut decoder = Decoder::new(34, 1024, 10);
-        decoder.decode(&hex("4001610162")).unwrap();
+        decoder.decode_owned(&hex("4001610162")).unwrap();
         assert_eq!(
-            decoder.decode(&hex("400161026263")).unwrap(),
+            decoder.decode_owned(&hex("400161026263")).unwrap(),
             headers(&[("a", "bc")])
         );
-        assert_eq!(decoder.decode(&[0xbe]), Err(Error::InvalidIndex));
+        assert_eq!(decoder.decode_owned(&[0xbe]), Err(Error::InvalidIndex));
     }
 
     #[test]
     fn literal_representations_preserve_opaque_bytes_and_duplicates() {
         let block = hex("0001ff01001001ff01004001ff0100bebe");
         assert_eq!(
-            Decoder::new(4096, 1024, 10).decode(&block).unwrap(),
+            Decoder::new(4096, 1024, 10).decode_owned(&block).unwrap(),
             vec![(vec![255], vec![0]); 5]
         );
     }
@@ -896,7 +942,7 @@ mod tests {
         let mut output = Vec::new();
         encode(input, &mut output);
         assert_eq!(
-            Decoder::new(0, 2000, 2).decode(&output).unwrap(),
+            Decoder::new(0, 2000, 2).decode_owned(&output).unwrap(),
             vec![(name, value), (b"x".to_vec(), vec![])]
         );
     }
@@ -920,11 +966,11 @@ mod tests {
             "f3fffffe8fffffd3fffffabfffff5fffffff7ffffecfffffdbfffffbbfffff7ffffff0fffffbbf",
         ));
         assert_eq!(
-            Decoder::new(4096, 289, 1).decode(&wire).unwrap(),
+            Decoder::new(4096, 289, 1).decode_owned(&wire).unwrap(),
             vec![(b"x".to_vec(), (0..=255).collect())]
         );
         assert_eq!(
-            Decoder::new(4096, 288, 1).decode(&wire),
+            Decoder::new(4096, 288, 1).decode_owned(&wire),
             Err(Error::HeaderListTooLarge)
         );
     }
@@ -938,7 +984,7 @@ mod tests {
             .collect()
     }
 
-    fn headers(pairs: &[(&str, &str)]) -> Vec<(Vec<u8>, Vec<u8>)> {
+    fn headers(pairs: &[(&str, &str)]) -> OwnedFields {
         pairs
             .iter()
             .map(|(n, v)| (n.as_bytes().to_vec(), v.as_bytes().to_vec()))
@@ -956,18 +1002,20 @@ mod tests {
         ]);
         assert_eq!(
             decoder
-                .decode(&hex("828684418cf1e3c2e5f23a6ba0ab90f4ff"))
+                .decode_owned(&hex("828684418cf1e3c2e5f23a6ba0ab90f4ff"))
                 .unwrap(),
             expected
         );
         expected.push((b"cache-control".to_vec(), b"no-cache".to_vec()));
         assert_eq!(
-            decoder.decode(&hex("828684be5886a8eb10649cbf")).unwrap(),
+            decoder
+                .decode_owned(&hex("828684be5886a8eb10649cbf"))
+                .unwrap(),
             expected
         );
         assert_eq!(
             decoder
-                .decode(&hex("828785bf408825a849e95ba97d7f8925a849e95bb8e8b4bf"))
+                .decode_owned(&hex("828785bf408825a849e95ba97d7f8925a849e95bb8e8b4bf"))
                 .unwrap(),
             headers(&[
                 (":method", "GET"),
@@ -990,20 +1038,20 @@ mod tests {
         ]);
         assert_eq!(
             decoder
-                .decode(&hex("828684410f7777772e6578616d706c652e636f6d"))
+                .decode_owned(&hex("828684410f7777772e6578616d706c652e636f6d"))
                 .unwrap(),
             expected
         );
         expected.push((b"cache-control".to_vec(), b"no-cache".to_vec()));
         assert_eq!(
             decoder
-                .decode(&hex("828684be58086e6f2d6361636865"))
+                .decode_owned(&hex("828684be58086e6f2d6361636865"))
                 .unwrap(),
             expected
         );
         assert_eq!(
             decoder
-                .decode(&hex(
+                .decode_owned(&hex(
                     "828785bf400a637573746f6d2d6b65790c637573746f6d2d76616c7565"
                 ))
                 .unwrap(),
@@ -1021,7 +1069,7 @@ mod tests {
     fn decodes_static_indexed_header() {
         let mut decoder = Decoder::new(4096, 1024, 10);
         assert_eq!(
-            decoder.decode(&[0x82]).unwrap(),
+            decoder.decode_owned(&[0x82]).unwrap(),
             vec![(b":method".to_vec(), b"GET".to_vec())]
         );
     }

@@ -863,3 +863,40 @@ async fn send_output<W: WriteIo>(
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod line_tests {
+    use super::*;
+
+    #[test]
+    fn line_boundaries_preserve_limits_and_following_bytes() {
+        compio::runtime::Runtime::new().unwrap().block_on(async {
+            for capacity in [1, 2, 3, 8, 1024] {
+                for (wire, limit, expected) in [
+                    (b"\r\nnext\r\n".as_slice(), 2, Some(b"".as_slice())),
+                    (b"abc\r\nnext\r\n", 5, Some(b"abc".as_slice())),
+                    (b"abc\r\nnext\r\n", 4, None),
+                    (b"abc\r", 5, None),
+                    (b"", 2, None),
+                    (b"abc\rx\r\nnext\r\n", 8, Some(b"abc\rx".as_slice())),
+                ] {
+                    let mut reader = Reader {
+                        io: Futures(futures_util::io::Cursor::new(wire.to_vec())),
+                        bytes: vec![],
+                        scratch: vec![],
+                        capacity,
+                        activity: Activity::new(),
+                    };
+                    let line = reader.line(limit).await;
+                    match expected {
+                        Some(expected) => {
+                            assert_eq!(line.unwrap(), expected);
+                            assert_eq!(reader.line(6).await.unwrap(), b"next");
+                        }
+                        None => assert!(line.is_err()),
+                    }
+                }
+            }
+        });
+    }
+}

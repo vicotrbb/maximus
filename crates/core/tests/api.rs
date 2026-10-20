@@ -154,3 +154,31 @@ fn buffered_body_take_and_terminal_states_preserve_limits() {
         assert!(body.frame().await.is_none());
     });
 }
+
+#[test]
+fn path_validation_preserves_ascii_and_unicode_control_policy() {
+    use std::fmt::Write;
+    for code in (0..=0x9f).chain([0x200b, 0x2028, 0x20ac, 0x10ffff]) {
+        let c = char::from_u32(code).unwrap();
+        let mut encoded = String::from("/prefix/");
+        let mut bytes = [0; 4];
+        for byte in c.encode_utf8(&mut bytes).bytes() {
+            write!(encoded, "%{byte:02X}").unwrap();
+        }
+        assert_eq!(
+            maximus_core::validate_path(&encoded).is_ok(),
+            !c.is_control() && !matches!(c, '/' | '\\' | '.'),
+            "{encoded}",
+        );
+    }
+    for path in [
+        "/a/%",
+        "/a/%0",
+        "/a/%gg",
+        "/a/%ff",
+        "/a/%c0%af",
+        "/a/%2e%2e",
+    ] {
+        assert!(maximus_core::validate_path(path).is_err(), "{path}");
+    }
+}

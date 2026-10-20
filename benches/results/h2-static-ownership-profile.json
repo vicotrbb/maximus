@@ -1,0 +1,40 @@
+{
+  "binary": "75a3c08056ed5caf320c59c5e094777ba632249ce8df6d8a236b7ed4df913045  /target/goal-h2-only/maximus-comparison",
+  "samples": 2679,
+  "responses": 76739,
+  "lost_samples": 0,
+  "event": "cpu-clock",
+  "frequency_hz": 199,
+  "record_seconds": 20,
+  "client_seconds": 15,
+  "protocol": "verified TLS1.3 HTTP2",
+  "payload_bytes": 131072,
+  "top_flat_entries": [
+    "14.67%  maximus-0  libc.so.6           [.] 0x000000000009d200",
+    "11.01%  maximus-0  maximus-comparison  [.] ring_core_0_17_14__aes_gcm_dec_kernel",
+    "10.08%  maximus-0  maximus-comparison  [.] ring_core_0_17_14__aes_gcm_enc_kernel",
+    "3.47%  maximus-0  [vdso]              [.] __kernel_clock_gettime",
+    "3.43%  maximus-0  [unknown]           [k] 0xffffbb3b5997df40",
+    "2.54%  maximus-0  [unknown]           [k] 0xffffbb3b598d28cc",
+    "2.50%  maximus-0  maximus-comparison  [.] <compio_runtime::time::future::TimerFuture as core::future::future::Future>::poll",
+    "2.28%  maximus-0  [unknown]           [k] 0xffffbb3b598d2668",
+    "1.31%  maximus-0  [unknown]           [k] 0xffffbb3b59c6a2ac",
+    "0.97%  maximus-0  libc.so.6           [.] 0x000000000009d214",
+    "0.97%  maximus-0  [unknown]           [k] 0xffffbb3b59720170",
+    "0.86%  maximus-0  libc.so.6           [.] cfree",
+    "0.86%  maximus-0  libc.so.6           [.] 0x000000000009d218",
+    "0.86%  maximus-0  [unknown]           [k] 0xffffbb3b59908540",
+    "0.78%  maximus-0  libc.so.6           [.] malloc",
+    "0.75%  maximus-0  maximus-comparison  [.] rustls::conn::ConnectionCore<Data>::process_new_packets",
+    "0.75%  maximus-0  [unknown]           [k] 0xffffbb3b598d28b4",
+    "0.71%  maximus-0  maximus-comparison  [.] compio_io::compat::sync_stream::SyncStreamReadHalf<S>::fill_read_buf::{{closure}}",
+    "0.67%  maximus-0  maximus-comparison  [.] <compio_runtime::time::future::TimerFuture as core::ops::drop::Drop>::drop",
+    "0.60%  maximus-0  [unknown]           [k] 0xffffbb3b5981837c"
+  ],
+  "limitations": [
+    "not hardware PMU cycles",
+    "restricted kernel symbol resolution",
+    "unresolved libc addresses",
+    "profiled throughput excluded from timed cohort"
+  ]
+}

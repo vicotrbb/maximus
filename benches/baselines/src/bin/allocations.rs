@@ -1,5 +1,5 @@
 //! Instrumentation only: counts allocations through the system allocator.
-use maximus::{Body, DynamicRouter, Handler, Request, Server};
+use maximus::{Body, DynamicRouter, Handler, IntoResponse, Request, Server};
 use std::{
     alloc::{GlobalAlloc, Layout, System},
     hint::black_box,
@@ -121,12 +121,25 @@ fn main() {
     end("http1-keepalive-complete", N, started);
     drop(socket);
     server.shutdown().unwrap();
-    http2_allocations(N);
+    http2_rejections(N / 10);
+    let large_static_calls = http2_allocations(N, false, true);
+    let large_owned_calls = http2_allocations(N, true, true);
+    let static_calls = http2_allocations(N, false, false);
+    let owned_calls = http2_allocations(N, true, false);
+    // An owned payload needs one allocation; tolerate runtime accounting noise.
+    assert!(
+        large_owned_calls <= large_static_calls + N * 3 / 2,
+        "partial owned responses need only the payload allocation"
+    );
+    assert!(
+        owned_calls <= static_calls + N * 3 / 2,
+        "owned HTTP/2 responses allocate more than their payloads require"
+    );
 }
 
 /// Sequential cleartext H2 with a stack-only wire client. Counts process-wide
 /// allocations, including server scheduling; excludes handshake and warmup.
-fn http2_allocations(count: usize) {
+fn http2_allocations(count: usize, owned: bool, large: bool) -> usize {
     use std::io::{Read, Write};
     use std::time::Duration;
     let server = Server::new("127.0.0.1:0".parse().unwrap())
@@ -135,7 +148,23 @@ fn http2_allocations(count: usize) {
             requests_per_connection: usize::MAX,
             ..Default::default()
         })
-        .start(|| |_: Request| async { "Hello, World!" })
+        .start(move || {
+            move |_: Request| async move {
+                if large {
+                    static LARGE: [u8; 32768] = [b'x'; 32768];
+                    let data = if owned {
+                        maximus::Bytes::from(LARGE.to_vec())
+                    } else {
+                        maximus::Bytes::from_static(&LARGE)
+                    };
+                    data.into_response()
+                } else if owned {
+                    "Hello, World!".to_owned().into_response()
+                } else {
+                    "Hello, World!".into_response()
+                }
+            }
+        })
         .unwrap();
     let mut socket = std::net::TcpStream::connect(server.local_addr()).unwrap();
     socket.set_nodelay(true).unwrap();
@@ -146,9 +175,10 @@ fn http2_allocations(count: usize) {
         .write_all(b"PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n")
         .unwrap();
     socket.write_all(&[0, 0, 0, 4, 0, 0, 0, 0, 0]).unwrap();
-    // Plenty of connection credit for every measured 13-byte response. Each
-    // stream retains its default 65,535-byte window; no timed WINDOW_UPDATEs.
-    let credit = u32::try_from((count + 100) * 13).unwrap();
+    // Connection credit covers every measured response. Both payload sizes fit
+    // the default 65,535-byte stream window; no timed WINDOW_UPDATEs.
+    let length = if large { 32768 } else { 13 };
+    let credit = u32::try_from((count + 100) * length).unwrap();
     socket.write_all(&[0, 0, 4, 8, 0, 0, 0, 0, 0]).unwrap();
     socket.write_all(&credit.to_be_bytes()).unwrap();
     let mut payload = [0u8; 16384];
@@ -160,7 +190,11 @@ fn http2_allocations(count: usize) {
         socket.read_exact(&mut payload[..size]).unwrap();
         let stream = u32::from_be_bytes(header[5..].try_into().unwrap());
         if header[3] == 0 && size != 0 {
-            assert_eq!(&payload[..size], b"Hello, World!");
+            if large {
+                assert!(payload[..size].iter().all(|b| *b == b'x'));
+            } else {
+                assert_eq!(&payload[..size], b"Hello, World!");
+            }
         }
         if header[3] == 1 {
             let status = usize::from(payload[0] == 0x20); // optional table-size reset
@@ -210,11 +244,25 @@ fn http2_allocations(count: usize) {
             }
         }
         assert!(headers);
-        assert_eq!(bytes, 13);
+        assert_eq!(bytes, length);
     }
-    end("http2-keepalive-complete", count, started);
+    end(
+        if large && owned {
+            "http2-large-owned"
+        } else if large {
+            "http2-large-static"
+        } else if owned {
+            "http2-owned-keepalive-complete"
+        } else {
+            "http2-keepalive-complete"
+        },
+        count,
+        started,
+    );
+    let calls = ALLOCS.load(Ordering::Relaxed);
     drop(socket);
     server.shutdown().unwrap();
+    calls
 }
 
 async fn dynamic_allocations(count: usize) {
@@ -264,4 +312,48 @@ async fn dynamic_allocations(count: usize) {
         }
         end(&label, count, started);
     }
+}
+
+/// Process-wide connection-rejection accounting with a stack-only client.
+fn http2_rejections(count: usize) {
+    use std::io::{Read, Write};
+    use std::time::Duration;
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .http2_prior_knowledge(true)
+        .start(|| |_: Request| async { Body::empty() })
+        .unwrap();
+    let mut request = [0u8; 41];
+    request[..24].copy_from_slice(b"PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n");
+    request[24..33].copy_from_slice(&[0, 0, 8, 6, 0, 0, 0, 0, 0]);
+    request[33..].copy_from_slice(b"12345678");
+    let mut started = Instant::now();
+    for index in 0..count + 100 {
+        if index == 100 {
+            started = start();
+        }
+        let mut socket = std::net::TcpStream::connect(server.local_addr()).unwrap();
+        socket.set_nodelay(true).unwrap();
+        socket
+            .set_read_timeout(Some(Duration::from_secs(5)))
+            .unwrap();
+        socket.write_all(&request).unwrap();
+        loop {
+            let mut header = [0u8; 9];
+            socket.read_exact(&mut header).unwrap();
+            let size = u32::from_be_bytes([0, header[0], header[1], header[2]]) as usize;
+            let mut payload = [0u8; 256];
+            assert!(size <= payload.len());
+            socket.read_exact(&mut payload[..size]).unwrap();
+            assert_eq!(&header[5..], &[0, 0, 0, 0]);
+            if header[3] == 7 {
+                assert_eq!(size, 8);
+                assert_eq!(&payload[..8], &[0, 0, 0, 0, 0, 0, 0, 1]);
+                break;
+            }
+            assert!(matches!(header[3], 4 | 8));
+        }
+        assert_eq!(socket.read(&mut [0u8; 1]).unwrap(), 0);
+    }
+    end("http2-invalid-first-frame", count, started);
+    server.shutdown().unwrap();
 }

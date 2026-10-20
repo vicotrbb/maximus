@@ -1,0 +1,1143 @@
+{
+  "runs": 12,
+  "requests": 4300800,
+  "connections_per_process": 64,
+  "warmup_requests_per_connection": 100,
+  "additional_requests_per_connection": {
+    "plaintext": 10000,
+    "large": 1000
+  },
+  "sampling": "before traffic; after equal warmup and midpoint counts; completion and +2/+4/+6 seconds with connections kept open",
+  "holds_seconds": {
+    "warm": 8,
+    "middle": 8,
+    "complete": 12
+  },
+  "source_manifest": {
+    "base": "6f0ebd61a7c5664bb1f70104dd20a67bc864e9c6",
+    "files": {
+      "crates/core/src/policy.rs": "17f44301c4c46ef92ad136989a0d73cc6d1987e9ca1311471dcd57d5c7520618",
+      "crates/core/tests/api.rs": "d19547fcaf5c0e880c8f537260bdea1b16efe38311c3bf21c19775629c4907e4",
+      "crates/http1/src/lib.rs": "b224c5aa7f9ed5f49dd9b37d434035dc66377154deebe9d0d9dd81d7352636c7",
+      "crates/http2/src/lib.rs": "677d76f337d0e7e91c68fad394b974a35a550fc558c64d0d73556a5c8e0df585",
+      "crates/http2/src/hpack.rs": "49aa07cc413908e02818ee602854100125d8831ac3cf441acd897ae46ab10393",
+      "crates/http2/tests/wire.rs": "31e4ede6f79193e476f949c870cba0f210ac3ecd89d71a0512e219f2b9f14199",
+      "fuzz/fuzz_targets/hpack.rs": "021196348ecf91869d29ebf665d5b5839dd52466f2049e37e2b980e3d63f60bb",
+      "benches/baselines/src/bin/allocations.rs": "4ea1845eda6d64c96dc1470b1d74324fbb2c0d894c648351ea3beed8a7c2e63c",
+      "benches/run.py": "e08bc56bc57b3bf1a7a4170c35e6d28f034104a63a6d73a9673066fef7dfb4f1",
+      "benches/load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+      "Cargo.lock": "8d5cf3dbc9060e69fe7551a2ce06b5af11246463eff4711342639e212e7b588f",
+      "benches/baselines/Cargo.lock": "f494307bbaec4c4d45e2c3eb753b595ecd3029572c148d4c7942e27707ac4b1e"
+    },
+    "candidate": "HTTP/2 only; original path validation restored"
+  },
+  "client_script_sha256": "0ec8bf11608420695eca01d849f2c7b56728cc6e825e9593c42cc87da5e5b44c",
+  "summary": [
+    {
+      "workload": "large",
+      "variant": "baseline-6f0ebd6",
+      "phase": "before",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            5132,
+            5116,
+            5120
+          ],
+          "median": 5120
+        },
+        "Anonymous": {
+          "samples": [
+            648,
+            636,
+            632
+          ],
+          "median": 636
+        },
+        "Pss_Anon": {
+          "samples": [
+            648,
+            636,
+            632
+          ],
+          "median": 636
+        },
+        "Pss_File": {
+          "samples": [
+            4082,
+            4082,
+            4086
+          ],
+          "median": 4082
+        },
+        "Private_Dirty": {
+          "samples": [
+            724,
+            712,
+            648
+          ],
+          "median": 712
+        },
+        "Private_Clean": {
+          "samples": [
+            3608,
+            3612,
+            3672
+          ],
+          "median": 3612
+        }
+      }
+    },
+    {
+      "workload": "large",
+      "variant": "baseline-6f0ebd6",
+      "phase": "complete",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            19756,
+            18564,
+            19492
+          ],
+          "median": 19492
+        },
+        "Anonymous": {
+          "samples": [
+            14832,
+            14652,
+            14688
+          ],
+          "median": 14688
+        },
+        "Pss_Anon": {
+          "samples": [
+            14832,
+            14652,
+            14688
+          ],
+          "median": 14688
+        },
+        "Pss_File": {
+          "samples": [
+            4522,
+            3514,
+            4406
+          ],
+          "median": 4406
+        },
+        "Private_Dirty": {
+          "samples": [
+            14908,
+            14728,
+            14764
+          ],
+          "median": 14764
+        },
+        "Private_Clean": {
+          "samples": [
+            4048,
+            3044,
+            3936
+          ],
+          "median": 3936
+        }
+      }
+    },
+    {
+      "workload": "large",
+      "variant": "baseline-6f0ebd6",
+      "phase": "middle",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            19648,
+            17868,
+            19740
+          ],
+          "median": 19648
+        },
+        "Anonymous": {
+          "samples": [
+            14716,
+            13956,
+            14804
+          ],
+          "median": 14716
+        },
+        "Pss_Anon": {
+          "samples": [
+            14716,
+            13956,
+            14804
+          ],
+          "median": 14716
+        },
+        "Pss_File": {
+          "samples": [
+            4536,
+            3514,
+            4534
+          ],
+          "median": 4534
+        },
+        "Private_Dirty": {
+          "samples": [
+            14792,
+            14032,
+            14880
+          ],
+          "median": 14792
+        },
+        "Private_Clean": {
+          "samples": [
+            4068,
+            3044,
+            4060
+          ],
+          "median": 4060
+        }
+      }
+    },
+    {
+      "workload": "large",
+      "variant": "baseline-6f0ebd6",
+      "phase": "quiescent",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            19756,
+            18564,
+            19492
+          ],
+          "median": 19492
+        },
+        "Anonymous": {
+          "samples": [
+            14832,
+            14652,
+            14688
+          ],
+          "median": 14688
+        },
+        "Pss_Anon": {
+          "samples": [
+            14832,
+            14652,
+            14688
+          ],
+          "median": 14688
+        },
+        "Pss_File": {
+          "samples": [
+            4522,
+            3514,
+            4402
+          ],
+          "median": 4402
+        },
+        "Private_Dirty": {
+          "samples": [
+            14908,
+            14728,
+            14764
+          ],
+          "median": 14764
+        },
+        "Private_Clean": {
+          "samples": [
+            4048,
+            3044,
+            3928
+          ],
+          "median": 3928
+        }
+      }
+    },
+    {
+      "workload": "large",
+      "variant": "baseline-6f0ebd6",
+      "phase": "warm",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            19436,
+            19524,
+            19812
+          ],
+          "median": 19524
+        },
+        "Anonymous": {
+          "samples": [
+            14504,
+            14596,
+            14876
+          ],
+          "median": 14596
+        },
+        "Pss_Anon": {
+          "samples": [
+            14504,
+            14596,
+            14876
+          ],
+          "median": 14596
+        },
+        "Pss_File": {
+          "samples": [
+            4530,
+            4530,
+            4534
+          ],
+          "median": 4530
+        },
+        "Private_Dirty": {
+          "samples": [
+            14580,
+            14672,
+            14952
+          ],
+          "median": 14672
+        },
+        "Private_Clean": {
+          "samples": [
+            4056,
+            4060,
+            4060
+          ],
+          "median": 4060
+        }
+      }
+    },
+    {
+      "workload": "large",
+      "variant": "h2-only",
+      "phase": "before",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            5140,
+            5128,
+            5152
+          ],
+          "median": 5140
+        },
+        "Anonymous": {
+          "samples": [
+            596,
+            592,
+            600
+          ],
+          "median": 596
+        },
+        "Pss_Anon": {
+          "samples": [
+            596,
+            592,
+            600
+          ],
+          "median": 596
+        },
+        "Pss_File": {
+          "samples": [
+            4146,
+            4142,
+            4150
+          ],
+          "median": 4146
+        },
+        "Private_Dirty": {
+          "samples": [
+            672,
+            668,
+            616
+          ],
+          "median": 668
+        },
+        "Private_Clean": {
+          "samples": [
+            3676,
+            3676,
+            3736
+          ],
+          "median": 3676
+        }
+      }
+    },
+    {
+      "workload": "large",
+      "variant": "h2-only",
+      "phase": "complete",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            19816,
+            18716,
+            20476
+          ],
+          "median": 19816
+        },
+        "Anonymous": {
+          "samples": [
+            14952,
+            14428,
+            15608
+          ],
+          "median": 14952
+        },
+        "Pss_Anon": {
+          "samples": [
+            14952,
+            14428,
+            15608
+          ],
+          "median": 14952
+        },
+        "Pss_File": {
+          "samples": [
+            4466,
+            3894,
+            4474
+          ],
+          "median": 4466
+        },
+        "Private_Dirty": {
+          "samples": [
+            15028,
+            14504,
+            15684
+          ],
+          "median": 15028
+        },
+        "Private_Clean": {
+          "samples": [
+            3996,
+            3428,
+            4008
+          ],
+          "median": 3996
+        }
+      }
+    },
+    {
+      "workload": "large",
+      "variant": "h2-only",
+      "phase": "middle",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            19692,
+            19000,
+            20296
+          ],
+          "median": 19692
+        },
+        "Anonymous": {
+          "samples": [
+            14828,
+            14712,
+            15424
+          ],
+          "median": 14828
+        },
+        "Pss_Anon": {
+          "samples": [
+            14828,
+            14712,
+            15424
+          ],
+          "median": 14828
+        },
+        "Pss_File": {
+          "samples": [
+            4466,
+            3894,
+            4470
+          ],
+          "median": 4466
+        },
+        "Private_Dirty": {
+          "samples": [
+            14904,
+            14788,
+            15500
+          ],
+          "median": 14904
+        },
+        "Private_Clean": {
+          "samples": [
+            3996,
+            3428,
+            3996
+          ],
+          "median": 3996
+        }
+      }
+    },
+    {
+      "workload": "large",
+      "variant": "h2-only",
+      "phase": "quiescent",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            19692,
+            18716,
+            20476
+          ],
+          "median": 19692
+        },
+        "Anonymous": {
+          "samples": [
+            14952,
+            14428,
+            15608
+          ],
+          "median": 14952
+        },
+        "Pss_Anon": {
+          "samples": [
+            14952,
+            14428,
+            15608
+          ],
+          "median": 14952
+        },
+        "Pss_File": {
+          "samples": [
+            4342,
+            3894,
+            4466
+          ],
+          "median": 4342
+        },
+        "Private_Dirty": {
+          "samples": [
+            15028,
+            14504,
+            15684
+          ],
+          "median": 15028
+        },
+        "Private_Clean": {
+          "samples": [
+            3872,
+            3428,
+            3992
+          ],
+          "median": 3872
+        }
+      }
+    },
+    {
+      "workload": "large",
+      "variant": "h2-only",
+      "phase": "warm",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            19744,
+            19484,
+            19476
+          ],
+          "median": 19484
+        },
+        "Anonymous": {
+          "samples": [
+            14880,
+            14628,
+            14604
+          ],
+          "median": 14628
+        },
+        "Pss_Anon": {
+          "samples": [
+            14880,
+            14628,
+            14604
+          ],
+          "median": 14628
+        },
+        "Pss_File": {
+          "samples": [
+            4466,
+            4462,
+            4470
+          ],
+          "median": 4466
+        },
+        "Private_Dirty": {
+          "samples": [
+            14956,
+            14704,
+            14680
+          ],
+          "median": 14704
+        },
+        "Private_Clean": {
+          "samples": [
+            3996,
+            3996,
+            3996
+          ],
+          "median": 3996
+        }
+      }
+    },
+    {
+      "workload": "plaintext",
+      "variant": "baseline-6f0ebd6",
+      "phase": "before",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            5128,
+            5068,
+            5120
+          ],
+          "median": 5120
+        },
+        "Anonymous": {
+          "samples": [
+            640,
+            592,
+            632
+          ],
+          "median": 632
+        },
+        "Pss_Anon": {
+          "samples": [
+            640,
+            592,
+            632
+          ],
+          "median": 632
+        },
+        "Pss_File": {
+          "samples": [
+            4086,
+            4078,
+            4086
+          ],
+          "median": 4086
+        },
+        "Private_Dirty": {
+          "samples": [
+            716,
+            668,
+            648
+          ],
+          "median": 668
+        },
+        "Private_Clean": {
+          "samples": [
+            3612,
+            3608,
+            3672
+          ],
+          "median": 3612
+        }
+      }
+    },
+    {
+      "workload": "plaintext",
+      "variant": "baseline-6f0ebd6",
+      "phase": "complete",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            8008,
+            8032,
+            7488
+          ],
+          "median": 8008
+        },
+        "Anonymous": {
+          "samples": [
+            3076,
+            3108,
+            3116
+          ],
+          "median": 3108
+        },
+        "Pss_Anon": {
+          "samples": [
+            3076,
+            3108,
+            3116
+          ],
+          "median": 3108
+        },
+        "Pss_File": {
+          "samples": [
+            4534,
+            4526,
+            3970
+          ],
+          "median": 4526
+        },
+        "Private_Dirty": {
+          "samples": [
+            3152,
+            3184,
+            3192
+          ],
+          "median": 3184
+        },
+        "Private_Clean": {
+          "samples": [
+            4064,
+            4056,
+            3496
+          ],
+          "median": 4056
+        }
+      }
+    },
+    {
+      "workload": "plaintext",
+      "variant": "baseline-6f0ebd6",
+      "phase": "middle",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            8000,
+            8032,
+            7484
+          ],
+          "median": 8000
+        },
+        "Anonymous": {
+          "samples": [
+            3064,
+            3108,
+            3112
+          ],
+          "median": 3108
+        },
+        "Pss_Anon": {
+          "samples": [
+            3064,
+            3108,
+            3112
+          ],
+          "median": 3108
+        },
+        "Pss_File": {
+          "samples": [
+            4534,
+            4528,
+            3970
+          ],
+          "median": 4528
+        },
+        "Private_Dirty": {
+          "samples": [
+            3140,
+            3184,
+            3188
+          ],
+          "median": 3184
+        },
+        "Private_Clean": {
+          "samples": [
+            4060,
+            4060,
+            3496
+          ],
+          "median": 4060
+        }
+      }
+    },
+    {
+      "workload": "plaintext",
+      "variant": "baseline-6f0ebd6",
+      "phase": "quiescent",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            8008,
+            8032,
+            7488
+          ],
+          "median": 8008
+        },
+        "Anonymous": {
+          "samples": [
+            3076,
+            3108,
+            3116
+          ],
+          "median": 3108
+        },
+        "Pss_Anon": {
+          "samples": [
+            3076,
+            3108,
+            3116
+          ],
+          "median": 3108
+        },
+        "Pss_File": {
+          "samples": [
+            4530,
+            4526,
+            3976
+          ],
+          "median": 4526
+        },
+        "Private_Dirty": {
+          "samples": [
+            3152,
+            3184,
+            3192
+          ],
+          "median": 3184
+        },
+        "Private_Clean": {
+          "samples": [
+            4056,
+            4056,
+            3508
+          ],
+          "median": 4056
+        }
+      }
+    },
+    {
+      "workload": "plaintext",
+      "variant": "baseline-6f0ebd6",
+      "phase": "warm",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            7956,
+            8032,
+            8028
+          ],
+          "median": 8028
+        },
+        "Anonymous": {
+          "samples": [
+            3020,
+            3108,
+            3092
+          ],
+          "median": 3092
+        },
+        "Pss_Anon": {
+          "samples": [
+            3020,
+            3108,
+            3092
+          ],
+          "median": 3092
+        },
+        "Pss_File": {
+          "samples": [
+            4538,
+            4526,
+            4542
+          ],
+          "median": 4538
+        },
+        "Private_Dirty": {
+          "samples": [
+            3096,
+            3184,
+            3168
+          ],
+          "median": 3168
+        },
+        "Private_Clean": {
+          "samples": [
+            4068,
+            4056,
+            4076
+          ],
+          "median": 4068
+        }
+      }
+    },
+    {
+      "workload": "plaintext",
+      "variant": "h2-only",
+      "phase": "before",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            5188,
+            5188,
+            5176
+          ],
+          "median": 5188
+        },
+        "Anonymous": {
+          "samples": [
+            640,
+            636,
+            632
+          ],
+          "median": 636
+        },
+        "Pss_Anon": {
+          "samples": [
+            640,
+            636,
+            632
+          ],
+          "median": 636
+        },
+        "Pss_File": {
+          "samples": [
+            4146,
+            4156,
+            4144
+          ],
+          "median": 4146
+        },
+        "Private_Dirty": {
+          "samples": [
+            716,
+            712,
+            708
+          ],
+          "median": 712
+        },
+        "Private_Clean": {
+          "samples": [
+            3672,
+            3688,
+            3672
+          ],
+          "median": 3672
+        }
+      }
+    },
+    {
+      "workload": "plaintext",
+      "variant": "h2-only",
+      "phase": "complete",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            7836,
+            8080,
+            7976
+          ],
+          "median": 7976
+        },
+        "Anonymous": {
+          "samples": [
+            3084,
+            3208,
+            3108
+          ],
+          "median": 3108
+        },
+        "Pss_Anon": {
+          "samples": [
+            3084,
+            3208,
+            3108
+          ],
+          "median": 3108
+        },
+        "Pss_File": {
+          "samples": [
+            4352,
+            4472,
+            4468
+          ],
+          "median": 4468
+        },
+        "Private_Dirty": {
+          "samples": [
+            3160,
+            3284,
+            3184
+          ],
+          "median": 3184
+        },
+        "Private_Clean": {
+          "samples": [
+            3880,
+            4000,
+            3996
+          ],
+          "median": 3996
+        }
+      }
+    },
+    {
+      "workload": "plaintext",
+      "variant": "h2-only",
+      "phase": "middle",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            7952,
+            8072,
+            7960
+          ],
+          "median": 7960
+        },
+        "Anonymous": {
+          "samples": [
+            3080,
+            3200,
+            3092
+          ],
+          "median": 3092
+        },
+        "Pss_Anon": {
+          "samples": [
+            3080,
+            3200,
+            3092
+          ],
+          "median": 3092
+        },
+        "Pss_File": {
+          "samples": [
+            4478,
+            4476,
+            4468
+          ],
+          "median": 4476
+        },
+        "Private_Dirty": {
+          "samples": [
+            3156,
+            3276,
+            3168
+          ],
+          "median": 3168
+        },
+        "Private_Clean": {
+          "samples": [
+            4012,
+            4008,
+            3996
+          ],
+          "median": 4008
+        }
+      }
+    },
+    {
+      "workload": "plaintext",
+      "variant": "h2-only",
+      "phase": "quiescent",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            7836,
+            8080,
+            7976
+          ],
+          "median": 7976
+        },
+        "Anonymous": {
+          "samples": [
+            3084,
+            3208,
+            3108
+          ],
+          "median": 3108
+        },
+        "Pss_Anon": {
+          "samples": [
+            3084,
+            3208,
+            3108
+          ],
+          "median": 3108
+        },
+        "Pss_File": {
+          "samples": [
+            4350,
+            4478,
+            4468
+          ],
+          "median": 4468
+        },
+        "Private_Dirty": {
+          "samples": [
+            3160,
+            3284,
+            3184
+          ],
+          "median": 3184
+        },
+        "Private_Clean": {
+          "samples": [
+            3876,
+            4012,
+            3996
+          ],
+          "median": 3996
+        }
+      }
+    },
+    {
+      "workload": "plaintext",
+      "variant": "h2-only",
+      "phase": "warm",
+      "metrics": {
+        "Rss": {
+          "samples": [
+            7912,
+            8028,
+            7912
+          ],
+          "median": 7912
+        },
+        "Anonymous": {
+          "samples": [
+            3040,
+            3156,
+            3044
+          ],
+          "median": 3044
+        },
+        "Pss_Anon": {
+          "samples": [
+            3040,
+            3156,
+            3044
+          ],
+          "median": 3044
+        },
+        "Pss_File": {
+          "samples": [
+            4470,
+            4470,
+            4468
+          ],
+          "median": 4470
+        },
+        "Private_Dirty": {
+          "samples": [
+            3116,
+            3232,
+            3120
+          ],
+          "median": 3120
+        },
+        "Private_Clean": {
+          "samples": [
+            3996,
+            3996,
+            3996
+          ],
+          "median": 3996
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "three alternating pairs per workload on a shared VM",
+    "quiescent mappings are not continuous peak live heap",
+    "periodic during-traffic samples exist in raw archive and are not equal-count comparisons",
+    "socket-campaign endpoint RSS observations remain valid and are not replaced by this cohort"
+  ]
+}

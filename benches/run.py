@@ -58,6 +58,7 @@ def main():
     environment = {'date_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'args': vars(args),
         'source_commit': capture('git', '-C', str(ROOT), 'rev-parse', 'HEAD'),
         'source_dirty': bool(capture('git', '-C', str(ROOT), 'status', '--porcelain')),
+        'network': {'server': 'none', 'client': 'container:<server>'},
         'workload_sha256': hashlib.sha256((ROOT / 'benches/load.js').read_bytes()).hexdigest(),
         'running_containers': capture('docker', 'ps', '--format', '{{.Names}} {{.Image}}'),
         'docker': capture('docker', 'version', '--format', '{{.Server.Version}}'),
@@ -78,7 +79,7 @@ def main():
                 continue
             name = f'maximus-bench-{os.getpid()}-{len(rows)}'
             key = f'{args.label}-{engine}-{path.strip("/").replace("/", "-")}-w{args.workers}-r{rate}-n{repeat}'
-            command = ['docker', 'run', '--rm', '-d', '--name', name, '--network', 'host', '--cpuset-cpus', ','.join(map(str, range(args.workers))), '--ulimit', 'nofile=65536:65536', '--security-opt', 'seccomp=unconfined']
+            command = ['docker', 'run', '--rm', '-d', '--name', name, '--network', 'none', '--cpuset-cpus', ','.join(map(str, range(args.workers))), '--ulimit', 'nofile=65536:65536', '--security-opt', 'seccomp=unconfined']
             if args.protocol != 'plain':
                 command += ['-v', f'{OUT}:/cert:ro', '-e', 'MAXIMUS_CERT=/cert/cert.pem', '-e', 'MAXIMUS_KEY=/cert/key.pem', '-e', f'PROTOCOL={args.protocol}']
             if engine == 'nginx':
@@ -93,7 +94,7 @@ def main():
                     log = subprocess.check_output(['docker', 'logs', name], text=True, stderr=subprocess.STDOUT)
                     if 'ready' in log or engine == 'nginx': break
                     time.sleep(.1)
-                base = ['docker', 'run', '--rm', '--network', 'host', '--cpuset-cpus', args.client_cpus, '-u', '0', '-v', f'{ROOT / "benches/load.js"}:/load.js:ro', '-v', f'{OUT}:/results', '-e', f'PATHNAME={path}', '-e', f'VUS={args.vus}', '-e', f'BODY_BYTES={args.body_bytes}']
+                base = ['docker', 'run', '--rm', '--network', f'container:{name}', '--cpuset-cpus', args.client_cpus, '-u', '0', '-v', f'{ROOT / "benches/load.js"}:/load.js:ro', '-v', f'{OUT}:/results', '-e', f'PATHNAME={path}', '-e', f'VUS={args.vus}', '-e', f'BODY_BYTES={args.body_bytes}']
                 if args.protocol != 'plain':
                     base += ['-v', f'{OUT}/cert.pem:/cert.pem:ro', '-e', 'SSL_CERT_FILE=/cert.pem', '-e', 'URL=https://localhost:8080', '-e', f'PROTOCOL={args.protocol}']
                 with (OUT / f'{key}.log').open('w') as log:
