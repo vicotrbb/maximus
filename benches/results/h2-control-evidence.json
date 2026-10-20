@@ -1,0 +1,59 @@
+{
+  "baseline_commit": "9bb479f6730e6b160566f251c1eaf6a167969860",
+  "candidate": "working tree, baseline plus reviewed protocol diff",
+  "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "os": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+  "cpu": "Apple M5 Pro",
+  "build": "cargo build --release -p maximus --all-features --example features",
+  "release_profile": {
+    "lto": "thin",
+    "codegen-units": 1
+  },
+  "binary_bytes": {
+    "baseline": 4319536,
+    "candidate": 4319536
+  },
+  "text_section_bytes": {
+    "baseline": 2442348,
+    "candidate": 2442348
+  },
+  "sha256": {
+    "crates/http2/src/lib.rs": "2bbf319dbfc72179d255a7b2c1a3502d596a5400b0fb401c33671e0b3e0ed24a",
+    "crates/http2/tests/wire.rs": "9a37b2ed94d8e76c7d6032b8828f45eaab93b6e435019d39cd36bfceaee78fec",
+    "artifacts/h2-progress/baseline": "71016e91e7ca80447bfb832b3177ca406e70cc05b758eebf9bdeee61af277222",
+    "artifacts/h2-progress/candidate": "7911998103180265e5f0997918f017fe0fda2c91d80fa985085b20de64d2bdbc",
+    "artifacts/h2-progress/compare.py": "f5f63535351c34207432ff185142ed9ab4d185fd70d2f7d8eb6af57d13ad85f5"
+  },
+  "experiment": {
+    "repeats": 20,
+    "alternating_order": true,
+    "workloads": [
+      "H2 cleartext GET /plaintext",
+      "H2 cleartext POST /echo, 1024 bytes"
+    ],
+    "warmup_requests_per_trial": 200,
+    "measured_requests_per_trial": 9000,
+    "trials": 80,
+    "total_checked_responses": 736000,
+    "connection_count": 1,
+    "cpu_pinning": false,
+    "server_workers": 1,
+    "client": "Python stdlib, local socket, independent frame construction and status/body verification",
+    "cpu_scope": "child user+system CPU including startup/warmup/shutdown and one ps invocation; not isolated application CPU"
+  },
+  "limits": [
+    "short single-connection localhost observations",
+    "shared host, no fixed offered load",
+    "tails do not establish non-regression",
+    "no universal performance claim"
+  ],
+  "verification": {
+    "check": "163 passed",
+    "linux": "141 passed, one privileged BPF ignored",
+    "final_wire": "37 passed on macOS and Linux",
+    "interop": "passed including 2062 mutations",
+    "h2spec_plain_and_tls": "139/147 raw, 5 policy differences, 3 closure races, held-response 3/3 in each mode",
+    "fuzz_http2": "1384338 runs in 61 seconds, no crash",
+    "independent_review": "no actionable findings"
+  }
+}

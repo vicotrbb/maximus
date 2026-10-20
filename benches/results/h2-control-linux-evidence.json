@@ -1,0 +1,123 @@
+{
+  "outcome": "NOT QUALIFIED; do not merge",
+  "source_revision": "42bd61155f35789a4a6205ff6cef40f2b5937b66",
+  "reason": "First measured unchanged-baseline trial dropped 145 arrivals; zero-drop validity gate failed before any candidate measurement. No paired comparison or statistical acceptance exists.",
+  "plan": {
+    "purpose": "Conditional merge qualification, frozen before measurement",
+    "pairs_per_workload": 10,
+    "duration_seconds": 30,
+    "warmup_seconds": 5,
+    "measured_tail_interval_seconds": [
+      5,
+      30
+    ],
+    "vus": 64,
+    "workloads": [
+      {
+        "label": "h2-plain",
+        "protocol": "h2",
+        "path": "/plaintext",
+        "body_bytes": 0,
+        "rate": 5000
+      },
+      {
+        "label": "h2-echo",
+        "protocol": "h2",
+        "path": "/echo",
+        "body_bytes": 1024,
+        "rate": 5000
+      },
+      {
+        "label": "h2-large",
+        "protocol": "h2",
+        "path": "/echo",
+        "body_bytes": 131072,
+        "rate": 500
+      },
+      {
+        "label": "h1-control",
+        "protocol": "h1",
+        "path": "/plaintext",
+        "body_bytes": 0,
+        "rate": 5000
+      }
+    ],
+    "gates": {
+      "throughput_paired_95_lower_percent": -3,
+      "cpu_per_request_paired_95_upper_percent": 3,
+      "p99_paired_95_upper_percent": 5,
+      "p999_paired_95_upper_percent": 5,
+      "validity_failures": 0
+    },
+    "statistics": "Median paired percentage changes; 100000 paired bootstrap resamples; fixed seed 1931; percentile 95% interval",
+    "policy": "All workload gates must pass; unknown, incomplete or failed trials block merge. No extra repetitions to obtain a pass. Rates are below prior measured saturation, so no near-capacity claim.",
+    "order": "AB/BA alternating pairs; each pair two trials per workload; fixed workload sequence",
+    "namespace": "maximus-h2-credit-final",
+    "node": "homelab-01",
+    "expected_server_cpu": [
+      2
+    ],
+    "expected_client_cpus": [
+      4,
+      6
+    ],
+    "fail_fast_after_completed_workload": true,
+    "premeasurement_adjustment": "64 preallocated VUs fit the 4 GiB conservative admission estimate; 256 could exceed it. Selected before any client execution."
+  },
+  "builds": {
+    "baseline": {
+      "h2_sha256": "aae4eed0a5039a62490960bbb0057ebbcf24d0838e948635d10cc75bf9a4f95a",
+      "binary_sha256": "c6a646c3557e88a7ac10f6c910946288b263bd918755aee360d6d939d61dc652",
+      "file_bytes": 3044344,
+      "size": "   text\t   data\t    bss\t    dec\t    hex\tfilename\n2448678\t  64360\t   2684\t2515722\t 26630a\t/work/results/server-baseline\n",
+      "lock_sha256": "c392ce2dc18300a63a799406b8a96bf588cebdcf2cc37aed16c143e636534658"
+    },
+    "candidate": {
+      "h2_sha256": "2bbf319dbfc72179d255a7b2c1a3502d596a5400b0fb401c33671e0b3e0ed24a",
+      "binary_sha256": "c19925e17540f7acdc6d53839f8dc49bcd455171c7ecad2bde8c6645ef41f624",
+      "file_bytes": 3044344,
+      "size": "   text\t   data\t    bss\t    dec\t    hex\tfilename\n2448678\t  64360\t   2684\t2515722\t 26630a\t/work/results/server-candidate\n",
+      "lock_sha256": "c392ce2dc18300a63a799406b8a96bf588cebdcf2cc37aed16c143e636534658"
+    }
+  },
+  "environment": {
+    "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)\n",
+    "kernel": "Linux measure 6.6.68 #1-NixOS SMP PREEMPT_DYNAMIC Fri Dec 27 12:58:58 UTC 2024 x86_64 GNU/Linux\n",
+    "topology": "CPU CORE SOCKET ONLINE\n  0    0      0    yes\n  1    0      0    yes\n  2    1      0    yes\n  3    1      0    yes\n  4    2      0    yes\n  5    2      0    yes\n  6    3      0    yes\n  7    3      0    yes\n  8    4      0    yes\n  9    4      0    yes\n 10    5      0    yes\n 11    5      0    yes\n 12    6      0    yes\n 13    6      0    yes\n 14    7      0    yes\n 15    7      0    yes\n",
+    "cpu": "Architecture:                         x86_64\nCPU op-mode(s):                       32-bit, 64-bit\nAddress sizes:                        48 bits physical, 48 bits virtual\nByte Order:                           Little Endian\nCPU(s):                               16\nOn-line CPU(s) list:                  0-15\nVendor ID:                            AuthenticAMD\nModel name:                           AMD Ryzen 7 5825U with Radeon Graphics\nCPU family:                           25\nModel:                                80\nThread(s) per core:                   2\nCore(s) per socket:                   8\nSocket(s):                            1\nStepping:                             0\nCPU(s) scaling MHz:                   69%\nCPU max MHz:                          4546.0000\nCPU min MHz:                          400.0000\nBogoMIPS:                             3992.60\nFlags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd cppc arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nVirtualization:                       AMD-V\nL1d cache:                            256 KiB (8 instances)\nL1i cache:                            256 KiB (8 instances)\nL2 cache:                             4 MiB (8 instances)\nL3 cache:                             16 MiB (1 instance)\nNUMA node(s):                         1\nNUMA node0 CPU(s):                    0-15\nVulnerability Gather data sampling:   Not affected\nVulnerability Itlb multihit:          Not affected\nVulnerability L1tf:                   Not affected\nVulnerability Mds:                    Not affected\nVulnerability Meltdown:               Not affected\nVulnerability Mmio stale data:        Not affected\nVulnerability Reg file data sampling: Not affected\nVulnerability Retbleed:               Not affected\nVulnerability Spec rstack overflow:   Mitigation; Safe RET\nVulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:             Mitigation; Retpolines; IBPB conditional; IBRS_FW; STIBP always-on; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected\nVulnerability Srbds:                  Not affected\nVulnerability Tsx async abort:        Not affected\n",
+    "quota": "200000 100000\n",
+    "governor": "powersave\n",
+    "harness_sha256": "c66770aab5ba2787e3d7caa25cf95562c4e9e7ed8485e2d3c75255e02e7f6073",
+    "load_sha256": "a2358eb7bda66e90edea27bf682c90332e406378e79b9497603ba9be6439d56b",
+    "plan_sha256": "b09c23d39938254ced30bdd390f278abdb67eee764198b0fa3f3f7ce006a0e7a",
+    "controller_sha256": "0f9e51c6d794094717be750e172aa7ef986b241110c6c1652a0af7aff370ec45"
+  },
+  "archive": {
+    "sha256": "803d245610388e89f8d1c14ba54b1540b4a09b3d2114df0a08a354f700957ae9",
+    "bytes": 16613,
+    "files": 51,
+    "controller_exit": 1,
+    "job_stop": true
+  },
+  "image_ids": "client docker.io/grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\nserver docker.io/library/rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\n",
+  "preflight_trials": 8,
+  "preflight_valid_responses": 64,
+  "measured_trials": 1,
+  "measured_baseline_valid_responses": 149854,
+  "dropped_arrivals": 145,
+  "http_or_check_failures": 0,
+  "client_exit": 99,
+  "candidate_measured_trials": 0,
+  "source_review": "Approved committed source; 37/37 wire tests passed freshly. No benchmark acceptance attributed to code review.",
+  "cleanup": "Owned namespace maximus-h2-credit-final deleted after archive checksum and file count verification.",
+  "ci_at_implementation_revision": {
+    "revision": "42bd61155f35789a4a6205ff6cef40f2b5937b66",
+    "push_run": "https://github.com/vicotrbb/maximus/actions/runs/39316605873",
+    "push_rust": "passed",
+    "push_linux": "passed",
+    "pull_request_run": "https://github.com/vicotrbb/maximus/actions/runs/39316615029",
+    "pull_request_linux": "passed",
+    "pull_request_rust": "failed in unchanged vendored h3 test tests::request::request_invalid_frame_after_data",
+    "failure": "Expected remote application-close error, observed local H3_NO_ERROR client close. Standalone vendored suite has no dependency on Maximus HTTP/2. Failure is retained; not treated as a passing gate."
+  }
+}

@@ -547,6 +547,139 @@ fn handler_deadline_produces_a_response() {
     assert_eq!((kind, id), (1, 1));
 }
 #[test]
+fn small_receive_window_completes_large_response() {
+    for (window, size) in [(1u32, 8192), (1024, 1024 * 1024)] {
+        let mut s = server_with(
+            move || move |_: Request| async move { "x".repeat(size) },
+            Limits::default(),
+        );
+        s.set_nodelay(true).unwrap();
+        handshake(&mut s);
+        let mut settings = 4u16.to_be_bytes().to_vec();
+        settings.extend(window.to_be_bytes());
+        s.write_all(&frame(4, 0, 0, &settings)).unwrap();
+        until(&mut s, 4, 0);
+        s.write_all(&frame(1, 5, 1, &request())).unwrap();
+        let mut received = 0;
+        loop {
+            let (kind, flags, id, payload) = receive(&mut s);
+            assert_ne!(kind, 7, "GOAWAY after {received} response bytes");
+            assert_ne!(kind, 3, "response stream reset");
+            if kind == 0 && id == 1 {
+                assert!(payload.iter().all(|&byte| byte == b'x'));
+                received += payload.len();
+                if flags & 1 != 0 {
+                    break;
+                }
+                let increment = (payload.len() as u32).to_be_bytes();
+                let mut credit = frame(8, 0, 1, &increment);
+                credit.extend(frame(8, 0, 0, &increment));
+                s.write_all(&credit).unwrap();
+            }
+        }
+        assert_eq!(received, size);
+    }
+}
+
+#[test]
+fn upload_progress_replenishes_control_allowance() {
+    use http_body_util::BodyExt;
+    let mut s = server_with(
+        || {
+            |request: Request| async {
+                assert_eq!(
+                    request.into_body().collect().await.unwrap().to_bytes(),
+                    vec![b'x'; 128 * 256]
+                );
+                "uploaded"
+            }
+        },
+        Limits::default(),
+    );
+    handshake(&mut s);
+    s.set_nodelay(true).unwrap();
+    s.write_all(&frame(1, 4, 1, &request())).unwrap();
+    for _ in 0..128 {
+        let mut wire = frame(0, 0, 1, &[b'x'; 256]);
+        for _ in 0..16 {
+            wire.extend(frame(6, 0, 0, b"12345678"));
+        }
+        s.write_all(&wire).unwrap();
+        let mut acknowledgements = 0;
+        while acknowledgements < 16 {
+            let (kind, flags, _, _) = receive(&mut s);
+            assert_ne!(kind, 7, "GOAWAY despite upload progress");
+            assert_ne!(kind, 3, "upload stream reset");
+            if kind == 6 {
+                assert_eq!(flags, 1);
+                acknowledgements += 1;
+            }
+        }
+    }
+    s.write_all(&frame(0, 1, 1, &[])).unwrap();
+    loop {
+        let (kind, _, id, payload) = receive(&mut s);
+        assert_ne!(kind, 7, "GOAWAY despite upload progress");
+        assert_ne!(kind, 3, "upload stream reset");
+        if kind == 0 && id == 1 {
+            assert_eq!(payload, b"uploaded");
+            break;
+        }
+    }
+}
+
+#[test]
+fn tiny_data_does_not_mask_a_control_flood() {
+    let mut s = server_with(
+        || |_: Request| async { futures_util::future::pending::<&str>().await },
+        Limits::default(),
+    );
+    handshake(&mut s);
+    s.set_nodelay(true).unwrap();
+    s.write_all(&frame(1, 4, 1, &request())).unwrap();
+    for _ in 0..18 {
+        s.write_all(&frame(0, 0, 1, b"x")).unwrap();
+        for _ in 0..64 {
+            s.write_all(&frame(6, 0, 0, b"12345678")).unwrap();
+            let (kind, _, _, payload) = receive(&mut s);
+            if kind == 7 {
+                assert_eq!(&payload[4..8], &11u32.to_be_bytes());
+                return;
+            }
+            assert_eq!(kind, 6);
+        }
+    }
+    panic!("one-byte DATA must not erase control debt");
+}
+
+#[test]
+fn nonprogress_frames_do_not_replenish_control_allowance() {
+    for (kind, payload) in [(0, vec![]), (8, 1u32.to_be_bytes().to_vec())] {
+        let mut s = server_with(
+            || |_: Request| async { futures_util::future::pending::<&str>().await },
+            Limits::default(),
+        );
+        handshake(&mut s);
+        s.set_nodelay(true).unwrap();
+        s.write_all(&frame(1, 4, 1, &request())).unwrap();
+        let mut rejected = false;
+        for _ in 0..600 {
+            let mut wire = frame(kind, 0, 1, &payload);
+            wire.extend(frame(6, 0, 0, b"12345678"));
+            s.write_all(&wire).unwrap();
+            let (kind, _, _, payload) = receive(&mut s);
+            if kind == 7 {
+                assert_eq!(&payload[4..8], &11u32.to_be_bytes());
+                rejected = true;
+                break;
+            }
+            assert_eq!(kind, 6);
+        }
+        assert!(rejected, "nonprogress frames must not erase control debt");
+    }
+}
+
+#[test]
 fn control_only_churn_is_bounded() {
     let mut s = server();
     handshake(&mut s);

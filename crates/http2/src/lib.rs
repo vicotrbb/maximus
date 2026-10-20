@@ -360,7 +360,7 @@ impl<H: Handler> Connection<H> {
             header_deadline,
         } = frame;
         self.last_activity = Instant::now();
-        // Bound control-only churn independently from flow-controlled application bytes.
+        // DATA repays control debt; empty or invalid frames never earn credit.
         if h.kind != 0 || h.len == 0 || !self.streams.contains_key(&h.stream) {
             self.controls = self.controls.saturating_add(1);
         }
@@ -561,12 +561,15 @@ impl<H: Handler> Connection<H> {
                 update(out, h.stream, padding);
                 s.received += payload.len() as u64;
                 if s.received > self.limits.body_bytes as u64
-                    || s.expected.is_some_and(|n| s.received > n)
+                    || s.expected
+                        .is_some_and(|n| s.received > n || h.flags & 1 != 0 && s.received != n)
                 {
                     self.recv += payload.len() as i64;
                     update(out, 0, payload.len());
                     return Err(Fault::Stream(h.stream, PROTOCOL));
                 }
+                // Even one-byte DATA can require both stream and connection WINDOW_UPDATE.
+                self.controls = self.controls.saturating_sub(payload.len() * 2);
                 let mut input = s.incoming.borrow_mut();
                 if payload.len() == MAX_FRAME && input.tail.is_empty() {
                     input.queue.push_back(Frame::data(p.into()));
@@ -581,9 +584,6 @@ impl<H: Handler> Connection<H> {
                 if h.flags & 1 != 0 {
                     s.remote_end = true;
                     input.ended = true;
-                    if s.expected.is_some_and(|n| s.received != n) {
-                        return Err(Fault::Stream(h.stream, PROTOCOL));
-                    }
                 }
                 if let Some(w) = input.reader.take() {
                     w.wake();
@@ -833,6 +833,7 @@ impl<H: Handler> Connection<H> {
                         reset.push((id, INTERNAL));
                     } else {
                         let data = s.pending.split_to(n);
+                        self.controls = self.controls.saturating_sub(n * 2);
                         s.sent += n as u64;
                         s.send -= n as i64;
                         self.send -= n as i64;
