@@ -1,0 +1,2201 @@
+{
+  "manifest": {
+    "base": "6f0ebd61a7c5664bb1f70104dd20a67bc864e9c6",
+    "files": {
+      "crates/core/src/policy.rs": "17f44301c4c46ef92ad136989a0d73cc6d1987e9ca1311471dcd57d5c7520618",
+      "crates/core/tests/api.rs": "d19547fcaf5c0e880c8f537260bdea1b16efe38311c3bf21c19775629c4907e4",
+      "crates/http1/src/lib.rs": "b224c5aa7f9ed5f49dd9b37d434035dc66377154deebe9d0d9dd81d7352636c7",
+      "crates/http2/src/lib.rs": "677d76f337d0e7e91c68fad394b974a35a550fc558c64d0d73556a5c8e0df585",
+      "crates/http2/src/hpack.rs": "49aa07cc413908e02818ee602854100125d8831ac3cf441acd897ae46ab10393",
+      "crates/http2/tests/wire.rs": "31e4ede6f79193e476f949c870cba0f210ac3ecd89d71a0512e219f2b9f14199",
+      "fuzz/fuzz_targets/hpack.rs": "021196348ecf91869d29ebf665d5b5839dd52466f2049e37e2b980e3d63f60bb",
+      "benches/baselines/src/bin/allocations.rs": "4ea1845eda6d64c96dc1470b1d74324fbb2c0d894c648351ea3beed8a7c2e63c",
+      "benches/run.py": "e08bc56bc57b3bf1a7a4170c35e6d28f034104a63a6d73a9673066fef7dfb4f1",
+      "benches/load.js": "85099804db4a0da62e67d417684f335ae80073896952bb125f1fa3e9950a3376",
+      "Cargo.lock": "8d5cf3dbc9060e69fe7551a2ce06b5af11246463eff4711342639e212e7b588f",
+      "benches/baselines/Cargo.lock": "f494307bbaec4c4d45e2c3eb753b595ecd3029572c148d4c7942e27707ac4b1e"
+    },
+    "candidate": "HTTP/2 only; original path validation restored"
+  },
+  "environment": {
+    "architecture": "Linux ARM64 Docker VM",
+    "cpus": 3,
+    "server_cpus": "0",
+    "client_cpus": "1,2",
+    "exclusive_host": false,
+    "network": {
+      "server": "none",
+      "client": "container:<server>"
+    },
+    "measurement_seconds": 10,
+    "warmup_seconds": 3,
+    "virtual_users": 64,
+    "repetitions": 3
+  },
+  "binary": {
+    "baseline_sha256": "5c111fb8dc6c1d37ab1b954d3671aafaaa6735d04ae783e7fc93f93697ce5b6f",
+    "h2_only_sha256": "75a3c08056ed5caf320c59c5e094777ba632249ce8df6d8a236b7ed4df913045"
+  },
+  "sizes": {
+    "hello": {
+      "baseline_file": 1279584,
+      "final_file": 1279584,
+      "baseline_gnu_text": 827893,
+      "final_gnu_text": 827893
+    },
+    "conformance": {
+      "baseline_file": 2953672,
+      "final_file": 2953672,
+      "baseline_gnu_text": 2155256,
+      "final_gnu_text": 2151396
+    },
+    "comparison": {
+      "baseline_file": 9594080,
+      "final_file": 9528400,
+      "baseline_gnu_text": 6988089,
+      "final_gnu_text": 6980069
+    }
+  },
+  "qualification": {
+    "fresh_check_test_executions": 166,
+    "fresh_linux_test_executions": 144,
+    "fresh_privileged_skipped": 1,
+    "fresh_wire_stress_cases": 2062,
+    "prior_unchanged_http2_components_fuzz_reference": "static-hpack-and-response-ownership-evidence.json"
+  },
+  "socket": [
+    {
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": "1024",
+      "engine": "axum",
+      "variant": "h2-only",
+      "metrics": {
+        "rps": {
+          "samples": [
+            50507.768935806846,
+            50784.68914442126,
+            50753.137400622654
+          ],
+          "median": 50753.137400622654
+        },
+        "p50_ms": {
+          "samples": [
+            0.917891,
+            0.911307,
+            0.9154535
+          ],
+          "median": 0.9154535
+        },
+        "p99_ms": {
+          "samples": [
+            5.979103,
+            6.048627879999999,
+            6.112736019999989
+          ],
+          "median": 6.048627879999999
+        },
+        "p999_ms": {
+          "samples": [
+            10.715466286000266,
+            11.839779544001638,
+            11.013063609000033
+          ],
+          "median": 11.013063609000033
+        },
+        "cpu_us_per_request": {
+          "samples": [
+            10.932694382685375,
+            10.757915919262645,
+            11.279921509600495
+          ],
+          "median": 10.932694382685375
+        },
+        "rss_kib": {
+          "samples": [
+            9160.0,
+            7896.0,
+            9028.0
+          ],
+          "median": 9028.0
+        },
+        "peak_rss_kib": {
+          "samples": [
+            9160.0,
+            8664.0,
+            9028.0
+          ],
+          "median": 9028.0
+        }
+      }
+    },
+    {
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": "1024",
+      "engine": "hyper",
+      "variant": "h2-only",
+      "metrics": {
+        "rps": {
+          "samples": [
+            50925.590891019354,
+            51353.85354924865,
+            49934.96605607189
+          ],
+          "median": 50925.590891019354
+        },
+        "p50_ms": {
+          "samples": [
+            0.920099,
+            0.916599,
+            0.9335785
+          ],
+          "median": 0.920099
+        },
+        "p99_ms": {
+          "samples": [
+            6.050388399999995,
+            5.865974959999999,
+            6.081733079999999
+          ],
+          "median": 6.050388399999995
+        },
+        "p999_ms": {
+          "samples": [
+            10.736193500000049,
+            10.23887180400025,
+            10.874823992000538
+          ],
+          "median": 10.736193500000049
+        },
+        "cpu_us_per_request": {
+          "samples": [
+            10.511408049530742,
+            10.469246810192585,
+            12.09555466559872
+          ],
+          "median": 10.511408049530742
+        },
+        "rss_kib": {
+          "samples": [
+            8904.0,
+            8996.0,
+            9144.0
+          ],
+          "median": 8996.0
+        },
+        "peak_rss_kib": {
+          "samples": [
+            8904.0,
+            8996.0,
+            9144.0
+          ],
+          "median": 8996.0
+        }
+      }
+    },
+    {
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": "1024",
+      "engine": "maximus",
+      "variant": "baseline",
+      "metrics": {
+        "rps": {
+          "samples": [
+            48020.588471377945,
+            51130.2608105283,
+            51243.54166250785
+          ],
+          "median": 51130.2608105283
+        },
+        "p50_ms": {
+          "samples": [
+            0.9673295,
+            0.914391,
+            0.912391
+          ],
+          "median": 0.914391
+        },
+        "p99_ms": {
+          "samples": [
+            6.30254028,
+            5.939866999999999,
+            5.97623647
+          ],
+          "median": 5.97623647
+        },
+        "p999_ms": {
+          "samples": [
+            12.04070946400036,
+            10.316387552000142,
+            10.776347881000095
+          ],
+          "median": 10.776347881000095
+        },
+        "cpu_us_per_request": {
+          "samples": [
+            13.41194501014089,
+            12.729845798824668,
+            12.67576469486353
+          ],
+          "median": 12.729845798824668
+        },
+        "rss_kib": {
+          "samples": [
+            8772.0,
+            8864.0,
+            8824.0
+          ],
+          "median": 8824.0
+        },
+        "peak_rss_kib": {
+          "samples": [
+            8772.0,
+            8864.0,
+            8824.0
+          ],
+          "median": 8824.0
+        }
+      }
+    },
+    {
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": "1024",
+      "engine": "maximus",
+      "variant": "h2-only",
+      "metrics": {
+        "rps": {
+          "samples": [
+            50366.49669241894,
+            51228.4488047321,
+            50158.97263940154
+          ],
+          "median": 50366.49669241894
+        },
+        "p50_ms": {
+          "samples": [
+            0.92485,
+            0.9170365,
+            0.935475
+          ],
+          "median": 0.92485
+        },
+        "p99_ms": {
+          "samples": [
+            6.062104739999999,
+            5.9582859999999975,
+            6.084621999999989
+          ],
+          "median": 6.062104739999999
+        },
+        "p999_ms": {
+          "samples": [
+            10.50201431400036,
+            10.720028435000074,
+            11.998257057000266
+          ],
+          "median": 10.720028435000074
+        },
+        "cpu_us_per_request": {
+          "samples": [
+            12.75930290041236,
+            12.581763633453443,
+            13.21305155559808
+          ],
+          "median": 12.75930290041236
+        },
+        "rss_kib": {
+          "samples": [
+            8816.0,
+            8748.0,
+            8800.0
+          ],
+          "median": 8800.0
+        },
+        "peak_rss_kib": {
+          "samples": [
+            8816.0,
+            8748.0,
+            8800.0
+          ],
+          "median": 8800.0
+        }
+      }
+    },
+    {
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": "131072",
+      "engine": "axum",
+      "variant": "h2-only",
+      "metrics": {
+        "rps": {
+          "samples": [
+            7314.199545920642,
+            7366.618384004875,
+            7171.968327302607
+          ],
+          "median": 7314.199545920642
+        },
+        "p50_ms": {
+          "samples": [
+            8.046973,
+            8.0632435,
+            8.230769
+          ],
+          "median": 8.0632435
+        },
+        "p99_ms": {
+          "samples": [
+            22.125381519999994,
+            20.178332219999998,
+            22.5170506
+          ],
+          "median": 22.125381519999994
+        },
+        "p999_ms": {
+          "samples": [
+            33.46862465600088,
+            29.89202877600104,
+            33.02669196000137
+          ],
+          "median": 33.02669196000137
+        },
+        "cpu_us_per_request": {
+          "samples": [
+            119.6203927678242,
+            119.05063085063085,
+            119.20501386547011
+          ],
+          "median": 119.20501386547011
+        },
+        "rss_kib": {
+          "samples": [
+            18376.0,
+            17900.0,
+            18796.0
+          ],
+          "median": 18376.0
+        },
+        "peak_rss_kib": {
+          "samples": [
+            18376.0,
+            18324.0,
+            18796.0
+          ],
+          "median": 18376.0
+        }
+      }
+    },
+    {
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": "131072",
+      "engine": "hyper",
+      "variant": "h2-only",
+      "metrics": {
+        "rps": {
+          "samples": [
+            7284.528760996614,
+            7379.02155048281,
+            7401.201512266731
+          ],
+          "median": 7379.02155048281
+        },
+        "p50_ms": {
+          "samples": [
+            8.062244,
+            7.993597,
+            8.083974
+          ],
+          "median": 8.062244
+        },
+        "p99_ms": {
+          "samples": [
+            23.056543619999996,
+            21.978097999999985,
+            19.682710499999995
+          ],
+          "median": 21.978097999999985
+        },
+        "p999_ms": {
+          "samples": [
+            33.457766307002466,
+            34.672486064000346,
+            26.01164988400115
+          ],
+          "median": 33.457766307002466
+        },
+        "cpu_us_per_request": {
+          "samples": [
+            118.89562067830096,
+            118.29873486232326,
+            118.68631766564496
+          ],
+          "median": 118.68631766564496
+        },
+        "rss_kib": {
+          "samples": [
+            18252.0,
+            18980.0,
+            19088.0
+          ],
+          "median": 18980.0
+        },
+        "peak_rss_kib": {
+          "samples": [
+            18252.0,
+            18980.0,
+            19088.0
+          ],
+          "median": 18980.0
+        }
+      }
+    },
+    {
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": "131072",
+      "engine": "maximus",
+      "variant": "baseline",
+      "metrics": {
+        "rps": {
+          "samples": [
+            5166.519525604712,
+            5271.190764266048,
+            5177.996712188191
+          ],
+          "median": 5177.996712188191
+        },
+        "p50_ms": {
+          "samples": [
+            11.41874,
+            11.19461,
+            11.427407
+          ],
+          "median": 11.41874
+        },
+        "p99_ms": {
+          "samples": [
+            25.19228299999999,
+            25.111453159999996,
+            24.015500999999997
+          ],
+          "median": 25.111453159999996
+        },
+        "p999_ms": {
+          "samples": [
+            56.77679829200021,
+            37.41170000000003,
+            33.68400630800003
+          ],
+          "median": 37.41170000000003
+        },
+        "cpu_us_per_request": {
+          "samples": [
+            175.6496934769576,
+            171.45153462624884,
+            175.29571458892084
+          ],
+          "median": 175.29571458892084
+        },
+        "rss_kib": {
+          "samples": [
+            19440.0,
+            19616.0,
+            19452.0
+          ],
+          "median": 19452.0
+        },
+        "peak_rss_kib": {
+          "samples": [
+            19440.0,
+            19616.0,
+            19540.0
+          ],
+          "median": 19540.0
+        }
+      }
+    },
+    {
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": "131072",
+      "engine": "maximus",
+      "variant": "h2-only",
+      "metrics": {
+        "rps": {
+          "samples": [
+            5205.144058283154,
+            5169.586460171204,
+            5246.987425768288
+          ],
+          "median": 5205.144058283154
+        },
+        "p50_ms": {
+          "samples": [
+            11.292091500000002,
+            11.433677,
+            11.3191765
+          ],
+          "median": 11.3191765
+        },
+        "p99_ms": {
+          "samples": [
+            25.54022417,
+            24.09097711,
+            24.23474679
+          ],
+          "median": 24.23474679
+        },
+        "p999_ms": {
+          "samples": [
+            35.67529019200037,
+            31.45380471400014,
+            35.535611053000714
+          ],
+          "median": 35.535611053000714
+        },
+        "cpu_us_per_request": {
+          "samples": [
+            174.75069113807402,
+            173.38858391000116,
+            171.9743496972236
+          ],
+          "median": 173.38858391000116
+        },
+        "rss_kib": {
+          "samples": [
+            20160.0,
+            18064.0,
+            20804.0
+          ],
+          "median": 20160.0
+        },
+        "peak_rss_kib": {
+          "samples": [
+            20264.0,
+            18064.0,
+            20804.0
+          ],
+          "median": 20264.0
+        }
+      }
+    },
+    {
+      "protocol": "h2",
+      "path": "/plaintext",
+      "body_bytes": "0",
+      "engine": "axum",
+      "variant": "h2-only",
+      "metrics": {
+        "rps": {
+          "samples": [
+            59883.181441905625,
+            59937.37597908781,
+            60539.68156357086
+          ],
+          "median": 59937.37597908781
+        },
+        "p50_ms": {
+          "samples": [
+            0.788181,
+            0.780597,
+            0.784847
+          ],
+          "median": 0.784847
+        },
+        "p99_ms": {
+          "samples": [
+            4.76283048,
+            4.910287179999998,
+            4.729874
+          ],
+          "median": 4.76283048
+        },
+        "p999_ms": {
+          "samples": [
+            9.68392602200004,
+            10.847209268000407,
+            9.98648010000018
+          ],
+          "median": 9.98648010000018
+        },
+        "cpu_us_per_request": {
+          "samples": [
+            8.443411916761013,
+            8.326404772748885,
+            8.667478767016943
+          ],
+          "median": 8.443411916761013
+        },
+        "rss_kib": {
+          "samples": [
+            8956.0,
+            9012.0,
+            9004.0
+          ],
+          "median": 9004.0
+        },
+        "peak_rss_kib": {
+          "samples": [
+            8956.0,
+            9012.0,
+            9004.0
+          ],
+          "median": 9004.0
+        }
+      }
+    },
+    {
+      "protocol": "h2",
+      "path": "/plaintext",
+      "body_bytes": "0",
+      "engine": "hyper",
+      "variant": "h2-only",
+      "metrics": {
+        "rps": {
+          "samples": [
+            60727.94068516739,
+            60321.8512353309,
+            60569.73327251559
+          ],
+          "median": 60569.73327251559
+        },
+        "p50_ms": {
+          "samples": [
+            0.7848675,
+            0.784097,
+            0.78318
+          ],
+          "median": 0.784097
+        },
+        "p99_ms": {
+          "samples": [
+            4.749126089999999,
+            4.819625,
+            4.81426544
+          ],
+          "median": 4.81426544
+        },
+        "p999_ms": {
+          "samples": [
+            9.742657058000031,
+            9.890141378000424,
+            9.610666744000964
+          ],
+          "median": 9.742657058000031
+        },
+        "cpu_us_per_request": {
+          "samples": [
+            8.108249629507657,
+            8.070386603321321,
+            8.19673519520977
+          ],
+          "median": 8.108249629507657
+        },
+        "rss_kib": {
+          "samples": [
+            9080.0,
+            9028.0,
+            8936.0
+          ],
+          "median": 9028.0
+        },
+        "peak_rss_kib": {
+          "samples": [
+            9080.0,
+            9028.0,
+            8936.0
+          ],
+          "median": 9028.0
+        }
+      }
+    },
+    {
+      "protocol": "h2",
+      "path": "/plaintext",
+      "body_bytes": "0",
+      "engine": "maximus",
+      "variant": "baseline",
+      "metrics": {
+        "rps": {
+          "samples": [
+            60422.17281245041,
+            59106.15792555569,
+            60175.53833189876
+          ],
+          "median": 60175.53833189876
+        },
+        "p50_ms": {
+          "samples": [
+            0.784055,
+            0.792638,
+            0.7906595000000001
+          ],
+          "median": 0.7906595000000001
+        },
+        "p99_ms": {
+          "samples": [
+            4.7848157299999965,
+            5.039004,
+            4.80867725
+          ],
+          "median": 4.80867725
+        },
+        "p999_ms": {
+          "samples": [
+            9.520095036000146,
+            11.305413852000044,
+            9.916658900001003
+          ],
+          "median": 9.916658900001003
+        },
+        "cpu_us_per_request": {
+          "samples": [
+            9.55296724463758,
+            9.692151402779846,
+            9.439685198479168
+          ],
+          "median": 9.55296724463758
+        },
+        "rss_kib": {
+          "samples": [
+            7592.0,
+            7500.0,
+            8556.0
+          ],
+          "median": 7592.0
+        },
+        "peak_rss_kib": {
+          "samples": [
+            8000.0,
+            8100.0,
+            8556.0
+          ],
+          "median": 8100.0
+        }
+      }
+    },
+    {
+      "protocol": "h2",
+      "path": "/plaintext",
+      "body_bytes": "0",
+      "engine": "maximus",
+      "variant": "h2-only",
+      "metrics": {
+        "rps": {
+          "samples": [
+            59052.900001745445,
+            60933.6983375183,
+            61607.23266913771
+          ],
+          "median": 60933.6983375183
+        },
+        "p50_ms": {
+          "samples": [
+            0.800681,
+            0.773722,
+            0.771722
+          ],
+          "median": 0.773722
+        },
+        "p99_ms": {
+          "samples": [
+            4.867085,
+            4.830945139999999,
+            4.674234439999999
+          ],
+          "median": 4.830945139999999
+        },
+        "p999_ms": {
+          "samples": [
+            10.021724858000068,
+            9.625714428000022,
+            9.55319795200018
+          ],
+          "median": 9.625714428000022
+        },
+        "cpu_us_per_request": {
+          "samples": [
+            9.725135127812623,
+            9.229231044425372,
+            9.277868034310105
+          ],
+          "median": 9.277868034310105
+        },
+        "rss_kib": {
+          "samples": [
+            7464.0,
+            8508.0,
+            8560.0
+          ],
+          "median": 8508.0
+        },
+        "peak_rss_kib": {
+          "samples": [
+            8028.0,
+            8508.0,
+            8560.0
+          ],
+          "median": 8508.0
+        }
+      }
+    }
+  ],
+  "allocation_rows": [
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "GET",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "72.29"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "HEAD",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "71.17"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "POST",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "72.41"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "PUT",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "68.74"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "static-text-content-type",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "656.0000",
+      "ns_per_request": "46.28"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "dynamic-register-64",
+      "requests": "100",
+      "allocations_per_request": "389.0000",
+      "allocated_bytes_per_request": "20280.0000",
+      "ns_per_request": "27781.31"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "dynamic-GET",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "110.84"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "dynamic-POST",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "107.11"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "dynamic-PATCH",
+      "requests": "10000",
+      "allocations_per_request": "5.0000",
+      "allocated_bytes_per_request": "698.0000",
+      "ns_per_request": "129.95"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "http1-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "15.0132",
+      "allocated_bytes_per_request": "2632.0192",
+      "ns_per_request": "4185.51"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "http2-invalid-first-frame",
+      "requests": "1000",
+      "allocations_per_request": "33.3460",
+      "allocated_bytes_per_request": "14404.3760",
+      "ns_per_request": "19265.54"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "http2-large-static",
+      "requests": "10000",
+      "allocations_per_request": "41.8043",
+      "allocated_bytes_per_request": "7926.7608",
+      "ns_per_request": "27241.51"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "http2-large-owned",
+      "requests": "10000",
+      "allocations_per_request": "43.8821",
+      "allocated_bytes_per_request": "40754.1090",
+      "ns_per_request": "24306.69"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "http2-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "37.0047",
+      "allocated_bytes_per_request": "6934.1432",
+      "ns_per_request": "6886.61"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 1,
+      "path": "http2-owned-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "39.0267",
+      "allocated_bytes_per_request": "6981.1752",
+      "ns_per_request": "6829.68"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "GET",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "80.41"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "HEAD",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "74.45"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "POST",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "85.29"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "PUT",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "86.15"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "static-text-content-type",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "656.0000",
+      "ns_per_request": "44.08"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "dynamic-register-64",
+      "requests": "100",
+      "allocations_per_request": "389.0000",
+      "allocated_bytes_per_request": "20280.0000",
+      "ns_per_request": "27943.39"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "dynamic-GET",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "127.06"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "dynamic-POST",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "133.09"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "dynamic-PATCH",
+      "requests": "10000",
+      "allocations_per_request": "5.0000",
+      "allocated_bytes_per_request": "698.0000",
+      "ns_per_request": "134.76"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "http1-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "15.0059",
+      "allocated_bytes_per_request": "2628.6904",
+      "ns_per_request": "4272.99"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "http2-invalid-first-frame",
+      "requests": "1000",
+      "allocations_per_request": "33.3230",
+      "allocated_bytes_per_request": "14394.6880",
+      "ns_per_request": "17348.96"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "http2-large-static",
+      "requests": "10000",
+      "allocations_per_request": "41.9353",
+      "allocated_bytes_per_request": "7986.3682",
+      "ns_per_request": "22127.68"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "http2-large-owned",
+      "requests": "10000",
+      "allocations_per_request": "43.9506",
+      "allocated_bytes_per_request": "40785.4736",
+      "ns_per_request": "22176.65"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "http2-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "37.0035",
+      "allocated_bytes_per_request": "6933.5960",
+      "ns_per_request": "6687.88"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 2,
+      "path": "http2-owned-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "39.0015",
+      "allocated_bytes_per_request": "6969.6840",
+      "ns_per_request": "6817.48"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "GET",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "87.05"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "HEAD",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "74.53"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "POST",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "94.12"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "PUT",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "77.66"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "static-text-content-type",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "656.0000",
+      "ns_per_request": "46.73"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "dynamic-register-64",
+      "requests": "100",
+      "allocations_per_request": "389.0000",
+      "allocated_bytes_per_request": "20280.0000",
+      "ns_per_request": "29075.09"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "dynamic-GET",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "111.70"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "dynamic-POST",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "109.99"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "dynamic-PATCH",
+      "requests": "10000",
+      "allocations_per_request": "5.0000",
+      "allocated_bytes_per_request": "698.0000",
+      "ns_per_request": "133.08"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "http1-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "15.0043",
+      "allocated_bytes_per_request": "2627.9608",
+      "ns_per_request": "4203.16"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "http2-invalid-first-frame",
+      "requests": "1000",
+      "allocations_per_request": "33.5220",
+      "allocated_bytes_per_request": "14485.0320",
+      "ns_per_request": "17559.88"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "http2-large-static",
+      "requests": "10000",
+      "allocations_per_request": "41.9560",
+      "allocated_bytes_per_request": "7995.9360",
+      "ns_per_request": "21499.31"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "http2-large-owned",
+      "requests": "10000",
+      "allocations_per_request": "43.9476",
+      "allocated_bytes_per_request": "40784.1056",
+      "ns_per_request": "22326.24"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "http2-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "37.0164",
+      "allocated_bytes_per_request": "6939.4784",
+      "ns_per_request": "6661.58"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 3,
+      "path": "http2-owned-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "39.0047",
+      "allocated_bytes_per_request": "6971.1432",
+      "ns_per_request": "6650.37"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "GET",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "86.73"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "HEAD",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "71.48"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "POST",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "72.92"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "PUT",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "90.11"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "static-text-content-type",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "656.0000",
+      "ns_per_request": "59.28"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "dynamic-register-64",
+      "requests": "100",
+      "allocations_per_request": "389.0000",
+      "allocated_bytes_per_request": "20280.0000",
+      "ns_per_request": "27113.38"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "dynamic-GET",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "109.31"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "dynamic-POST",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "93.44"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "dynamic-PATCH",
+      "requests": "10000",
+      "allocations_per_request": "5.0000",
+      "allocated_bytes_per_request": "698.0000",
+      "ns_per_request": "133.74"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "http1-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "15.0171",
+      "allocated_bytes_per_request": "2633.7976",
+      "ns_per_request": "4422.84"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "http2-invalid-first-frame",
+      "requests": "1000",
+      "allocations_per_request": "33.4420",
+      "allocated_bytes_per_request": "14448.1520",
+      "ns_per_request": "17405.22"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "http2-large-static",
+      "requests": "10000",
+      "allocations_per_request": "41.9430",
+      "allocated_bytes_per_request": "7990.0080",
+      "ns_per_request": "21681.87"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "http2-large-owned",
+      "requests": "10000",
+      "allocations_per_request": "43.9546",
+      "allocated_bytes_per_request": "40787.2976",
+      "ns_per_request": "22515.69"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "http2-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "37.0107",
+      "allocated_bytes_per_request": "6936.8792",
+      "ns_per_request": "6708.06"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 4,
+      "path": "http2-owned-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "39.0175",
+      "allocated_bytes_per_request": "6976.9800",
+      "ns_per_request": "6777.01"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "GET",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "68.78"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "HEAD",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "68.56"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "POST",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "65.35"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "PUT",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "66.20"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "static-text-content-type",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "656.0000",
+      "ns_per_request": "52.53"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "dynamic-register-64",
+      "requests": "100",
+      "allocations_per_request": "389.0000",
+      "allocated_bytes_per_request": "20280.0000",
+      "ns_per_request": "28712.16"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "dynamic-GET",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "106.99"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "dynamic-POST",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "123.86"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "dynamic-PATCH",
+      "requests": "10000",
+      "allocations_per_request": "5.0000",
+      "allocated_bytes_per_request": "698.0000",
+      "ns_per_request": "121.91"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "http1-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "15.0110",
+      "allocated_bytes_per_request": "2631.0160",
+      "ns_per_request": "4162.59"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "http2-invalid-first-frame",
+      "requests": "1000",
+      "allocations_per_request": "33.3800",
+      "allocated_bytes_per_request": "14419.8800",
+      "ns_per_request": "18072.56"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "http2-large-static",
+      "requests": "10000",
+      "allocations_per_request": "41.9318",
+      "allocated_bytes_per_request": "7984.9008",
+      "ns_per_request": "21566.89"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "http2-large-owned",
+      "requests": "10000",
+      "allocations_per_request": "43.9252",
+      "allocated_bytes_per_request": "40773.7226",
+      "ns_per_request": "22528.06"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "http2-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "37.0144",
+      "allocated_bytes_per_request": "6938.5664",
+      "ns_per_request": "6626.05"
+    },
+    {
+      "variant": "qualified-base",
+      "trial": 5,
+      "path": "http2-owned-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "39.0137",
+      "allocated_bytes_per_request": "6975.2472",
+      "ns_per_request": "6403.76"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "GET",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "78.02"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "HEAD",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "74.74"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "POST",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "81.45"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "PUT",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "81.80"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "static-text-content-type",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "656.0000",
+      "ns_per_request": "51.02"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "dynamic-register-64",
+      "requests": "100",
+      "allocations_per_request": "389.0000",
+      "allocated_bytes_per_request": "20280.0000",
+      "ns_per_request": "30331.77"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "dynamic-GET",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "110.35"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "dynamic-POST",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "96.10"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "dynamic-PATCH",
+      "requests": "10000",
+      "allocations_per_request": "5.0000",
+      "allocated_bytes_per_request": "698.0000",
+      "ns_per_request": "182.13"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "http1-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "15.0074",
+      "allocated_bytes_per_request": "2629.3744",
+      "ns_per_request": "4154.74"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "http2-invalid-first-frame",
+      "requests": "1000",
+      "allocations_per_request": "33.5380",
+      "allocated_bytes_per_request": "14492.3280",
+      "ns_per_request": "18085.77"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "http2-large-static",
+      "requests": "10000",
+      "allocations_per_request": "34.9432",
+      "allocated_bytes_per_request": "7953.0992",
+      "ns_per_request": "21607.80"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "http2-large-owned",
+      "requests": "10000",
+      "allocations_per_request": "35.9706",
+      "allocated_bytes_per_request": "40733.5936",
+      "ns_per_request": "21423.53"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "http2-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "30.0086",
+      "allocated_bytes_per_request": "6898.9216",
+      "ns_per_request": "6926.29"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 1,
+      "path": "http2-owned-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "31.0053",
+      "allocated_bytes_per_request": "6910.4168",
+      "ns_per_request": "6300.70"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "GET",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "72.18"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "HEAD",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "71.83"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "POST",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "73.26"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "PUT",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "70.94"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "static-text-content-type",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "656.0000",
+      "ns_per_request": "51.91"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "dynamic-register-64",
+      "requests": "100",
+      "allocations_per_request": "389.0000",
+      "allocated_bytes_per_request": "20280.0000",
+      "ns_per_request": "51859.64"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "dynamic-GET",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "104.23"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "dynamic-POST",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "96.66"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "dynamic-PATCH",
+      "requests": "10000",
+      "allocations_per_request": "5.0000",
+      "allocated_bytes_per_request": "698.0000",
+      "ns_per_request": "125.19"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "http1-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "15.0219",
+      "allocated_bytes_per_request": "2635.9864",
+      "ns_per_request": "5276.57"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "http2-invalid-first-frame",
+      "requests": "1000",
+      "allocations_per_request": "33.5060",
+      "allocated_bytes_per_request": "14477.7360",
+      "ns_per_request": "19717.34"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "http2-large-static",
+      "requests": "10000",
+      "allocations_per_request": "34.9748",
+      "allocated_bytes_per_request": "7967.5088",
+      "ns_per_request": "21249.11"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "http2-large-owned",
+      "requests": "10000",
+      "allocations_per_request": "35.9163",
+      "allocated_bytes_per_request": "40708.7042",
+      "ns_per_request": "23574.55"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "http2-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "30.0059",
+      "allocated_bytes_per_request": "6897.6904",
+      "ns_per_request": "9274.57"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 2,
+      "path": "http2-owned-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "31.0056",
+      "allocated_bytes_per_request": "6910.5536",
+      "ns_per_request": "6327.27"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "GET",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "71.71"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "HEAD",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "76.73"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "POST",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "75.23"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "PUT",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "79.47"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "static-text-content-type",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "656.0000",
+      "ns_per_request": "90.47"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "dynamic-register-64",
+      "requests": "100",
+      "allocations_per_request": "389.0000",
+      "allocated_bytes_per_request": "20280.0000",
+      "ns_per_request": "36197.71"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "dynamic-GET",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "110.99"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "dynamic-POST",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "107.53"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "dynamic-PATCH",
+      "requests": "10000",
+      "allocations_per_request": "5.0000",
+      "allocated_bytes_per_request": "698.0000",
+      "ns_per_request": "129.10"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "http1-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "15.0110",
+      "allocated_bytes_per_request": "2631.0160",
+      "ns_per_request": "4219.39"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "http2-invalid-first-frame",
+      "requests": "1000",
+      "allocations_per_request": "33.3190",
+      "allocated_bytes_per_request": "14392.8640",
+      "ns_per_request": "17028.58"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "http2-large-static",
+      "requests": "10000",
+      "allocations_per_request": "34.9346",
+      "allocated_bytes_per_request": "7949.1776",
+      "ns_per_request": "21738.57"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "http2-large-owned",
+      "requests": "10000",
+      "allocations_per_request": "35.9670",
+      "allocated_bytes_per_request": "40731.9520",
+      "ns_per_request": "22142.43"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "http2-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "30.0167",
+      "allocated_bytes_per_request": "6902.4866",
+      "ns_per_request": "6520.25"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 3,
+      "path": "http2-owned-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "31.0082",
+      "allocated_bytes_per_request": "6911.7392",
+      "ns_per_request": "6377.86"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "GET",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "73.90"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "HEAD",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "69.57"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "POST",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "69.13"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "PUT",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "140.62"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "static-text-content-type",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "656.0000",
+      "ns_per_request": "47.69"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "dynamic-register-64",
+      "requests": "100",
+      "allocations_per_request": "389.0000",
+      "allocated_bytes_per_request": "20280.0000",
+      "ns_per_request": "28916.75"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "dynamic-GET",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "94.93"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "dynamic-POST",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "96.34"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "dynamic-PATCH",
+      "requests": "10000",
+      "allocations_per_request": "5.0000",
+      "allocated_bytes_per_request": "698.0000",
+      "ns_per_request": "125.89"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "http1-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "15.0280",
+      "allocated_bytes_per_request": "2638.7680",
+      "ns_per_request": "4274.74"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "http2-invalid-first-frame",
+      "requests": "1000",
+      "allocations_per_request": "33.3510",
+      "allocated_bytes_per_request": "14407.4560",
+      "ns_per_request": "17487.88"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "http2-large-static",
+      "requests": "10000",
+      "allocations_per_request": "34.9213",
+      "allocated_bytes_per_request": "7942.9842",
+      "ns_per_request": "21500.98"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "http2-large-owned",
+      "requests": "10000",
+      "allocations_per_request": "35.9541",
+      "allocated_bytes_per_request": "40726.0696",
+      "ns_per_request": "22126.25"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "http2-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "30.0057",
+      "allocated_bytes_per_request": "6897.5992",
+      "ns_per_request": "6343.06"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 4,
+      "path": "http2-owned-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "31.0051",
+      "allocated_bytes_per_request": "6910.3256",
+      "ns_per_request": "6246.11"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "GET",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "78.80"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "HEAD",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "81.40"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "POST",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "86.68"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "PUT",
+      "requests": "10000",
+      "allocations_per_request": "0.0000",
+      "allocated_bytes_per_request": "0.0000",
+      "ns_per_request": "125.89"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "static-text-content-type",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "656.0000",
+      "ns_per_request": "48.44"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "dynamic-register-64",
+      "requests": "100",
+      "allocations_per_request": "389.0000",
+      "allocated_bytes_per_request": "20280.0000",
+      "ns_per_request": "40464.45"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "dynamic-GET",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "103.01"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "dynamic-POST",
+      "requests": "10000",
+      "allocations_per_request": "2.0000",
+      "allocated_bytes_per_request": "609.0000",
+      "ns_per_request": "114.14"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "dynamic-PATCH",
+      "requests": "10000",
+      "allocations_per_request": "5.0000",
+      "allocated_bytes_per_request": "698.0000",
+      "ns_per_request": "124.13"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "http1-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "15.0060",
+      "allocated_bytes_per_request": "2628.7360",
+      "ns_per_request": "4202.07"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "http2-invalid-first-frame",
+      "requests": "1000",
+      "allocations_per_request": "33.5300",
+      "allocated_bytes_per_request": "14489.0800",
+      "ns_per_request": "18010.64"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "http2-large-static",
+      "requests": "10000",
+      "allocations_per_request": "34.9221",
+      "allocated_bytes_per_request": "7943.3490",
+      "ns_per_request": "21477.52"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "http2-large-owned",
+      "requests": "10000",
+      "allocations_per_request": "35.9453",
+      "allocated_bytes_per_request": "40722.0168",
+      "ns_per_request": "22085.74"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "http2-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "30.0347",
+      "allocated_bytes_per_request": "6910.8232",
+      "ns_per_request": "6480.42"
+    },
+    {
+      "variant": "h2-only",
+      "trial": 5,
+      "path": "http2-owned-keepalive-complete",
+      "requests": "10000",
+      "allocations_per_request": "31.0204",
+      "allocated_bytes_per_request": "6917.3024",
+      "ns_per_request": "6460.14"
+    }
+  ],
+  "requests": 14050021
+}

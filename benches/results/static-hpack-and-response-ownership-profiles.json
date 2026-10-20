@@ -1,0 +1,107 @@
+[
+  {
+    "variant": "baseline-6f0ebd6",
+    "binary": "5c111fb8dc6c1d37ab1b954d3671aafaaa6735d04ae783e7fc93f93697ce5b6f  /target/goal-baseline-6f0ebd6/maximus-comparison",
+    "samples": 2687,
+    "validated_responses": 86540,
+    "lost_samples": 0,
+    "top_flat_entries": [
+      "14.85%  maximus-0  libc.so.6           [.] 0x000000000009d200",
+      "11.46%  maximus-0  maximus-comparison  [.] ring_core_0_17_14__aes_gcm_dec_kernel",
+      "10.53%  maximus-0  maximus-comparison  [.] ring_core_0_17_14__aes_gcm_enc_kernel",
+      "3.76%  maximus-0  [unknown]           [k] 0xffffbb3b5997df40",
+      "3.54%  maximus-0  [vdso]              [.] __kernel_clock_gettime",
+      "2.75%  maximus-0  [unknown]           [k] 0xffffbb3b598d28cc",
+      "2.68%  maximus-0  maximus-comparison  [.] <compio_runtime::time::future::TimerFuture as core::future::future::Future>::poll",
+      "2.16%  maximus-0  [unknown]           [k] 0xffffbb3b598d2668",
+      "1.19%  maximus-0  maximus-comparison  [.] <compio_runtime::time::future::TimerFuture as core::ops::drop::Drop>::drop",
+      "1.00%  maximus-0  libc.so.6           [.] 0x000000000009d214",
+      "0.93%  maximus-0  libc.so.6           [.] 0x000000000009d218",
+      "0.93%  maximus-0  maximus-comparison  [.] compio_io::compat::sync_stream::SyncStreamReadHalf<S>::fill_read_buf::{{closure}}",
+      "0.93%  maximus-0  maximus-comparison  [.] rustls::vecbuf::ChunkVecBuffer::write_to",
+      "0.89%  maximus-0  [unknown]           [k] 0xffffbb3b59c6a2ac",
+      "0.86%  maximus-0  maximus-comparison  [.] rustls::conn::ConnectionCore<Data>::process_new_packets",
+      "0.86%  maximus-0  [unknown]           [k] 0xffffbb3b59720170",
+      "0.78%  maximus-0  [unknown]           [k] 0xffffbb3b598d28b4",
+      "0.71%  maximus-0  libc.so.6           [.] cfree",
+      "0.67%  maximus-0  maximus-comparison  [.] maximus::transport::Transport::serve::{{closure}}",
+      "0.67%  maximus-0  [unknown]           [k] 0xffffbb3b59908540"
+    ],
+    "limitations": [
+      "CPU-clock sampling, not hardware PMU cycles",
+      "restricted kernel symbol resolution",
+      "unresolved libc addresses",
+      "profiled throughput excluded from comparison cohort"
+    ]
+  },
+  {
+    "variant": "selected",
+    "binary": "27fc486c700cdca005014def0e3cb62cf020ed90c7fcf76b21b56068e1c96e63  /target/goal-selected/maximus-comparison",
+    "samples": 2676,
+    "validated_responses": 81604,
+    "lost_samples": 0,
+    "top_flat_entries": [
+      "14.69%  maximus-0  libc.so.6           [.] 0x000000000009d200",
+      "10.91%  maximus-0  maximus-comparison  [.] ring_core_0_17_14__aes_gcm_dec_kernel",
+      "10.91%  maximus-0  maximus-comparison  [.] ring_core_0_17_14__aes_gcm_enc_kernel",
+      "4.22%  maximus-0  [unknown]           [k] 0xffffbb3b5997df40",
+      "3.10%  maximus-0  [vdso]              [.] __kernel_clock_gettime",
+      "3.06%  maximus-0  maximus-comparison  [.] <compio_runtime::time::future::TimerFuture as core::future::future::Future>::poll",
+      "2.20%  maximus-0  [unknown]           [k] 0xffffbb3b598d28cc",
+      "1.87%  maximus-0  [unknown]           [k] 0xffffbb3b598d2668",
+      "1.38%  maximus-0  [unknown]           [k] 0xffffbb3b59c6a2ac",
+      "1.08%  maximus-0  maximus-comparison  [.] compio_io::compat::sync_stream::SyncStreamReadHalf<S>::fill_read_buf::{{closure}}",
+      "1.05%  maximus-0  libc.so.6           [.] 0x000000000009d214",
+      "1.05%  maximus-0  libc.so.6           [.] 0x000000000009d218",
+      "1.01%  maximus-0  [unknown]           [k] 0xffffbb3b598d28b4",
+      "0.97%  maximus-0  libc.so.6           [.] malloc",
+      "0.82%  maximus-0  [unknown]           [k] 0xffffbb3b59720170",
+      "0.78%  maximus-0  libc.so.6           [.] cfree",
+      "0.78%  maximus-0  maximus-comparison  [.] maximus_http2::Connection<H>::poll",
+      "0.78%  maximus-0  maximus-comparison  [.] rustls::conn::ConnectionCore<Data>::process_new_packets",
+      "0.78%  maximus-0  maximus-comparison  [.] rustls::vecbuf::ChunkVecBuffer::write_to",
+      "0.75%  maximus-0  maximus-comparison  [.] maximus::transport::Transport::serve::{{closure}}"
+    ],
+    "limitations": [
+      "CPU-clock sampling, not hardware PMU cycles",
+      "restricted kernel symbol resolution",
+      "unresolved libc addresses",
+      "profiled throughput excluded from comparison cohort"
+    ]
+  },
+  {
+    "variant": "hyper",
+    "binary": "27fc486c700cdca005014def0e3cb62cf020ed90c7fcf76b21b56068e1c96e63  /target/goal-selected/maximus-comparison",
+    "samples": 2582,
+    "validated_responses": 115356,
+    "lost_samples": 0,
+    "top_flat_entries": [
+      "17.58%  tokio-rt-worker  maximus-comparison  [.] ring_core_0_17_14__aes_gcm_dec_kernel",
+      "17.04%  tokio-rt-worker  maximus-comparison  [.] ring_core_0_17_14__aes_gcm_enc_kernel",
+      "13.98%  tokio-rt-worker  libc.so.6           [.] 0x000000000009d200",
+      "2.67%  tokio-rt-worker  [unknown]           [k] 0xffffbb3b598d28cc",
+      "2.17%  tokio-rt-worker  [unknown]           [k] 0xffffbb3b598d2668",
+      "1.82%  tokio-rt-worker  libc.so.6           [.] recv",
+      "1.39%  tokio-rt-worker  [unknown]           [k] 0xffffbb3b59c6a2ac",
+      "1.16%  tokio-rt-worker  maximus-comparison  [.] rustls::conn::ConnectionCore<Data>::process_new_packets",
+      "1.16%  tokio-rt-worker  maximus-comparison  [.] tracing::span::Span::log",
+      "1.12%  tokio-rt-worker  libc.so.6           [.] writev",
+      "1.08%  tokio-rt-worker  maximus-comparison  [.] tracing::span::Span::record_all",
+      "0.97%  tokio-rt-worker  [unknown]           [k] 0xffffbb3b59858324",
+      "0.89%  tokio-rt-worker  libc.so.6           [.] 0x000000000009d214",
+      "0.81%  tokio-rt-worker  maximus-comparison  [.] h2::proto::connection::Connection<T,P,B>::poll2",
+      "0.74%  tokio-rt-worker  libc.so.6           [.] 0x00000000000912f0",
+      "0.70%  tokio-rt-worker  [unknown]           [k] 0xffffbb3b598d2658",
+      "0.70%  tokio-rt-worker  [unknown]           [k] 0xffffbb3b598d28b4",
+      "0.66%  tokio-rt-worker  maximus-comparison  [.] h2::proto::streams::prioritize::Prioritize::buffer_pending",
+      "0.62%  tokio-rt-worker  [unknown]           [k] 0xffffbb3b59857d30",
+      "0.62%  tokio-rt-worker  [unknown]           [k] 0xffffbb3b598d28b8"
+    ],
+    "limitations": [
+      "CPU-clock sampling, not hardware PMU cycles",
+      "restricted kernel symbol resolution",
+      "unresolved libc addresses",
+      "profiled throughput excluded from comparison cohort"
+    ]
+  }
+]

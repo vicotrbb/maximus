@@ -8,3 +8,20 @@ The [HTTP/1 terminator buffer report](lean-ownership.md) records the retained al
 - [Correctness qualification](../../docs/native-http-qualification.md) and [evidence manifest](native-qualification-evidence.json).
 
 See [benchmark instructions](../README.md) to run a new campaign. Raw logs, binaries and profiler dumps remain local under ignored `artifacts/`; this repository contains compact measured results, not the full raw archive. Older reports and their tools remain in Git history at `9cb096a`.
+
+The [owned HTTP/2 DATA and path-validation investigation](owned-data-and-paths.md)
+records the rejected preliminary two-change candidate, matched allocation counts, focused
+path timings, 84 socket trials, rejected HTTP/1 and HPACK experiments, and the
+remaining performance qualification limits.
+
+The [static HPACK and response-ownership investigation](static-hpack-and-response-ownership.md)
+records the rejected four-change candidate, five matched allocation pairs,
+release footprints, focused decode probes, correctness qualification, and a fresh
+private-loopback comparison with Hyper and Axum. It keeps the preliminary
+candidate and rejected experiments separate.
+
+The [HTTP/2 static fields and DATA ownership report](h2-static-ownership.md)
+records the retained three HTTP/2 changes after restoring the original path
+validator, its ablation, fresh correctness checks, allocation measurements and
+frozen-binary comparison and fixed-count memory diagnosis. It states the
+remaining throughput and memory uncertainties.

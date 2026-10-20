@@ -2,6 +2,7 @@
 #![forbid(unsafe_code)]
 mod frame;
 mod hpack;
+use bytes::Buf;
 use frame::Header;
 use futures_util::{FutureExt, Stream, future::LocalBoxFuture};
 use maximus_core::{
@@ -778,10 +779,10 @@ impl<H: Handler> Connection<H> {
                     && let Some(body) = s.body.as_mut()
                 {
                     match Pin::new(body).poll_frame(cx) {
-                        Poll::Ready(Some(Ok(frame))) => {
-                            if let Some(data) = frame.data_ref() {
-                                s.pending = data.clone();
-                                if data.is_empty() {
+                        Poll::Ready(Some(Ok(mut frame))) => {
+                            if let Some(data) = frame.data_mut() {
+                                s.pending = std::mem::take(data);
+                                if s.pending.is_empty() {
                                     cx.waker().wake_by_ref();
                                 }
                             } else if let Ok(trailers) = frame.into_trailers() {
@@ -832,12 +833,15 @@ impl<H: Handler> Connection<H> {
                     }) {
                         reset.push((id, INTERNAL));
                     } else {
-                        let data = s.pending.split_to(n);
                         self.controls = self.controls.saturating_sub(n * 2);
                         s.sent += n as u64;
                         s.send -= n as i64;
                         self.send -= n as i64;
-                        emit(out, 0, u8::from(end), id, &data);
+                        emit(out, 0, u8::from(end), id, &s.pending[..n]);
+                        s.pending.advance(n);
+                        if s.pending.is_empty() {
+                            s.pending = Bytes::new();
+                        }
                         if end {
                             s.local_end = true;
                             s.body = None;
@@ -990,9 +994,9 @@ fn valid_field(n: &[u8], v: &[u8], trailers: bool) -> bool {
         && !(n == b"te" && v != b"trailers")
         && !(trailers && matches!(n, b"content-length" | b"host" | b"te"))
 }
-fn regular_headers(fields: &[(Vec<u8>, Vec<u8>)], trailers: bool) -> Result<http::HeaderMap, ()> {
+fn regular_headers(fields: &[hpack::Field], trailers: bool) -> Result<http::HeaderMap, ()> {
     let mut map = http::HeaderMap::new();
-    for (n, v) in fields {
+    for hpack::Field { name: n, value: v } in fields {
         if !valid_field(n, v, trailers) {
             return Err(());
         }
@@ -1002,16 +1006,16 @@ fn regular_headers(fields: &[(Vec<u8>, Vec<u8>)], trailers: bool) -> Result<http
     }
     Ok(map)
 }
-fn request_headers(fields: &[(Vec<u8>, Vec<u8>)]) -> Result<http::Request<Body>, ()> {
+fn request_headers(fields: &[hpack::Field]) -> Result<http::Request<Body>, ()> {
     let (mut method, mut scheme, mut authority, mut path) = (None, None, None, None);
     let mut regular = 0;
-    for (i, (n, v)) in fields.iter().enumerate() {
+    for (i, hpack::Field { name: n, value: v }) in fields.iter().enumerate() {
         if !n.starts_with(b":") {
             regular = i;
             break;
         }
         regular = i + 1;
-        let slot = match n.as_slice() {
+        let slot = match n.as_ref() {
             b":method" => &mut method,
             b":scheme" => &mut scheme,
             b":authority" => &mut authority,

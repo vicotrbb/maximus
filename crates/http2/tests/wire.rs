@@ -550,7 +550,13 @@ fn handler_deadline_produces_a_response() {
 fn small_receive_window_completes_large_response() {
     for (window, size) in [(1u32, 8192), (1024, 1024 * 1024)] {
         let mut s = server_with(
-            move || move |_: Request| async move { "x".repeat(size) },
+            move || {
+                move |_: Request| async move {
+                    maximus_core::Bytes::from(
+                        (0..size).map(|i| (i % 251) as u8).collect::<Vec<_>>(),
+                    )
+                }
+            },
             Limits::default(),
         );
         s.set_nodelay(true).unwrap();
@@ -566,7 +572,12 @@ fn small_receive_window_completes_large_response() {
             assert_ne!(kind, 7, "GOAWAY after {received} response bytes");
             assert_ne!(kind, 3, "response stream reset");
             if kind == 0 && id == 1 {
-                assert!(payload.iter().all(|&byte| byte == b'x'));
+                assert!(
+                    payload
+                        .iter()
+                        .enumerate()
+                        .all(|(offset, &byte)| byte == ((received + offset) % 251) as u8)
+                );
                 received += payload.len();
                 if flags & 1 != 0 {
                     break;
