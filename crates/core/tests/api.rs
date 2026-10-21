@@ -66,6 +66,37 @@ fn body_collect_and_error_conversion() {
 }
 
 #[test]
+fn error_responses_preserve_status_payload_and_content_type() {
+    let borrowed = "static error text";
+    let owned = String::from("owned error text");
+    let owned_pointer = owned.as_ptr();
+    for (error, pointer, expected) in [
+        (maximus_core::Error::bad_request(borrowed), None, borrowed),
+        (
+            maximus_core::Error::new(StatusCode::BAD_REQUEST, owned),
+            Some(owned_pointer),
+            "owned error text",
+        ),
+    ] {
+        let mut response = error.into_response();
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+        assert_eq!(
+            response.headers()["content-type"],
+            "text/plain; charset=utf-8"
+        );
+        let bytes = response.body_mut().take_bytes().unwrap();
+        assert_eq!(bytes, expected);
+        if let Some(pointer) = pointer {
+            assert_eq!(
+                bytes.as_ptr(),
+                pointer,
+                "error conversion copied owned data"
+            );
+        }
+    }
+}
+
+#[test]
 fn admission_reserves_multiplexed_bodies_and_tls_records() {
     let limits = maximus_core::Limits::default();
     assert!(limits.protocol_capacity(true, true) < limits.protocol_capacity(false, true));

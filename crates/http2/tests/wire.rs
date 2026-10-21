@@ -751,6 +751,72 @@ fn shutdown_bounds_a_blocked_response_write() {
 }
 
 #[test]
+fn shutdown_during_request_cap_drain_finishes_the_existing_response_once() {
+    let shutdown = maximus_runtime::Shutdown::default();
+    let release = maximus_runtime::Shutdown::default();
+    let signal = shutdown.clone();
+    let ready = release.clone();
+    let (address_tx, address) = std::sync::mpsc::channel();
+    let (done_tx, done) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        compio::runtime::Runtime::new()
+            .unwrap()
+            .block_on(async move {
+                let listener = compio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+                address_tx.send(listener.local_addr().unwrap()).unwrap();
+                let (stream, _) = listener.accept().await.unwrap();
+                let result = maximus_http2::serve(
+                    stream,
+                    Rc::new(move |_: Request| {
+                        let ready = ready.clone();
+                        async move {
+                            ready.cancelled().await;
+                            "hello"
+                        }
+                    }),
+                    Rc::new(Limits {
+                        requests_per_connection: 1,
+                        drain_timeout: Duration::from_secs(2),
+                        ..Limits::default()
+                    }),
+                    signal,
+                )
+                .await;
+                done_tx.send(result.is_ok()).unwrap();
+            });
+    });
+    let mut socket = TcpStream::connect(address.recv().unwrap()).unwrap();
+    socket
+        .set_read_timeout(Some(Duration::from_secs(3)))
+        .unwrap();
+    handshake(&mut socket);
+    socket.write_all(&frame(1, 5, 1, &request())).unwrap();
+    let (_, goaway) = until(&mut socket, 7, 0);
+    assert_eq!(&goaway[..8], &[0, 0, 0, 1, 0, 0, 0, 0]);
+    shutdown.cancel();
+    shutdown.cancel();
+    release.cancel();
+    let mut body = Vec::new();
+    let mut headers = false;
+    loop {
+        let (kind, flags, stream, payload) = receive(&mut socket);
+        assert_eq!(stream, 1, "drain must not emit a second GOAWAY or reset");
+        match kind {
+            1 => headers = true,
+            0 => body.extend(payload),
+            _ => panic!("unexpected drain frame {kind}"),
+        }
+        if flags & 1 != 0 {
+            break;
+        }
+    }
+    assert!(headers);
+    assert_eq!(body, b"hello");
+    assert_eq!(socket.read(&mut [0u8; 1]).unwrap(), 0);
+    assert!(done.recv_timeout(Duration::from_secs(3)).unwrap());
+}
+
+#[test]
 fn in_flight_headers_after_reset_preserve_hpack_and_other_streams() {
     let mut s = server_with(
         || {

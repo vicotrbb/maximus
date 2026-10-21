@@ -34,6 +34,41 @@ fn read_all(mut stream: TcpStream) -> String {
     stream.read_to_string(&mut wire).unwrap();
     wire
 }
+
+#[test]
+fn pipelined_header_metadata_survives_fragmentation_and_buffer_reuse() {
+    for capacity in [1024, 16384] {
+        let server = Server::new("127.0.0.1:0".parse().unwrap())
+            .limits(maximus::Limits {
+                io_buffer_bytes: capacity,
+                ..Default::default()
+            })
+            .start(|| {
+                |req: Request| async move {
+                    format!(
+                        "{}:{}",
+                        req.uri(),
+                        req.headers()["x-probe"].to_str().unwrap()
+                    )
+                }
+            })
+            .unwrap();
+        let first = "a".repeat(1500);
+        let second = "b".repeat(1500);
+        let mut stream = connect(server.local_addr());
+        write!(
+            stream,
+            "GET /one?pick=first HTTP/1.1\r\nHost: localhost\r\nX-Probe: {first}\r\n\r\nGET /two?pick=second HTTP/1.1\r\nHost: localhost\r\nX-Probe: {second}\r\nConnection: close\r\n\r\n"
+        )
+        .unwrap();
+        let wire = read_all(stream);
+        assert_eq!(wire.matches("HTTP/1.1 200 OK").count(), 2, "{capacity}");
+        assert!(wire.contains(&format!("/one?pick=first:{first}HTTP/1.1 200 OK")));
+        assert!(wire.ends_with(&format!("/two?pick=second:{second}")));
+        server.shutdown().unwrap();
+    }
+}
+
 #[test]
 fn fragmented_chunked_request_trailers_and_ordered_pipeline() {
     use http_body_util::BodyExt;
@@ -71,6 +106,63 @@ fn fragmented_chunked_request_trailers_and_ordered_pipeline() {
     let wire = read_all(stream);
     assert_eq!(wire.matches("200 OK").count(), 2, "{wire}");
     assert!(wire.contains("abcde:yesHTTP/1.1 200"), "{wire}");
+    server.shutdown().unwrap();
+}
+
+#[test]
+fn consumed_request_framing_preserves_body_trailers_and_pipeline_order() {
+    use http_body_util::BodyExt;
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(|| {
+            |req: Request| async move {
+                if req.uri().path() == "/next" {
+                    return "next".to_owned();
+                }
+                let body = req.into_body().collect().await.unwrap();
+                let trailer = body
+                    .trailers()
+                    .and_then(|trailers| trailers.get("x-check"))
+                    .map(|value| value.to_str().unwrap().to_owned())
+                    .unwrap_or_else(|| "none".to_owned());
+                format!("{}:{trailer}", String::from_utf8_lossy(&body.to_bytes()))
+            }
+        })
+        .unwrap();
+    for (name, framing, body, expected) in [
+        ("no framing", "", "", ":none"),
+        ("zero length", "Content-Length: 0\r\n", "", ":none"),
+        ("fixed body", "Content-Length: 5\r\n", "hello", "hello:none"),
+        (
+            "empty chunked body",
+            "Transfer-Encoding: chunked\r\n",
+            "0\r\nX-Check: yes\r\n\r\n",
+            ":yes",
+        ),
+        (
+            "nonempty chunked body",
+            "Transfer-Encoding: chunked\r\n",
+            "5\r\nhello\r\n0\r\nX-Check: yes\r\n\r\n",
+            "hello:yes",
+        ),
+    ] {
+        let mut stream = connect(server.local_addr());
+        stream
+            .write_all(
+                format!("POST /echo HTTP/1.1\r\nHost: a\r\n{framing}\r\n{body}GET /next HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n")
+                    .as_bytes(),
+            )
+            .unwrap();
+        let wire = read_all(stream);
+        assert!(wire.starts_with("HTTP/1.1 200 OK\r\n"), "{name}: {wire}");
+        assert_eq!(wire.matches("HTTP/1.1 ").count(), 2, "{name}: {wire}");
+        let (_, payload) = wire.split_once("\r\n\r\n").unwrap();
+        let next = payload
+            .strip_prefix(expected)
+            .unwrap_or_else(|| panic!("{name}: {wire}"));
+        let (headers, body) = next.split_once("\r\n\r\n").unwrap();
+        assert!(headers.starts_with("HTTP/1.1 200 OK\r\n"), "{name}: {wire}");
+        assert_eq!(body, "next", "{name}: {wire}");
+    }
     server.shutdown().unwrap();
 }
 
@@ -231,6 +323,40 @@ fn unread_request_body_is_closed_and_never_parsed_as_next_request() {
 }
 
 #[test]
+fn ignored_empty_chunked_body_closes_before_dispatching_pipeline() {
+    use std::sync::{
+        Arc,
+        atomic::{AtomicUsize, Ordering},
+    };
+    let followups = Arc::new(AtomicUsize::new(0));
+    let calls = followups.clone();
+    let server = Server::new("127.0.0.1:0".parse().unwrap())
+        .start(move || {
+            let calls = calls.clone();
+            move |req: Request| {
+                let calls = calls.clone();
+                async move {
+                    if req.uri().path() == "/next" {
+                        calls.fetch_add(1, Ordering::Relaxed);
+                        "unexpected next"
+                    } else {
+                        "ignored"
+                    }
+                }
+            }
+        })
+        .unwrap();
+    let mut stream = connect(server.local_addr());
+    stream.write_all(b"POST / HTTP/1.1\r\nHost: a\r\nTransfer-Encoding: chunked\r\n\r\n0\r\nX-Check: yes\r\n\r\nGET /next HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n").unwrap();
+    let wire = read_all(stream);
+    server.shutdown().unwrap();
+    assert!(wire.starts_with("HTTP/1.1 200 OK\r\n"), "{wire}");
+    assert_eq!(wire.matches("HTTP/1.1 ").count(), 1, "{wire}");
+    assert_eq!(wire.split_once("\r\n\r\n").unwrap().1, "ignored", "{wire}");
+    assert_eq!(followups.load(Ordering::Relaxed), 0, "{wire}");
+}
+
+#[test]
 fn stalled_request_body_times_out_and_releases_admission() {
     use http_body_util::BodyExt;
     let server = Server::new("127.0.0.1:0".parse().unwrap())
@@ -377,6 +503,56 @@ fn unsupported_tunnel_and_informational_final_responses_are_refused() {
         assert!(wire.starts_with(&format!("HTTP/1.1 {status}")), "{wire}");
     }
     server.shutdown().unwrap();
+}
+
+#[test]
+fn rejected_connect_never_dispatches_optimistic_tunnel_bytes() {
+    use maximus::{IntoResponse, StatusCode};
+    use std::sync::{
+        Arc,
+        atomic::{AtomicUsize, Ordering},
+    };
+    for status in [
+        StatusCode::OK,
+        StatusCode::FOUND,
+        StatusCode::FORBIDDEN,
+        StatusCode::BAD_GATEWAY,
+    ] {
+        let followups = Arc::new(AtomicUsize::new(0));
+        let calls = followups.clone();
+        let server = Server::new("127.0.0.1:0".parse().unwrap())
+            .start(move || {
+                let calls = calls.clone();
+                move |req: Request| {
+                    let calls = calls.clone();
+                    async move {
+                        if req.method() == maximus::Method::CONNECT {
+                            status.into_response()
+                        } else {
+                            calls.fetch_add(1, Ordering::Relaxed);
+                            "must not dispatch".into_response()
+                        }
+                    }
+                }
+            })
+            .unwrap();
+        let mut stream = connect(server.local_addr());
+        stream.write_all(b"CONNECT example.com:443 HTTP/1.1\r\nHost: example.com:443\r\n\r\nGET / HTTP/1.1\r\nHost: a\r\nConnection: close\r\n\r\n").unwrap();
+        let wire = read_all(stream);
+        server.shutdown().unwrap();
+        let expected = if status.is_success() {
+            StatusCode::NOT_IMPLEMENTED
+        } else {
+            status
+        };
+        assert!(
+            wire.starts_with(&format!("HTTP/1.1 {}", expected.as_u16())),
+            "{wire}"
+        );
+        assert_eq!(followups.load(Ordering::Relaxed), 0, "{status}: {wire}");
+        assert_eq!(wire.matches("HTTP/1.1 ").count(), 1, "{wire}");
+        assert!(wire.contains("connection: close\r\n"), "{wire}");
+    }
 }
 
 #[test]

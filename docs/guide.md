@@ -30,6 +30,11 @@ At capacity, TCP acceptance pauses and the kernel backlog is bounded; QUIC refus
 
 HTTP/1 rejects duplicate or malformed Content-Length fields and every request combining Transfer-Encoding with Content-Length before application dispatch. Rejection closes the connection, preventing following bytes from becoming another request. Chunked framing, extensions and trailers are validated incrementally. An unread request body closes HTTP/1 instead of reusing its bytes. HTTP/1.1 requires exactly one valid Host; duplicate Hosts are rejected for every version. URI authorities also receive authority validation. Split HTTP/2 and HTTP/3 Cookie fields are combined before application dispatch, after applying the raw header limits. HTTP/3 rejects invalid header ordering, pseudo-field multiplicity/context, forbidden connection fields and malformed trailers through a documented patch to the existing decoder. Both incoming and outgoing H3 Content-Length are checked against DATA bytes; failed or cancelled responses reset the stream. HEAD and bodyless status semantics are applied across engines; HTTP/3 omits optional HEAD Content-Length for client interoperability.
 
+HTTP/1 also closes the connection after rejecting CONNECT, including an unregistered
+tunnel converted to 501. Optimistic tunnel bytes cannot become subsequent HTTP
+requests. This follows [RFC 9931 §8](https://www.rfc-editor.org/rfc/rfc9931.html#section-8).
+Successful registered tunnels retain their upgrade and read-ahead behavior.
+
 ## TLS, placement and observability
 
 `TlsConfig::from_pem` accepts a certificate chain and private key, enables only TLS 1.3 and disables early data. Pass `true` for H2 ALPN only with the `http2` feature. Ring uses supported hardware cryptography on the target CPU. Session storage is bounded to 256 entries. HTTP/3 advertises h3, disables 0-RTT and active migration, and retries unvalidated incoming addresses. Migration is disabled because reuseport routing uses the connection tuple. Certificate rotation currently requires starting a new server configuration; it is not an implicit background task.

@@ -140,36 +140,59 @@ fn first_masked_frame_coalesced_with_handshake_is_preserved() {
 #[test]
 fn registered_connect_upgrade_transfers_read_ahead_without_body_framing() {
     use futures_util::{AsyncReadExt, AsyncWriteExt};
-    let server = Server::new("127.0.0.1:0".parse().unwrap())
-        .start(|| {
-            |request: Request| async move {
-                let slot = request
-                    .extensions()
-                    .get::<maximus_http1::UpgradeSlot>()
-                    .unwrap();
-                assert!(slot.register(|mut io| async move {
-                    let mut input = [0; 5];
-                    io.read_exact(&mut input).await.unwrap();
-                    assert_eq!(&input, b"hello");
-                    io.write_all(b"world").await.unwrap();
-                    io.flush().await.unwrap();
-                }));
-                "discarded tunnel response body"
-            }
-        })
-        .unwrap();
-    let mut stream = TcpStream::connect(server.local_addr()).unwrap();
-    stream
-        .set_read_timeout(Some(Duration::from_secs(2)))
-        .unwrap();
-    stream
-        .write_all(b"CONNECT example.com:443 HTTP/1.1\r\nHost: example.com:443\r\n\r\nhello")
-        .unwrap();
-    let mut wire = String::new();
-    stream.read_to_string(&mut wire).unwrap();
-    assert!(wire.starts_with("HTTP/1.1 200 OK"), "{wire}");
-    assert!(!wire.contains("content-length"));
-    assert!(!wire.contains("transfer-encoding"));
-    assert!(wire.ends_with("\r\n\r\nworld"), "{wire}");
-    server.shutdown().unwrap();
+    use maximus::{IntoResponse, StatusCode};
+    for status in [StatusCode::OK, StatusCode::SWITCHING_PROTOCOLS] {
+        let server = Server::new("127.0.0.1:0".parse().unwrap())
+            .start(move || {
+                move |request: Request| async move {
+                    let slot = request
+                        .extensions()
+                        .get::<maximus_http1::UpgradeSlot>()
+                        .unwrap();
+                    assert!(slot.register(|mut io| async move {
+                        let mut input = [0; 5];
+                        io.read_exact(&mut input).await.unwrap();
+                        assert_eq!(&input, b"hello");
+                        io.write_all(b"world").await.unwrap();
+                        io.flush().await.unwrap();
+                    }));
+                    let mut response = (status, "discarded tunnel response body").into_response();
+                    if status == StatusCode::SWITCHING_PROTOCOLS {
+                        response
+                            .headers_mut()
+                            .insert("connection", "upgrade".parse().unwrap());
+                        response
+                            .headers_mut()
+                            .insert("upgrade", "test/1".parse().unwrap());
+                    }
+                    response
+                }
+            })
+            .unwrap();
+        let mut stream = TcpStream::connect(server.local_addr()).unwrap();
+        stream
+            .set_read_timeout(Some(Duration::from_secs(2)))
+            .unwrap();
+        let upgrade = if status == StatusCode::SWITCHING_PROTOCOLS {
+            "Connection: upgrade\r\nUpgrade: test/1\r\n"
+        } else {
+            ""
+        };
+        let request = format!(
+            "CONNECT example.com:443 HTTP/1.1\r\nHost: example.com:443\r\n{upgrade}\r\nhello"
+        );
+        stream.write_all(request.as_bytes()).unwrap();
+        let mut wire = String::new();
+        stream.read_to_string(&mut wire).unwrap();
+        assert!(wire.starts_with(&format!("HTTP/1.1 {status}")), "{wire}");
+        if status == StatusCode::SWITCHING_PROTOCOLS {
+            assert!(wire.contains("connection: upgrade\r\n"), "{wire}");
+            assert!(wire.contains("upgrade: test/1\r\n"), "{wire}");
+            assert!(!wire.contains("connection: close"), "{wire}");
+        }
+        assert!(!wire.contains("content-length"));
+        assert!(!wire.contains("transfer-encoding"));
+        assert!(wire.ends_with("\r\n\r\nworld"), "{wire}");
+        server.shutdown().unwrap();
+    }
 }
