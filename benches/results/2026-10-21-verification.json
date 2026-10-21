@@ -1,0 +1,267 @@
+{
+  "gzip-check": {
+    "log": "artifacts/performance-2026-10-21/gzip-check.log",
+    "sha256": "94f90547b6f0f4cf2ff4f367e0c55dc9c3bd0734a65e629086a534e614a8557f",
+    "test_results": [
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s",
+      "test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s",
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+      "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s",
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+      "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 29 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 38 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.46s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.81s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    ],
+    "tail": [
+      " Documenting maximus-http1 v0.2.0 (/Users/victorbona/Code/Research/maximus/crates/http1)",
+      " Documenting maximus v0.2.0 (/Users/victorbona/Code/Research/maximus/crates/framework)",
+      "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.23s",
+      "   Generated /Users/victorbona/Code/Research/maximus/target/doc/maximus/index.html and 10 other files"
+    ]
+  },
+  "gzip-linux": {
+    "log": "artifacts/performance-2026-10-21/gzip-linux.log",
+    "sha256": "4d89f133fe33935453cb22f62b4239907f89f483b6d5ea586ce5a83561632507",
+    "test_results": [
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s",
+      "test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s",
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+      "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s",
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+      "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+      "test result: ok. 29 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+      "test result: ok. 38 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.05s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.82s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.07s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    ],
+    "tail": [
+      "running 0 tests",
+      "",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      ""
+    ]
+  },
+  "gzip-interop": {
+    "log": "artifacts/performance-2026-10-21/gzip-interop.log",
+    "sha256": "b179a2f68df25081d0b73417c09c1840cf3c3c2cb509ef3a1db92ac40a11f056",
+    "test_results": [],
+    "tail": [
+      "WebSocket text/binary echo PASS",
+      "HTTP/3 verified QUIC: 16 concurrent uploads, flow control, JSON, HEAD, SSE, errors PASS",
+      "All independent client checks passed.",
+      "2062 raw-wire mutations/disconnects, 16 concurrent clients, post-stress health PASS"
+    ]
+  },
+  "final-h3-upstream": {
+    "log": "artifacts/performance-2026-10-21/final-h3-upstream.log",
+    "sha256": "405e4e4e7e6b47ce5e2c574a9816d738d7c11ebfd07ce5ebe16051e9483356ab",
+    "test_results": [
+      "test result: ok. 229 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 30.75s",
+      "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.03s"
+    ],
+    "tail": [
+      "test src/server/builder.rs - server::builder (line 8) ... ok",
+      "",
+      "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.03s",
+      ""
+    ]
+  },
+  "final-downstream": {
+    "log": "artifacts/performance-2026-10-21/final-downstream.log",
+    "sha256": "0a821204b49396de683f303559d7f1bb72abc51a037d2a49315ad5c37deff19f",
+    "test_results": [],
+    "tail": [
+      "    Checking maximus v0.2.0 (/Users/victorbona/Code/Research/maximus/crates/framework)",
+      "    Checking maximus-downstream-check v0.0.0 (/var/folders/h8/79gkbybn2xd8fd9yl80td6dc0000gn/T/tmp.0gluQKkxEC)",
+      "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 14.45s",
+      "h3 v0.0.8 (/Users/victorbona/Code/Research/maximus/vendor/h3)"
+    ]
+  },
+  "final-audit": {
+    "log": "artifacts/performance-2026-10-21/final-audit.log",
+    "sha256": "9ca79519cede50753f584aaa6a7444b60b03310155ba1f2ee41545f0ab0a8fd0",
+    "test_results": [],
+    "tail": [
+      "    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`",
+      "      Loaded 1348 security advisories (from /Users/victorbona/.cargo/advisory-db)",
+      "    Updating crates.io index",
+      "    Scanning Cargo.lock for vulnerabilities (235 crate dependencies)"
+    ]
+  },
+  "final-benchmark-audit": {
+    "log": "artifacts/performance-2026-10-21/final-benchmark-audit.log",
+    "sha256": "49e4e71c9b23947ee417b95a46cbcb84566a875ccf33948ca6bf128af39d1ae1",
+    "test_results": [],
+    "tail": [
+      "    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`",
+      "      Loaded 1348 security advisories (from /Users/victorbona/.cargo/advisory-db)",
+      "    Updating crates.io index",
+      "    Scanning benches/baselines/Cargo.lock for vulnerabilities (266 crate dependencies)"
+    ]
+  },
+  "final-vendor-audit": {
+    "log": "artifacts/performance-2026-10-21/final-vendor-audit.log",
+    "sha256": "1a0e552c10b46ac36c5fd5dacc8a7656a839fab42a5271018c6185d9e6c83eb1",
+    "test_results": [],
+    "tail": [
+      "    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`",
+      "      Loaded 1348 security advisories (from /Users/victorbona/.cargo/advisory-db)",
+      "    Updating crates.io index",
+      "    Scanning vendor/h3/Cargo.lock for vulnerabilities (134 crate dependencies)"
+    ]
+  },
+  "fuzz": {
+    "request": {
+      "runs": 8583878,
+      "seconds": 61,
+      "log_sha256": "d349f8dd68ff37ea4f0c91d8fa60f06f0a30faf1bf392a34530467703a8f42dc"
+    },
+    "http1": {
+      "runs": 1076742,
+      "seconds": 61,
+      "log_sha256": "1e1ccc1411b7af96578e9aea11470be3d72447563df0be1f8f5d5b16744c92f9"
+    },
+    "hpack": {
+      "runs": 1008885,
+      "seconds": 61,
+      "log_sha256": "6df1ea11003f2ba917eb7272dfb94f35277364692673c37ac0d8913cf5f6f457"
+    },
+    "http2": {
+      "runs": 1525926,
+      "seconds": 61,
+      "log_sha256": "f6fcf17c7124258f6540dd9371652625ec96a5a6f04b82ff9c3cd4fd4d3f16ea"
+    }
+  },
+  "total_fuzz_executions": 12195431,
+  "report-tests": {
+    "log": "artifacts/performance-2026-10-21/report-tests.log",
+    "sha256": "4e42e4a39d7e7d140e82a52578097a985dfbd282742f9320485d2bef55ece89d",
+    "tail": [
+      "......",
+      "----------------------------------------------------------------------",
+      "Ran 6 tests in 0.218s",
+      "",
+      "OK"
+    ]
+  },
+  "benchmark-clippy": {
+    "log": "artifacts/performance-2026-10-21/benchmark-clippy.log",
+    "sha256": "9becf129736975858c00130cfa0d18caf01a14e09c189c11820d10b608b557a1",
+    "tail": [
+      "    Checking maximus-comparison v0.0.0 (/Users/victorbona/Code/Research/maximus/benches/baselines)",
+      "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.58s"
+    ]
+  },
+  "final-python-lint": {
+    "log": "artifacts/performance-2026-10-21/final-python-lint.log",
+    "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "tail": [
+      "All checks passed!"
+    ]
+  },
+  "socket_campaigns": {
+    "sockets": {
+      "complete_and_passing": true,
+      "rows": 96,
+      "requests": 93807252
+    },
+    "controls": {
+      "complete_and_passing": true,
+      "rows": 36,
+      "requests": 39991014
+    },
+    "h2-followup": {
+      "complete_and_passing": true,
+      "rows": 18,
+      "requests": 5593513
+    }
+  },
+  "total_socket_rows": 150,
+  "total_socket_requests": 139391779,
+  "retained_source_identity": {
+    "crates/core/src/sse.rs": "cf076ab83e6bc03d5a379dd7835e34ed0a17efa68799ab9562fe7c25ec24e864",
+    "crates/framework/src/compression.rs": "65b330ba3ec8867cc680f085d53d79e286f09ae0e17fba2eb015ac3e50b8bc33"
+  },
+  "reporter_contract_sha256": {
+    "benches/workloads.py": "2cd0d4f48649de786f1e4ffd0a21520c54935740dc3c84c164ccb8025e91b4e8",
+    "benches/compare-final.py": "5ba85add82faedf776f744eb18e83befb16ede819333ec2c22739472f8ad294c",
+    "benches/report-final.py": "54c3e269f276d6f27138ee37336d1c818dc4c801215ecaf2e32c9b29c3242544",
+    "benches/test_report_final.py": "b96ee2d12685c68f7d02059691b975afa3849cffe7b4b9d67485ac67038eb410"
+  }
+}

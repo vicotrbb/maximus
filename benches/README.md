@@ -2,11 +2,17 @@
 
 The comparison servers are an isolated Cargo workspace. Product builds do not resolve Axum, Actix or their benchmark dependencies. All Rust servers use thin LTO and one codegen unit. Commit both lockfiles when changing dependencies.
 
-Latest investigation: [approved local Docker/k6 campaign](results/local-docker-k6.md),
+Latest investigation: [SSE and gzip measurements, 2026-10-21](results/2026-10-21-performance.md).
+It records retained component improvements, all 150 response-checked socket
+rows, identical-binary controls, native size distinctions, standards research,
+and rejected Body, H1, and HPACK experiments. Whole-server throughput gains
+are not established. Unstripped SSE artifact growth remains disclosed.
+
+Previous investigation: [approved local Docker/k6 campaign](results/local-docker-k6.md),
 with all five sources measured on plain H1, TLS H1 and TLS H2 against Hyper and Axum.
 The generated report explicitly records campaign completeness and sample counts.
 Earlier [joint wall/thread-CPU H1 control](results/head-len-cpu-http1.md) is separate.
-All performance experiments from this investigation are archived and
+All performance experiments from that previous investigation are archived and
 unqualified; none is retained in root product code. Borrowed Error conversion,
 optional H1 completion state and the borrowed H2 timer are restored to HEAD.
 The RFC 9931 CONNECT correctness correction and functional regression coverage

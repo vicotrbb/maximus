@@ -65,3 +65,78 @@ fn sse_escapes_multiline_data_and_rejects_metadata_injection() {
         );
     });
 }
+
+#[cfg(feature = "sse")]
+#[test]
+fn sse_preserves_all_line_endings_and_empty_data() {
+    compio::runtime::Runtime::new().unwrap().block_on(async {
+        // Enumerate mixed CR, LF, CRLF, trailing separators and UTF-8. The
+        // normalized wire representation is the existing public contract.
+        let alphabet = ["a", "\r", "\n", "é"];
+        for length in 0..=6 {
+            for mut index in 0..4usize.pow(length) {
+                let mut data = String::new();
+                for _ in 0..length {
+                    data.push_str(alphabet[index % 4]);
+                    index /= 4;
+                }
+                let normalized = data.replace("\r\n", "\n").replace('\r', "\n");
+                let mut expected = String::new();
+                for line in normalized.split('\n') {
+                    expected.push_str("data:");
+                    expected.push_str(line);
+                    expected.push('\n');
+                }
+                expected.push('\n');
+                let response = maximus_core::Sse::new(futures_util::stream::iter([Ok(
+                    maximus_core::Event::new(data.clone()),
+                )]))
+                .into_response();
+                assert_eq!(
+                    response.into_body().collect().await.unwrap().to_bytes(),
+                    expected,
+                    "{data:?}"
+                );
+            }
+        }
+        let event = maximus_core::Event::new("").retry(std::time::Duration::from_millis(1234));
+        let response =
+            maximus_core::Sse::new(futures_util::stream::iter([Ok(event)])).into_response();
+        assert_eq!(
+            response.into_body().collect().await.unwrap().to_bytes(),
+            "retry:1234\ndata:\n\n"
+        );
+    });
+}
+
+#[cfg(feature = "sse")]
+#[test]
+fn sse_preserves_leading_spaces_in_data_and_metadata() {
+    compio::runtime::Runtime::new().unwrap().block_on(async {
+        let event = maximus_core::Event::new(" leading\n  two\r\n three")
+            .id(" id")
+            .unwrap()
+            .event(" event")
+            .unwrap();
+        let response =
+            maximus_core::Sse::new(futures_util::stream::iter([Ok(event)])).into_response();
+        let bytes = response.into_body().collect().await.unwrap().to_bytes();
+        // WHATWG removes exactly one optional ASCII space after the colon.
+        let fields: Vec<_> = std::str::from_utf8(&bytes)
+            .unwrap()
+            .lines()
+            .filter_map(|line| line.split_once(':'))
+            .map(|(name, value)| (name, value.strip_prefix(' ').unwrap_or(value)))
+            .collect();
+        assert_eq!(
+            fields,
+            [
+                ("id", " id"),
+                ("event", " event"),
+                ("data", " leading"),
+                ("data", "  two"),
+                ("data", " three")
+            ]
+        );
+    });
+}

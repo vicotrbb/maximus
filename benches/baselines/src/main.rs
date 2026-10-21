@@ -2,6 +2,8 @@ use bytes::Bytes;
 use http_body_util::{BodyExt, Full};
 use std::{convert::Infallible, net::SocketAddr};
 const TEXT: &str = "Hello, World!";
+const SSE_DATA: &str = "one\ntwo\nthree";
+const SSE_WIRE: &str = "data:one\ndata:two\ndata:three\n\n";
 const JSON: &str = r#"{"message":"Hello, World!"}"#;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -54,9 +56,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
             let server = if engine == "dynamic" {
                 server.start(|| {
-                    let mut router = maximus::DynamicRouter::new(5);
+                    let mut router = maximus::DynamicRouter::new(6);
                     router.add("GET", "/plaintext", plain).unwrap();
                     router.add("GET", "/json", json).unwrap();
+                    router.add("GET", "/sse", events).unwrap();
                     router.add("POST", "/echo", echo).unwrap();
                     router.add("GET", "/error", error).unwrap();
                     router
@@ -71,6 +74,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     maximus::routes! {
                         GET "/plaintext" => plain,
                         GET "/json" => json,
+                        GET "/sse" => events,
                         POST "/echo" => echo,
                         GET "/error" => error,
                         GET "/users/{id:u64}" => user,
@@ -90,6 +94,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 eprintln!("ready {engine} {address} workers={workers}");
                 let router = axum::Router::new()
                     .route("/plaintext", axum::routing::get(|| async { TEXT }))
+                    .route(
+                        "/sse",
+                        axum::routing::get(|| async {
+                            axum::response::Sse::new(futures_util::stream::iter([Ok::<
+                                _,
+                                Infallible,
+                            >(
+                                axum::response::sse::Event::default().data(SSE_DATA),
+                            )]))
+                        }),
+                    )
                     .route(
                         "/error",
                         axum::routing::get(|| async {
@@ -228,6 +243,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     Ok(())
 }
+async fn events(_: maximus::Request) -> impl maximus::IntoResponse {
+    maximus::Sse::new(futures_util::stream::iter([Ok(maximus::Event::new(
+        SSE_DATA,
+    ))]))
+}
 async fn plain(_: maximus::Request) -> &'static str {
     TEXT
 }
@@ -261,6 +281,11 @@ async fn hyper_handler(
             Bytes::from_static(TEXT.as_bytes()),
         ),
         ("GET", "/json") => (200, "application/json", Bytes::from_static(JSON.as_bytes())),
+        ("GET", "/sse") => (
+            200,
+            "text/event-stream",
+            Bytes::from_static(SSE_WIRE.as_bytes()),
+        ),
         ("POST", "/echo") => match http_body_util::Limited::new(req.into_body(), 1024 * 1024)
             .collect()
             .await

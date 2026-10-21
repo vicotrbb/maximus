@@ -4,7 +4,7 @@ import { Counter } from 'k6/metrics';
 const iterationStarts = new Counter('iteration_starts');
 const path = __ENV.PATHNAME || '/plaintext';
 const body = 'x'.repeat(Number(__ENV.BODY_BYTES || 1024));
-const expected = path === '/echo' ? body : path === '/error' ? 'handler error' : path === '/json' ? '{"message":"Hello, World!"}' : path.startsWith('/users/') ? '42' : 'Hello, World!';
+const expected = path === '/compress' ? 'Hello, compression!'.repeat(100) : path === '/echo' ? body : path === '/sse' ? 'data:one\ndata:two\ndata:three\n\n' : path === '/error' ? 'handler error' : path === '/json' ? '{"message":"Hello, World!"}' : path.startsWith('/users/') ? '42' : 'Hello, World!';
 const expectedStatus = path === '/error' ? 500 : 200;
 http.setResponseCallback(http.expectedStatuses(expectedStatus));
 const scenario = __ENV.RATE ? {
@@ -20,8 +20,8 @@ export const options = {
 export default function () {
   iterationStarts.add(1);
   const url = (__ENV.URL || 'http://127.0.0.1:8080') + path;
-  const r = path === '/echo' ? http.post(url, body) : http.get(url);
-  check(r, { 'correct status, body and protocol': r => r.status === expectedStatus && r.body === expected && r.proto === (__ENV.PROTOCOL === 'h2' ? 'HTTP/2.0' : 'HTTP/1.1') });
+  const r = path === '/echo' ? http.post(url, body) : http.get(url, path === '/compress' ? { headers: { 'Accept-Encoding': 'br;q=1, gzip;q=0.8, identity;q=0.5' } } : {});
+  check(r, { 'correct status, body and protocol': r => r.status === expectedStatus && (path !== '/compress' || r.headers['Content-Encoding'] === 'gzip') && (path === '/sse' ? r.body.replace(/^data: /gm, 'data:') : r.body) === expected && r.proto === (__ENV.PROTOCOL === 'h2' ? 'HTTP/2.0' : 'HTTP/1.1') });
 }
 export function handleSummary(data) {
   return { [__ENV.RESULT || '/results/summary.json']: JSON.stringify(data, null, 2) };

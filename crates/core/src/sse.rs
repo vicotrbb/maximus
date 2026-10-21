@@ -1,5 +1,6 @@
 use crate::{Body, Bytes, Error, HeaderValue, IntoResponse, Response, Result};
 use futures_util::{Stream, StreamExt};
+use std::fmt::Write;
 
 /// One SSE event. Metadata cannot inject additional fields.
 pub struct Event {
@@ -36,27 +37,37 @@ impl Event {
     fn encode(self) -> Bytes {
         let mut output = String::new();
         if let Some(id) = self.id {
-            output.push_str("id:");
-            output.push_str(&id);
-            output.push('\n');
+            field(&mut output, "id:", &id);
         }
         if let Some(event) = self.event {
-            output.push_str("event:");
-            output.push_str(&event);
-            output.push('\n');
+            field(&mut output, "event:", &event);
         }
         if let Some(retry) = self.retry {
-            output.push_str(&format!("retry:{}\n", retry.as_millis()));
+            writeln!(output, "retry:{}", retry.as_millis()).expect("writing to String");
         }
-        let data = self.data.replace("\r\n", "\n").replace('\r', "\n");
-        for line in data.split('\n') {
-            output.push_str("data:");
-            output.push_str(line);
-            output.push('\n');
+        for (index, part) in self.data.split('\r').enumerate() {
+            // A CRLF is one separator. Bare CR and LF each start a new line.
+            let part = if index == 0 {
+                part
+            } else {
+                part.strip_prefix('\n').unwrap_or(part)
+            };
+            for line in part.split('\n') {
+                field(&mut output, "data:", line);
+            }
         }
         output.push('\n');
         output.into()
     }
+}
+fn field(output: &mut String, prefix: &str, value: &str) {
+    output.push_str(prefix);
+    // SSE parsers remove one optional space after the colon.
+    if value.starts_with(' ') {
+        output.push(' ');
+    }
+    output.push_str(value);
+    output.push('\n');
 }
 fn validate(value: &str) -> Result<()> {
     if value.contains(['\n', '\r', '\0']) {

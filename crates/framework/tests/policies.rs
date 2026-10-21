@@ -67,8 +67,13 @@ fn gzip_negotiation_respects_q_zero_and_preserves_content() {
             .read_to_string(&mut decoded)
             .unwrap();
         assert_eq!(decoded, "hello".repeat(300));
-        let response = app.handle(request("gzip;q=0, *;q=1")).await;
-        assert!(!response.headers().contains_key("content-encoding"));
+        for value in ["gzip;q=0, *;q=1", "gzip;Q=0", "*;q=1, gzip;Q=0"] {
+            let response = app.handle(request(value)).await;
+            assert!(
+                !response.headers().contains_key("content-encoding"),
+                "{value}"
+            );
+        }
     });
 }
 

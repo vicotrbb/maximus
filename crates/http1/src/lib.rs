@@ -902,3 +902,52 @@ mod line_tests {
         });
     }
 }
+
+#[cfg(test)]
+mod response_tests {
+    use super::*;
+
+    #[test]
+    fn status_lines_preserve_every_status_and_http_version() {
+        compio::runtime::Runtime::new().unwrap().block_on(async {
+            for version in [http::Version::HTTP_10, http::Version::HTTP_11] {
+                for code in 100..=999 {
+                    let status = http::StatusCode::from_u16(code).unwrap();
+                    let mut response = Response::new(Body::empty());
+                    *response.status_mut() = status;
+                    let mut writer = Futures(futures_util::io::Cursor::new(Vec::new()));
+                    let mut output = Vec::new();
+                    let limits = Limits {
+                        io_buffer_bytes: 64,
+                        ..Default::default()
+                    };
+                    write_response(
+                        &mut writer,
+                        &mut output,
+                        response,
+                        false,
+                        version,
+                        true,
+                        &limits,
+                        &Activity::new(),
+                    )
+                    .await
+                    .unwrap();
+                    let protocol = if version == http::Version::HTTP_10 {
+                        "HTTP/1.0"
+                    } else {
+                        "HTTP/1.1"
+                    };
+                    let expected = format!(
+                        "{protocol} {code} {}\r\n",
+                        status.canonical_reason().unwrap_or("")
+                    );
+                    assert!(
+                        writer.0.into_inner().starts_with(expected.as_bytes()),
+                        "{version:?} {code}"
+                    );
+                }
+            }
+        });
+    }
+}

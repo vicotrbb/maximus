@@ -932,6 +932,20 @@ mod tests {
     }
 
     #[test]
+    fn static_names_are_contiguous_and_literals_use_the_first_index() {
+        for (i, &(name, _)) in STATIC.iter().enumerate() {
+            let first = STATIC.iter().position(|&(n, _)| n == name).unwrap();
+            assert!(STATIC[first..=i].iter().all(|&(n, _)| n == name));
+            let mut expected = vec![0x20];
+            write_integer(first + 1, 4, 0x10, &mut expected);
+            expected.extend_from_slice(b"\x06opaque");
+            let mut output = Vec::new();
+            encode([(name, b"opaque".as_slice())], &mut output);
+            assert_eq!(output, expected);
+        }
+    }
+
+    #[test]
     fn encoder_roundtrips_long_binary_literals_and_empty_values() {
         let name = vec![0xfe; 1337];
         let value: Vec<u8> = (0..=255).collect();
