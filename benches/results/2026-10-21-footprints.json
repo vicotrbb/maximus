@@ -1,0 +1,86 @@
+{
+  "baseline": {
+    "compression": {
+      "text": 886768,
+      "data": 28720,
+      "bss": 2504,
+      "total": 917992,
+      "unstripped_file_bytes": 1277232,
+      "stripped_file_bytes": 922344
+    },
+    "features": {
+      "text": 3586046,
+      "data": 126496,
+      "bss": 2656,
+      "total": 3715198,
+      "unstripped_file_bytes": 4932128,
+      "stripped_file_bytes": 3744152
+    },
+    "hello": {
+      "text": 827905,
+      "data": 27656,
+      "bss": 2488,
+      "total": 858049,
+      "unstripped_file_bytes": 1279584,
+      "stripped_file_bytes": 922400
+    },
+    "sse": {
+      "text": 811953,
+      "data": 26760,
+      "bss": 2480,
+      "total": 841193,
+      "unstripped_file_bytes": 1201480,
+      "stripped_file_bytes": 856808
+    },
+    "tls-sse": {
+      "text": 2153340,
+      "data": 58928,
+      "bss": 2560,
+      "total": 2214828,
+      "unstripped_file_bytes": 2949176,
+      "stripped_file_bytes": 2233128
+    }
+  },
+  "candidate": {
+    "compression": {
+      "text": 873744,
+      "data": 28496,
+      "bss": 2504,
+      "total": 904744,
+      "unstripped_file_bytes": 1275760,
+      "stripped_file_bytes": 922344
+    },
+    "features": {
+      "text": 3568898,
+      "data": 126304,
+      "bss": 2656,
+      "total": 3697858,
+      "unstripped_file_bytes": 4931328,
+      "stripped_file_bytes": 3744152
+    },
+    "hello": {
+      "text": 827905,
+      "data": 27656,
+      "bss": 2488,
+      "total": 858049,
+      "unstripped_file_bytes": 1279584,
+      "stripped_file_bytes": 922400
+    },
+    "sse": {
+      "text": 811217,
+      "data": 26768,
+      "bss": 2480,
+      "total": 840465,
+      "unstripped_file_bytes": 1201976,
+      "stripped_file_bytes": 856808
+    },
+    "tls-sse": {
+      "text": 2140268,
+      "data": 58936,
+      "bss": 2560,
+      "total": 2201764,
+      "unstripped_file_bytes": 2949464,
+      "stripped_file_bytes": 2233128
+    }
+  }
+}

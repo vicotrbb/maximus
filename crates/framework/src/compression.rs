@@ -89,8 +89,8 @@ impl<H: Handler> Handler for Compressed<H> {
     }
 }
 fn accepts_gzip(headers: &HeaderMap) -> bool {
-    let mut gzip: Option<f32> = None;
-    let mut wildcard: Option<f32> = None;
+    let mut gzip: Option<bool> = None;
+    let mut wildcard: Option<bool> = None;
     for value in headers.get_all("accept-encoding") {
         let Ok(value) = value.to_str() else {
             continue;
@@ -98,12 +98,6 @@ fn accepts_gzip(headers: &HeaderMap) -> bool {
         for encoding in value.split(',') {
             let mut fields = encoding.split(';').map(str::trim);
             let name = fields.next().unwrap_or("");
-            let quality = fields.find_map(|s| s.strip_prefix("q=")).map_or(1.0, |s| {
-                s.parse::<f32>()
-                    .ok()
-                    .filter(|q| (0.0..=1.0).contains(q))
-                    .unwrap_or(0.0)
-            });
             let target = if name.eq_ignore_ascii_case("gzip") {
                 &mut gzip
             } else if name == "*" {
@@ -111,8 +105,78 @@ fn accepts_gzip(headers: &HeaderMap) -> bool {
             } else {
                 continue;
             };
-            *target = Some(target.map_or(quality, |old| old.min(quality)));
+            // A qvalue only decides whether this coding is acceptable. Repeated
+            // entries preserve the existing zero-veto policy.
+            let accepted = fields
+                .find_map(|field| {
+                    let (name, value) = field.split_once('=')?;
+                    name.eq_ignore_ascii_case("q").then_some(value)
+                })
+                .is_none_or(positive_quality);
+            *target = Some(target.unwrap_or(true) && accepted);
         }
     }
-    gzip.or(wildcard).unwrap_or(0.0) > 0.0
+    gzip.or(wildcard).unwrap_or(false)
+}
+
+// RFC 9110 section 12.4.2: reject malformed weights rather than recovering
+// signs, exponents or excess precision through a floating-point parser.
+fn positive_quality(value: &str) -> bool {
+    match value.as_bytes() {
+        b"1" => true,
+        [b'1', b'.', fraction @ ..] => {
+            fraction.len() <= 3 && fraction.iter().all(|&digit| digit == b'0')
+        }
+        [b'0', b'.', fraction @ ..] => {
+            fraction.len() <= 3
+                && fraction.iter().all(u8::is_ascii_digit)
+                && fraction.iter().any(|&digit| digit != b'0')
+        }
+        _ => false,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn negotiation_preserves_explicit_zero_and_repeated_field_policy() {
+        for (values, expected) in [
+            (vec!["gzip"], true),
+            (vec!["GZIP;Q=0"], false),
+            (vec!["gzip;q=0.001"], true),
+            (vec!["*;q=1, gzip;q=0"], false),
+            (vec!["gzip;q=0", "*;q=1"], false),
+            (vec!["gzip;q=1", "gzip;q=0"], false),
+            (vec!["gzip;q=0", "gzip;q=1"], false),
+            (vec!["br;q=0, *;q=0.5"], true),
+            (vec!["br;q=1"], false),
+            (vec![""], false),
+        ] {
+            let mut headers = HeaderMap::new();
+            for value in &values {
+                headers.append("accept-encoding", HeaderValue::from_str(value).unwrap());
+            }
+            assert_eq!(accepts_gzip(&headers), expected, "{values:?}");
+        }
+    }
+
+    #[test]
+    fn quality_uses_http_decimal_grammar() {
+        for value in ["1", "1.", "1.0", "1.00", "1.000", "0.1", "0.001", "0.999"] {
+            assert!(positive_quality(value), "{value}");
+        }
+        for value in [
+            "0", "0.", "0.0", "0.000", "", ".5", "+0.5", "1e0", "NaN", "1.001", "0.0001", "1.0000",
+            "2", "-0.1",
+        ] {
+            assert!(!positive_quality(value), "{value}");
+        }
+        // Exhaust every three-digit fraction, including the smallest nonzero q.
+        for fraction in 0..1000 {
+            assert_eq!(positive_quality(&format!("0.{fraction:03}")), fraction != 0);
+            assert_eq!(positive_quality(&format!("1.{fraction:03}")), fraction == 0);
+        }
+    }
 }

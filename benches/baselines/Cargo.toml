@@ -8,11 +8,14 @@ publish = false
 [workspace]
 
 [dependencies]
-maximus = { path = "../../crates/framework", features = ["tls", "http2", "dynamic"] }
+maximus = { path = "../../crates/framework", features = ["tls", "http2", "dynamic", "sse", "compression"] }
 axum = "0.8"
-actix-web = "4"
+# The Actix fixture serves plaintext HTTP/1 only. TLS/H2 use Hyper and Axum.
+actix-web = { version = "4", default-features = false }
 bytes = "1"
+flate2 = "1"
 http-body-util = "0.1"
+futures-util = "0.3"
 hyper = { version = "1", features = ["server", "http1", "http2"] }
 hyper-util = { version = "0.1", features = ["tokio", "service"] }
 tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12"] }
@@ -24,3 +27,12 @@ codegen-units = 1
 
 [dependencies.maximus-runtime]
 path = "../../crates/runtime"
+
+[dependencies.tower-http]
+version = "0.7.1"
+default-features = false
+features = ["compression-gzip"]
+
+[dependencies.tower]
+version = "0.5"
+features = ["util"]
