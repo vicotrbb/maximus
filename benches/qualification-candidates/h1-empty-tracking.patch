@@ -1,0 +1,47 @@
+--- a/crates/http1/src/lib.rs
++++ b/crates/http1/src/lib.rs
+@@ -536,8 +536,10 @@
+         let version = head.request.version();
+         let is_head = head.request.method() == http::Method::HEAD;
+         let connect = head.request.method() == http::Method::CONNECT;
+-        let done = Rc::new(Cell::new(matches!(head.framing, Framing::Empty)));
+-        if !done.get() {
++        let done = if matches!(head.framing, Framing::Empty) {
++            None
++        } else {
++            let done = Rc::new(Cell::new(false));
+             let incoming = Incoming {
+                 reader: reader.clone(),
+                 framing: head.framing,
+@@ -557,7 +559,8 @@
+                 }),
+                 limits.body_bytes,
+             );
+-        }
++            Some(done)
++        };
+         #[cfg(feature = "websocket")]
+         let upgrades = {
+             let slot = UpgradeSlot::default();
+@@ -623,10 +626,11 @@
+             &activity,
+         )
+         .await?;
++        let unread_body = done.is_some_and(|done| !done.get());
+         #[cfg(feature = "websocket")]
+         if switching {
+             if let Some(callback) = callback {
+-                if !done.get() {
++                if unread_body {
+                     return Err(io::Error::other("upgrade with unread request body"));
+                 }
+                 let reader = Rc::try_unwrap(reader)
+@@ -643,7 +647,7 @@
+             }
+             return Ok(());
+         }
+-        if close || switching || !done.get() {
++        if close || switching || unread_body {
+             return write.close().await;
+         }
+     }

@@ -5,6 +5,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / 'artifacts/bench'
 K6 = 'grafana/k6:1.6.0'
 RUST = 'rust:1.96-bookworm'
+WRK = 'maximus-tools:latest'
 
 def run(*args, **kwargs):
     return subprocess.run(args, check=True, text=True, **kwargs)
@@ -52,22 +53,33 @@ def main():
     parser.add_argument('--client-cpus', default='2')
     parser.add_argument('--sample-seconds', type=float, default=0, help='optional server memory sampling interval')
     parser.add_argument('--protocol', choices=['plain', 'h1', 'h2'], default='plain')
+    parser.add_argument('--binary', default='/target/release/maximus-comparison', help='frozen comparison executable within maximus-bench-target')
+    parser.add_argument('--reuse-certificate', action='store_true', help='reuse artifacts/bench TLS credentials across paired trials')
+    parser.add_argument('--generator', choices=['k6', 'wrk'], default='k6')
     args = parser.parse_args()
     if args.body_bytes < 0: parser.error('--body-bytes must be nonnegative')
+    if args.generator == 'wrk' and (args.protocol != 'plain' or args.rates != '0' or args.body_bytes != 1024):
+        parser.error('wrk supports plain HTTP/1 saturation with 1024-byte echo bodies')
     OUT.mkdir(parents=True, exist_ok=True)
+    client_image = WRK if args.generator == 'wrk' else K6
+    workload = ROOT / ('benches/wrk.lua' if args.generator == 'wrk' else 'benches/load.js')
     environment = {'date_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'args': vars(args),
         'source_commit': capture('git', '-C', str(ROOT), 'rev-parse', 'HEAD'),
         'source_dirty': bool(capture('git', '-C', str(ROOT), 'status', '--porcelain')),
         'network': {'server': 'none', 'client': 'container:<server>'},
-        'workload_sha256': hashlib.sha256((ROOT / 'benches/load.js').read_bytes()).hexdigest(),
+        'workload_sha256': hashlib.sha256(workload.read_bytes()).hexdigest(),
+        'binary_sha256': capture('docker', 'run', '--rm', '-v', 'maximus-bench-target:/target:ro', RUST, 'sha256sum', args.binary) if any(engine != 'nginx' for engine in args.engines.split(',')) else None,
         'running_containers': capture('docker', 'ps', '--format', '{{.Names}} {{.Image}}'),
         'docker': capture('docker', 'version', '--format', '{{.Server.Version}}'),
         'kernel': capture('docker', 'run', '--rm', RUST, 'uname', '-a'),
         'cpus': capture('docker', 'info', '--format', '{{.NCPU}}'),
-        'images': {image: capture('docker', 'image', 'inspect', image, '--format', '{{json .RepoDigests}}') for image in (K6, RUST)}}
-    (OUT / f'{args.label}-environment.json').write_text(json.dumps(environment, indent=2))
+        'images': {image: capture('docker', 'image', 'inspect', image, '--format', '{{json .RepoDigests}}') for image in (client_image, RUST)},
+        'image_ids': {image: capture('docker', 'image', 'inspect', image, '--format', '{{.Id}}') for image in (client_image, RUST)}}
     if args.protocol != 'plain':
-        run('openssl', 'req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', str(OUT/'key.pem'), '-out', str(OUT/'cert.pem'), '-days', '1', '-subj', '/CN=localhost', '-addext', 'subjectAltName=DNS:localhost,IP:127.0.0.1', stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if not args.reuse_certificate:
+            run('openssl', 'req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', str(OUT/'key.pem'), '-out', str(OUT/'cert.pem'), '-days', '1', '-subj', '/CN=localhost', '-addext', 'subjectAltName=DNS:localhost,IP:127.0.0.1', stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        environment['certificate_sha256'] = hashlib.sha256((OUT / 'cert.pem').read_bytes()).hexdigest()
+    (OUT / f'{args.label}-environment.json').write_text(json.dumps(environment, indent=2))
     rows = []
     for repeat in range(args.repeats):
       for path in args.paths.split(','):
@@ -87,26 +99,33 @@ def main():
                 config.write_text((ROOT / 'benches/nginx.conf').read_text().replace('worker_processes 1;', f'worker_processes {args.workers};'))
                 command += ['-v', f'{config}:/etc/nginx/nginx.conf:ro', 'nginx:1.29.6-alpine']
             else:
-                command += ['-e', f'WORKERS={args.workers}', '-v', 'maximus-bench-target:/target:ro', RUST, '/target/release/maximus-comparison', engine]
+                command += ['-e', f'WORKERS={args.workers}', '-v', 'maximus-bench-target:/target:ro', RUST, args.binary, engine]
             run(*command, stdout=subprocess.DEVNULL)
             try:
                 for _ in range(100):
                     log = subprocess.check_output(['docker', 'logs', name], text=True, stderr=subprocess.STDOUT)
                     if 'ready' in log or engine == 'nginx': break
                     time.sleep(.1)
-                base = ['docker', 'run', '--rm', '--network', f'container:{name}', '--cpuset-cpus', args.client_cpus, '-u', '0', '-v', f'{ROOT / "benches/load.js"}:/load.js:ro', '-v', f'{OUT}:/results', '-e', f'PATHNAME={path}', '-e', f'VUS={args.vus}', '-e', f'BODY_BYTES={args.body_bytes}']
+                base = ['docker', 'run', '--rm', '--network', f'container:{name}', '--cpuset-cpus', args.client_cpus, '-u', '0', '-v', f'{workload}:/load:ro', '-v', f'{OUT}:/results', '-e', f'PATHNAME={path}', '-e', f'VUS={args.vus}', '-e', f'BODY_BYTES={args.body_bytes}']
                 if args.protocol != 'plain':
                     base += ['-v', f'{OUT}/cert.pem:/cert.pem:ro', '-e', 'SSL_CERT_FILE=/cert.pem', '-e', 'URL=https://localhost:8080', '-e', f'PROTOCOL={args.protocol}']
+                def client(duration, suffix, cpu_path=None):
+                    payload = ['wrk', '-t2', f'-c{args.vus}', f'-d{duration}', '--latency', '-s', '/load', 'http://127.0.0.1:8080'] if args.generator == 'wrk' else ['k6', 'run', '--quiet', '/load']
+                    command = shlex.join(payload)
+                    if cpu_path:
+                        command += '; status=$?; cat /sys/fs/cgroup/cpu.stat > ' + shlex.quote(cpu_path) + '; exit "$status"'
+                    environment = ['-e', f'DURATION={duration}', '-e', f'RESULT=/results/{key}{suffix}.json']
+                    if rate != '0' and not suffix:
+                        environment += ['-e', f'RATE={rate}']
+                    return base + environment + ['--entrypoint', '/bin/sh', client_image, '-c', command]
                 with (OUT / f'{key}.log').open('w') as log:
-                    run(*base, '-e', 'DURATION=3s', '-e', f'RESULT=/results/{key}-warmup.json', K6, 'run', '--quiet', '/load.js', stdout=log, stderr=subprocess.STDOUT)
-                    validate_k6_iterations(json.loads((OUT / f'{key}-warmup.json').read_text()))
+                    run(*client('3s', '-warmup'), stdout=log, stderr=subprocess.STDOUT)
+                    warmup = json.loads((OUT / f'{key}-warmup.json').read_text())
+                    if args.generator == 'k6': validate_k6_iterations(warmup)
                     interval_start = time.monotonic()
                     before = counters(name)
-                    test = base + ['-e', f'DURATION={args.duration}', '-e', f'RESULT=/results/{key}.json']
-                    if rate != '0': test += ['-e', f'RATE={rate}']
                     cpu_path = f'/results/{key}-client-cpu.txt'
-                    command = 'k6 run --quiet /load.js; status=$?; cat /sys/fs/cgroup/cpu.stat > ' + shlex.quote(cpu_path) + '; exit "$status"'
-                    result = subprocess.Popen(test + ['--entrypoint', '/bin/sh', K6, '-c', command], stdout=log, stderr=subprocess.STDOUT)
+                    result = subprocess.Popen(client(args.duration, '', cpu_path), stdout=log, stderr=subprocess.STDOUT)
                     samples = []
                     while True:
                         try:
@@ -119,15 +138,15 @@ def main():
                     if samples:
                         (OUT / f'{key}-memory.json').write_text(json.dumps(samples, indent=2))
                 summary = json.loads((OUT / f'{key}.json').read_text())
-                iterations_started, iterations_completed = validate_k6_iterations(summary)
+                iterations_started, iterations_completed = validate_k6_iterations(summary) if args.generator == 'k6' else (None, None)
                 data = summary['metrics']
                 client_cpu = dict(line.split() for line in (OUT / f'{key}-client-cpu.txt').read_text().splitlines())
                 metric = lambda name, field, default=0: data.get(name, {}).get('values', {}).get(field, default)
                 count = metric('http_reqs', 'count')
-                row = dict(body_bytes=args.body_bytes if path == '/echo' else 0, engine=engine, path=path, workers=args.workers, protocol=args.protocol, offered_rps=int(rate), repeat=repeat,
+                row = dict(body_bytes=args.body_bytes if path == '/echo' else 0, engine=engine, path=path, workers=args.workers, protocol=args.protocol, generator=args.generator, offered_rps=int(rate), repeat=repeat,
                     requests=count, iterations_started=iterations_started, iterations_completed=iterations_completed,
                     rps=metric('http_reqs', 'rate'), p50_ms=metric('http_req_duration', 'med'), p99_ms=metric('http_req_duration', 'p(99)'), p999_ms=metric('http_req_duration', 'p(99.9)'),
-                    failures=metric('http_req_failed', 'passes'), checks_failed=metric('checks', 'fails'), dropped=metric('dropped_iterations', 'count'),
+                    failures=metric('http_req_failed', 'passes'), checks_failed=metric('checks', 'fails'), network_errors=metric('network_errors', 'count'), dropped=metric('dropped_iterations', 'count'),
                     cpu_us_per_request=(after['usage_usec'] - before['usage_usec']) / max(count, 1),
                     server_cpu_percent=100 * (after['usage_usec'] - before['usage_usec']) / (interval_seconds * 1_000_000),
                     client_cpu_percent=100 * int(client_cpu['usage_usec']) / (interval_seconds * 1_000_000),

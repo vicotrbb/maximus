@@ -1,0 +1,5610 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "decision": "initial candidate not qualified; preserve adverse dynamic HTTP/1 error result",
+  "scope": "Three performance changes: borrowed Error payload, literal dynamic-route metadata elision with pattern.contains, and two-pass direct shape String construction. Plus rejected-CONNECT closure fix. Persistent Fuse and length-based route classification are excluded.",
+  "source_baseline": "b5bb664bd6faf9b417cd8af5235ec12e7f0037de",
+  "snapshot_changed_files": [
+    "benches/load.js",
+    "benches/run.py",
+    "crates/core/src/lib.rs",
+    "crates/core/tests/api.rs",
+    "crates/framework/tests/native_http1.rs",
+    "crates/http1/src/lib.rs",
+    "crates/router/src/lib.rs",
+    "crates/router/tests/routes.rs"
+  ],
+  "source_manifest_sha256": {
+    "baseline": "ac7f89b8d6095bec8353eaf60e6125f6b97d858735bddfba9fd3115737bd9782",
+    "reviewed": "c9cd9456ba8a7055c80ef0435c79dd2575d82ac980b003719cfcfd60be2ea994"
+  },
+  "product_source_hashes": {
+    "baseline": {
+      "crates/core/src/body.rs": "6db454d4bbfa2b7a66baa25e074f5d642958fe7ab60cafd2bf0db6ccbf40cdce",
+      "crates/core/src/date.rs": "fa6be8123b0753026261845ed8d57faa1d39d3e76b1a35ad294e5f75e55603ad",
+      "crates/core/src/features.rs": "6006ff1c89c29155032fb06c74fd651a86b589e35e72b6518bf01c56ccf1b188",
+      "crates/core/src/lib.rs": "e9e9e277f8fe334846a75d3e1238a5403abde927b21b97ddefe4953a8a2e3254",
+      "crates/core/src/pipeline.rs": "b47bf22abf77fbe9851c4625b1ad9b4c8b02a989bbec8d73a3d88e17c01efe27",
+      "crates/core/src/policy.rs": "17f44301c4c46ef92ad136989a0d73cc6d1987e9ca1311471dcd57d5c7520618",
+      "crates/core/src/request.rs": "7724b3bf8f316b0973d9254f06b4192a35abde07cea5fbdf0b6ae4d316e50a3c",
+      "crates/core/src/sse.rs": "dd5af06b4a25436f0861d83ebeeed8ad8b8d191a7b436656c8f0063b73d401d0",
+      "crates/framework/src/compression.rs": "8136175658204d1cfa3fd99d6f9cbd1470cd87ab720684256c492787e9911f75",
+      "crates/framework/src/cors.rs": "75bde23f9b877936dcf9537b5d4fa1e214298ef9418b1a451ea024740b456587",
+      "crates/framework/src/lib.rs": "807290b64a209d9d44d5866ccd8d44060237cba8de4b79a2b42c858fc535a4e5",
+      "crates/framework/src/server.rs": "fae875644d26a4e78862b042f391e543745445c60b0515d348a15ae563208580",
+      "crates/framework/src/telemetry.rs": "0530801b5ba0a20b727ed47857359d46c8e57d83c09467cc7624176b408cbdc4",
+      "crates/framework/src/transport.rs": "9bf192b75ca8be90dd1409695e867cab75ed0194d7d9586cdd4415b00613b4b4",
+      "crates/framework/src/websocket.rs": "317d4bbf9d14164c1ac118deb6164f0e2c5c4f59b6b8e1d2f9da1119a1bec712",
+      "crates/http1/src/activity.rs": "d005eaf7139c76ac00975b81d5990519c6a62f2e453a41b3e6975ab73e723a0e",
+      "crates/http1/src/io.rs": "e33020bd117665cb545058494ad779bae436131d2cc2b5971682abaf9779d737",
+      "crates/http1/src/lib.rs": "b224c5aa7f9ed5f49dd9b37d434035dc66377154deebe9d0d9dd81d7352636c7",
+      "crates/http1/src/upgrade.rs": "0b291878b495a13e5f1d82502da493cec817353e61f0128c8c5e644d79ee7371",
+      "crates/http2/src/frame.rs": "2818b22a169a60ea7aef2938ede21e5ff6801ca52dec22901f18cb1cd776e8e0",
+      "crates/http2/src/hpack.rs": "49aa07cc413908e02818ee602854100125d8831ac3cf441acd897ae46ab10393",
+      "crates/http2/src/lib.rs": "677d76f337d0e7e91c68fad394b974a35a550fc558c64d0d73556a5c8e0df585",
+      "crates/http3/src/lib.rs": "7ad782135c52f7fda1c8804c5b16c657612aeea5b8ca0ae683a1d0c3446f0537",
+      "crates/io/src/lib.rs": "128a0e058dd188425ffd923a19462c4a6a9d9a0f98eeb2bfd15a2ec5cc10bb6f",
+      "crates/macros/src/lib.rs": "bcb583cc4287809942d606aa1d0bf62ecbeec82c3ff707ec84c5685b3ff870ef",
+      "crates/net/src/ebpf.rs": "2e720a72b1a608513edac8ec8855211c3fb872c9bf15089ab1eed0bc6b082472",
+      "crates/net/src/lib.rs": "8947176a87b074cd40bada2c21f302c1bd8f83dab0ab1c7d5c5d8475db97da07",
+      "crates/router/src/lib.rs": "969a5d4c0604cb333217e8df685f97fbd5255afe8e56af64cbee4c7f40248665",
+      "crates/runtime/src/lib.rs": "d3d3e55dd76ddb565da579d89b42f4168807080c2279987533862fb0f9205b03",
+      "crates/tls/src/lib.rs": "006c9dcc9e1257ec15e64d938467396f46cc7580afc13e99e3dc8c2342e23c40"
+    },
+    "reviewed": {
+      "crates/core/src/body.rs": "6db454d4bbfa2b7a66baa25e074f5d642958fe7ab60cafd2bf0db6ccbf40cdce",
+      "crates/core/src/date.rs": "fa6be8123b0753026261845ed8d57faa1d39d3e76b1a35ad294e5f75e55603ad",
+      "crates/core/src/features.rs": "6006ff1c89c29155032fb06c74fd651a86b589e35e72b6518bf01c56ccf1b188",
+      "crates/core/src/lib.rs": "bfbcd698eab1ded22ebc1adc9a92c44b92d5b37f2a1324c5e74ab7c5c4f8dafe",
+      "crates/core/src/pipeline.rs": "b47bf22abf77fbe9851c4625b1ad9b4c8b02a989bbec8d73a3d88e17c01efe27",
+      "crates/core/src/policy.rs": "17f44301c4c46ef92ad136989a0d73cc6d1987e9ca1311471dcd57d5c7520618",
+      "crates/core/src/request.rs": "7724b3bf8f316b0973d9254f06b4192a35abde07cea5fbdf0b6ae4d316e50a3c",
+      "crates/core/src/sse.rs": "dd5af06b4a25436f0861d83ebeeed8ad8b8d191a7b436656c8f0063b73d401d0",
+      "crates/framework/src/compression.rs": "8136175658204d1cfa3fd99d6f9cbd1470cd87ab720684256c492787e9911f75",
+      "crates/framework/src/cors.rs": "75bde23f9b877936dcf9537b5d4fa1e214298ef9418b1a451ea024740b456587",
+      "crates/framework/src/lib.rs": "807290b64a209d9d44d5866ccd8d44060237cba8de4b79a2b42c858fc535a4e5",
+      "crates/framework/src/server.rs": "fae875644d26a4e78862b042f391e543745445c60b0515d348a15ae563208580",
+      "crates/framework/src/telemetry.rs": "0530801b5ba0a20b727ed47857359d46c8e57d83c09467cc7624176b408cbdc4",
+      "crates/framework/src/transport.rs": "9bf192b75ca8be90dd1409695e867cab75ed0194d7d9586cdd4415b00613b4b4",
+      "crates/framework/src/websocket.rs": "317d4bbf9d14164c1ac118deb6164f0e2c5c4f59b6b8e1d2f9da1119a1bec712",
+      "crates/http1/src/activity.rs": "d005eaf7139c76ac00975b81d5990519c6a62f2e453a41b3e6975ab73e723a0e",
+      "crates/http1/src/io.rs": "e33020bd117665cb545058494ad779bae436131d2cc2b5971682abaf9779d737",
+      "crates/http1/src/lib.rs": "574b5adc03a8c982ad38cdf98f60bff8f910c073d0537bb1adad77968f7bdc6a",
+      "crates/http1/src/upgrade.rs": "0b291878b495a13e5f1d82502da493cec817353e61f0128c8c5e644d79ee7371",
+      "crates/http2/src/frame.rs": "2818b22a169a60ea7aef2938ede21e5ff6801ca52dec22901f18cb1cd776e8e0",
+      "crates/http2/src/hpack.rs": "49aa07cc413908e02818ee602854100125d8831ac3cf441acd897ae46ab10393",
+      "crates/http2/src/lib.rs": "677d76f337d0e7e91c68fad394b974a35a550fc558c64d0d73556a5c8e0df585",
+      "crates/http3/src/lib.rs": "7ad782135c52f7fda1c8804c5b16c657612aeea5b8ca0ae683a1d0c3446f0537",
+      "crates/io/src/lib.rs": "128a0e058dd188425ffd923a19462c4a6a9d9a0f98eeb2bfd15a2ec5cc10bb6f",
+      "crates/macros/src/lib.rs": "bcb583cc4287809942d606aa1d0bf62ecbeec82c3ff707ec84c5685b3ff870ef",
+      "crates/net/src/ebpf.rs": "2e720a72b1a608513edac8ec8855211c3fb872c9bf15089ab1eed0bc6b082472",
+      "crates/net/src/lib.rs": "8947176a87b074cd40bada2c21f302c1bd8f83dab0ab1c7d5c5d8475db97da07",
+      "crates/router/src/lib.rs": "d8cd324e2d27c77cec4d5ea3b5ba81b0439352c34399577fd6fafe95ecb356b5",
+      "crates/runtime/src/lib.rs": "d3d3e55dd76ddb565da579d89b42f4168807080c2279987533862fb0f9205b03",
+      "crates/tls/src/lib.rs": "006c9dcc9e1257ec15e64d938467396f46cc7580afc13e99e3dc8c2342e23c40"
+    }
+  },
+  "measurement_tools": {
+    "benches/run.py": "5c5cc7e86ebb69db4425451e0e4ab48ac3dd22dc8e167dc491aa3a6f623fd3c3",
+    "benches/load.js": "9dc5450974865a97bbb6ac5f77228c6a81b633f0b7d5729342a1f2a1c7290914",
+    "benches/compare-ownership.py": "8ef033f2dd0ec7fe9833732e34b09bb67e688e3648d021d611f69eec73b3b8cb",
+    "benches/baselines/src/main.rs": "b6681125ec3b2526a5a1a3ff0d1c9880ab8cb80aa4d7387349a8b91c25b13d68",
+    "benches/baselines/src/bin/allocations.rs": "0e70606bd2d0c595dedbf245c9f5d78b6d6f2ac427224481aefb2d2b72e0bf00"
+  },
+  "builds": {
+    "baseline-reviewed-build.log": {
+      "sha256": "b6133aa84c9f654c5d1c3d8fb8bbef5d306f9b9963c96746cb1f30bf0376c8a2",
+      "identities": [
+        "    Finished `release` profile [optimized] target(s) in 19.31s",
+        "431b6a287b3e42d39c77a11c59dfbf92bc14222f6d6c71d45e0eb589165c68ef  benches/baselines/target/oct20-baseline-reviewed/allocations",
+        "be05e0aea314cfdda839441c4c3c923e4cae9c8100f4836f382d7ca1e703e8f2  benches/baselines/target/oct20-baseline-reviewed/maximus-comparison",
+        "   text\t   data\t    bss\t    dec\t    hex\tfilename",
+        "7136205\t 373344\t   3136\t7512685\t 72a26d\tbenches/baselines/target/oct20-baseline-reviewed/maximus-comparison",
+        "9752760"
+      ]
+    },
+    "final-reviewed-build.log": {
+      "sha256": "6560ba37a17bf83a6f868f55a01b242210dd0c11bddb86f970437b291364568d",
+      "identities": [
+        "    Finished `release` profile [optimized] target(s) in 19.87s",
+        "651907357722e557d3cd0393cf32194282a18f4ac3bb4d86141a543360fb7c0c  benches/baselines/target/oct20-final-reviewed/allocations",
+        "4959b032ee51b042b0d3d478c44a784b7a0268149a69cbeb8f87acb58541ad26  benches/baselines/target/oct20-final-reviewed/maximus-comparison",
+        "   text\t   data\t    bss\t    dec\t    hex\tfilename",
+        "7113533\t 373320\t   3136\t7489989\t 7249c5\tbenches/baselines/target/oct20-final-reviewed/maximus-comparison",
+        "9686504"
+      ]
+    }
+  },
+  "environment": {
+    "date_utc": "2026-10-20T14:49:23Z",
+    "args": {
+      "engines": "dynamic",
+      "paths": "/plaintext",
+      "rates": "0",
+      "body_bytes": 1024,
+      "workers": 1,
+      "duration": "15s",
+      "repeats": 1,
+      "vus": 64,
+      "label": "ownership-registration-0-0-baseline",
+      "client_cpus": "1,2",
+      "sample_seconds": 0,
+      "protocol": "plain",
+      "binary": "/target/oct20-baseline-reviewed/maximus-comparison"
+    },
+    "source_commit": "b5bb664bd6faf9b417cd8af5235ec12e7f0037de",
+    "source_dirty": true,
+    "network": {
+      "server": "none",
+      "client": "container:<server>"
+    },
+    "workload_sha256": "9dc5450974865a97bbb6ac5f77228c6a81b633f0b7d5729342a1f2a1c7290914",
+    "binary_sha256": "be05e0aea314cfdda839441c4c3c923e4cae9c8100f4836f382d7ca1e703e8f2  /target/oct20-baseline-reviewed/maximus-comparison",
+    "running_containers": "lifeing-web-1 lifeing-web\nlifeing-api-1 lifeing-api\nlifeing-postgres-1 postgres:17-alpine\nlifeing-redis-1 redis:8-alpine",
+    "docker": "29.4.0",
+    "kernel": "Linux bd1d7453d349 7.0.14-orbstack-00380-ga7e0a2dc9535 #1 SMP PREEMPT Fri Aug  7 03:48:40 UTC 2026 aarch64 GNU/Linux",
+    "cpus": "3",
+    "images": {
+      "grafana/k6:1.6.0": "[\"grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532\"]",
+      "rust:1.96-bookworm": "[\"rust@sha256:a339861ae23e9abb272cea45dfafde21760d2ce6577a70f8a926153677902663\"]"
+    }
+  },
+  "methodology": {
+    "rounds": 3,
+    "cases": 7,
+    "measurements": 84,
+    "baseline_candidate_pairs": 21,
+    "duration": "15s",
+    "warmup": "separate 3s client process",
+    "vus": 64,
+    "server_cpus": "0",
+    "client_cpus": "1,2",
+    "worker_count": 1,
+    "mode": "closed-loop constant VUs",
+    "order": "baseline then candidate in rounds 0/2; reverse in round 1; candidate/Hyper/Axum order rotated by round",
+    "tls": "TLS1.3 with CA verification. New RSA2048 key/certificate per runner invocation; candidate and competitor engines share one invocation certificate, paired baseline has a distinct key/certificate.",
+    "cpu_scope": "Server cgroup usage delta during broader before/after interval divided by completed responses. Client CPU includes measured client container lifetime. Not exact request-only CPU attribution.",
+    "rss_scope": "Endpoint observations only; no periodic samples configured. peak_rss_kib is max(before,after), not continuous peak.",
+    "confounders": [
+      "shared three-CPU Linux ARM64 VM",
+      "four lifeing service containers active",
+      "unrelated Positron cargo test process observed; no causal attribution",
+      "no exclusive host or physical-core reservation",
+      "three pairs insufficient for universal no-regression inference",
+      "TLS Hyper fixture retains shared router clone adapter; comparator policies differ"
+    ]
+  },
+  "validity": {
+    "trials": 84,
+    "checked_measured_responses": 54324333,
+    "positive_equal_counters": true,
+    "zero_failures": true,
+    "zero_failed_checks": true,
+    "zero_drops": true,
+    "zero_nonzero_exits": true,
+    "warmup_responses_excluded": true
+  },
+  "socket_summaries": [
+    {
+      "case": 0,
+      "protocol": "plain",
+      "path": "/plaintext",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "variant": "baseline",
+      "trials": [
+        "ownership-registration-0-0-baseline",
+        "ownership-registration-1-0-baseline",
+        "ownership-registration-2-0-baseline"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 58822.799282829634,
+          "minimum": 56709.238703396906,
+          "maximum": 61044.63424542162,
+          "samples": [
+            56709.238703396906,
+            58822.799282829634,
+            61044.63424542162
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 8.045543676685096,
+          "minimum": 7.9552897817358,
+          "maximum": 8.368722950592295,
+          "samples": [
+            8.368722950592295,
+            7.9552897817358,
+            8.045543676685096
+          ]
+        },
+        "p50_ms": {
+          "median": 0.798461,
+          "minimum": 0.761882,
+          "maximum": 0.814545,
+          "samples": [
+            0.814545,
+            0.798461,
+            0.761882
+          ]
+        },
+        "p99_ms": {
+          "median": 5.445579399999998,
+          "minimum": 5.422851499999998,
+          "maximum": 5.962214809999999,
+          "samples": [
+            5.962214809999999,
+            5.445579399999998,
+            5.422851499999998
+          ]
+        },
+        "p999_ms": {
+          "median": 10.503400040000166,
+          "minimum": 10.231860601000122,
+          "maximum": 11.470260132000199,
+          "samples": [
+            11.470260132000199,
+            10.503400040000166,
+            10.231860601000122
+          ]
+        },
+        "rss_kib": {
+          "median": 6880.0,
+          "minimum": 6840.0,
+          "maximum": 6908.0,
+          "samples": [
+            6908.0,
+            6840.0,
+            6880.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 6880.0,
+          "minimum": 6840.0,
+          "maximum": 6908.0,
+          "samples": [
+            6908.0,
+            6840.0,
+            6880.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.678228999953717,
+          "minimum": 15.954807667061687,
+          "maximum": 17.18015691707842,
+          "samples": [
+            16.678228999953717,
+            15.954807667061687,
+            17.18015691707842
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 42.89256515855584,
+          "minimum": 42.688932979753176,
+          "maximum": 43.99624957241962,
+          "samples": [
+            42.688932979753176,
+            43.99624957241962,
+            42.89256515855584
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 172.2924478377155,
+          "minimum": 171.06039334708046,
+          "maximum": 181.74631499860806,
+          "samples": [
+            172.2924478377155,
+            181.74631499860806,
+            171.06039334708046
+          ]
+        }
+      }
+    },
+    {
+      "case": 0,
+      "protocol": "plain",
+      "path": "/plaintext",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-0-candidate",
+        "ownership-registration-1-0-candidate",
+        "ownership-registration-2-0-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 59941.12240473278,
+          "minimum": 56693.24620733024,
+          "maximum": 64782.567522634134,
+          "samples": [
+            56693.24620733024,
+            59941.12240473278,
+            64782.567522634134
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 7.722126946843011,
+          "minimum": 6.802057446745017,
+          "maximum": 8.790609842850676,
+          "samples": [
+            8.790609842850676,
+            7.722126946843011,
+            6.802057446745017
+          ]
+        },
+        "p50_ms": {
+          "median": 0.782419,
+          "minimum": 0.717506,
+          "maximum": 0.822211,
+          "samples": [
+            0.822211,
+            0.782419,
+            0.717506
+          ]
+        },
+        "p99_ms": {
+          "median": 5.53766426,
+          "minimum": 5.1518816199999975,
+          "maximum": 5.911087759999996,
+          "samples": [
+            5.911087759999996,
+            5.53766426,
+            5.1518816199999975
+          ]
+        },
+        "p999_ms": {
+          "median": 9.892164250000041,
+          "minimum": 9.746111299000058,
+          "maximum": 11.073410000000058,
+          "samples": [
+            11.073410000000058,
+            9.746111299000058,
+            9.892164250000041
+          ]
+        },
+        "rss_kib": {
+          "median": 6652.0,
+          "minimum": 6576.0,
+          "maximum": 7176.0,
+          "samples": [
+            6652.0,
+            6576.0,
+            7176.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 7060.0,
+          "minimum": 6652.0,
+          "maximum": 7176.0,
+          "samples": [
+            6652.0,
+            7060.0,
+            7176.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.48347833403386,
+          "minimum": 15.98020995897241,
+          "maximum": 16.718393792165443,
+          "samples": [
+            16.718393792165443,
+            15.98020995897241,
+            16.48347833403386
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 43.44958556756337,
+          "minimum": 40.10167554472924,
+          "maximum": 44.71784845445766,
+          "samples": [
+            44.71784845445766,
+            43.44958556756337,
+            40.10167554472924
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 172.55710302456856,
+          "minimum": 170.31669791463037,
+          "maximum": 181.16507276392278,
+          "samples": [
+            172.55710302456856,
+            181.16507276392278,
+            170.31669791463037
+          ]
+        }
+      }
+    },
+    {
+      "case": 0,
+      "protocol": "plain",
+      "path": "/plaintext",
+      "body_bytes": 0,
+      "engine": "hyper",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-0-candidate",
+        "ownership-registration-1-0-candidate",
+        "ownership-registration-2-0-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 56033.82960860958,
+          "minimum": 51033.75088990411,
+          "maximum": 56811.53389292181,
+          "samples": [
+            56811.53389292181,
+            56033.82960860958,
+            51033.75088990411
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 6.113445102060932,
+          "minimum": 4.948102042948952,
+          "maximum": 6.230581375154343,
+          "samples": [
+            6.113445102060932,
+            6.230581375154343,
+            4.948102042948952
+          ]
+        },
+        "p50_ms": {
+          "median": 0.822127,
+          "minimum": 0.794215,
+          "maximum": 0.823295,
+          "samples": [
+            0.822127,
+            0.823295,
+            0.794215
+          ]
+        },
+        "p99_ms": {
+          "median": 6.155834129999999,
+          "minimum": 5.80900265,
+          "maximum": 7.293145,
+          "samples": [
+            5.80900265,
+            6.155834129999999,
+            7.293145
+          ]
+        },
+        "p999_ms": {
+          "median": 11.556795137000378,
+          "minimum": 10.53544639500005,
+          "maximum": 20.38141247800421,
+          "samples": [
+            10.53544639500005,
+            11.556795137000378,
+            20.38141247800421
+          ]
+        },
+        "rss_kib": {
+          "median": 5808.0,
+          "minimum": 5436.0,
+          "maximum": 5912.0,
+          "samples": [
+            5912.0,
+            5436.0,
+            5808.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 5808.0,
+          "minimum": 5724.0,
+          "maximum": 5912.0,
+          "samples": [
+            5912.0,
+            5724.0,
+            5808.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.60483704204671,
+          "minimum": 16.023823417024687,
+          "maximum": 17.0727352919057,
+          "samples": [
+            16.60483704204671,
+            16.023823417024687,
+            17.0727352919057
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 31.376989649503983,
+          "minimum": 22.187827171407907,
+          "maximum": 32.6876605145001,
+          "samples": [
+            31.376989649503983,
+            32.6876605145001,
+            22.187827171407907
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 175.6986047265897,
+          "minimum": 136.13571347890124,
+          "maximum": 180.96451917456451,
+          "samples": [
+            175.6986047265897,
+            180.96451917456451,
+            136.13571347890124
+          ]
+        }
+      }
+    },
+    {
+      "case": 0,
+      "protocol": "plain",
+      "path": "/plaintext",
+      "body_bytes": 0,
+      "engine": "axum",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-0-candidate",
+        "ownership-registration-1-0-candidate",
+        "ownership-registration-2-0-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 55742.73599112367,
+          "minimum": 55366.82274321165,
+          "maximum": 59596.5222784976,
+          "samples": [
+            59596.5222784976,
+            55366.82274321165,
+            55742.73599112367
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 6.69139022010503,
+          "minimum": 6.173919074161697,
+          "maximum": 7.077701254605437,
+          "samples": [
+            6.173919074161697,
+            7.077701254605437,
+            6.69139022010503
+          ]
+        },
+        "p50_ms": {
+          "median": 0.805257,
+          "minimum": 0.788752,
+          "maximum": 0.836502,
+          "samples": [
+            0.788752,
+            0.836502,
+            0.805257
+          ]
+        },
+        "p99_ms": {
+          "median": 5.979854099999999,
+          "minimum": 5.5094604999999985,
+          "maximum": 6.014278589999999,
+          "samples": [
+            5.5094604999999985,
+            5.979854099999999,
+            6.014278589999999
+          ]
+        },
+        "p999_ms": {
+          "median": 10.706719888000293,
+          "minimum": 10.275286674000213,
+          "maximum": 13.954205016000257,
+          "samples": [
+            10.275286674000213,
+            10.706719888000293,
+            13.954205016000257
+          ]
+        },
+        "rss_kib": {
+          "median": 6856.0,
+          "minimum": 6792.0,
+          "maximum": 6952.0,
+          "samples": [
+            6792.0,
+            6856.0,
+            6952.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 6856.0,
+          "minimum": 6792.0,
+          "maximum": 6952.0,
+          "samples": [
+            6792.0,
+            6856.0,
+            6952.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.496182166039944,
+          "minimum": 16.06387325003743,
+          "maximum": 16.742180541157722,
+          "samples": [
+            16.742180541157722,
+            16.06387325003743,
+            16.496182166039944
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 33.92419496627939,
+          "minimum": 32.966757146308595,
+          "maximum": 36.593378872597256,
+          "samples": [
+            32.966757146308595,
+            36.593378872597256,
+            33.92419496627939
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 173.8660722300037,
+          "minimum": 172.9273252598552,
+          "maximum": 180.87409274056802,
+          "samples": [
+            172.9273252598552,
+            180.87409274056802,
+            173.8660722300037
+          ]
+        }
+      }
+    },
+    {
+      "case": 1,
+      "protocol": "plain",
+      "path": "/users/42",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "variant": "baseline",
+      "trials": [
+        "ownership-registration-0-1-baseline",
+        "ownership-registration-1-1-baseline",
+        "ownership-registration-2-1-baseline"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 55798.99721205773,
+          "minimum": 49351.79460113898,
+          "maximum": 59921.36999735649,
+          "samples": [
+            59921.36999735649,
+            55798.99721205773,
+            49351.79460113898
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 8.930523887225926,
+          "minimum": 8.233510438290269,
+          "maximum": 9.338101063778948,
+          "samples": [
+            8.233510438290269,
+            9.338101063778948,
+            8.930523887225926
+          ]
+        },
+        "p50_ms": {
+          "median": 0.820086,
+          "minimum": 0.783753,
+          "maximum": 0.84559,
+          "samples": [
+            0.783753,
+            0.820086,
+            0.84559
+          ]
+        },
+        "p99_ms": {
+          "median": 6.063827099999998,
+          "minimum": 5.570223329999998,
+          "maximum": 7.5007253799999996,
+          "samples": [
+            5.570223329999998,
+            6.063827099999998,
+            7.5007253799999996
+          ]
+        },
+        "p999_ms": {
+          "median": 12.168884130000688,
+          "minimum": 10.340096500000149,
+          "maximum": 27.11020231400005,
+          "samples": [
+            10.340096500000149,
+            12.168884130000688,
+            27.11020231400005
+          ]
+        },
+        "rss_kib": {
+          "median": 6856.0,
+          "minimum": 6628.0,
+          "maximum": 6928.0,
+          "samples": [
+            6928.0,
+            6628.0,
+            6856.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 6856.0,
+          "minimum": 6628.0,
+          "maximum": 6928.0,
+          "samples": [
+            6928.0,
+            6628.0,
+            6856.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.893066250020638,
+          "minimum": 16.497444082982838,
+          "maximum": 17.48200033302419,
+          "samples": [
+            16.893066250020638,
+            16.497444082982838,
+            17.48200033302419
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 43.81157861137825,
+          "minimum": 37.81817797767029,
+          "maximum": 47.37788448128381,
+          "samples": [
+            43.81157861137825,
+            47.37788448128381,
+            37.81817797767029
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 172.08966430214812,
+          "minimum": 145.62140781973164,
+          "maximum": 175.3166724161467,
+          "samples": [
+            172.08966430214812,
+            175.3166724161467,
+            145.62140781973164
+          ]
+        }
+      }
+    },
+    {
+      "case": 1,
+      "protocol": "plain",
+      "path": "/users/42",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-1-candidate",
+        "ownership-registration-1-1-candidate",
+        "ownership-registration-2-1-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 57805.77034870377,
+          "minimum": 34948.52515905965,
+          "maximum": 59872.67653686855,
+          "samples": [
+            59872.67653686855,
+            57805.77034870377,
+            34948.52515905965
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 8.61881285742457,
+          "minimum": 8.091210800074816,
+          "maximum": 10.178806443860365,
+          "samples": [
+            8.091210800074816,
+            8.61881285742457,
+            10.178806443860365
+          ]
+        },
+        "p50_ms": {
+          "median": 0.799169,
+          "minimum": 0.78821,
+          "maximum": 1.044628,
+          "samples": [
+            0.78821,
+            0.799169,
+            1.044628
+          ]
+        },
+        "p99_ms": {
+          "median": 5.7217512,
+          "minimum": 5.40259985,
+          "maximum": 11.142803979999998,
+          "samples": [
+            5.40259985,
+            5.7217512,
+            11.142803979999998
+          ]
+        },
+        "p999_ms": {
+          "median": 10.419376500000562,
+          "minimum": 9.717987095000115,
+          "maximum": 36.19238500000283,
+          "samples": [
+            9.717987095000115,
+            10.419376500000562,
+            36.19238500000283
+          ]
+        },
+        "rss_kib": {
+          "median": 7124.0,
+          "minimum": 6876.0,
+          "maximum": 7140.0,
+          "samples": [
+            7124.0,
+            7140.0,
+            6876.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 7124.0,
+          "minimum": 6972.0,
+          "maximum": 7140.0,
+          "samples": [
+            7124.0,
+            7140.0,
+            6972.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.127483749995008,
+          "minimum": 16.07543716696091,
+          "maximum": 17.310615291120484,
+          "samples": [
+            16.127483749995008,
+            16.07543716696091,
+            17.310615291120484
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 45.06378746158867,
+          "minimum": 30.828280279196093,
+          "maximum": 46.49158789510495,
+          "samples": [
+            45.06378746158867,
+            46.49158789510495,
+            30.828280279196093
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 180.02782362133203,
+          "minimum": 115.93323901256306,
+          "maximum": 180.45763669570096,
+          "samples": [
+            180.02782362133203,
+            180.45763669570096,
+            115.93323901256306
+          ]
+        }
+      }
+    },
+    {
+      "case": 1,
+      "protocol": "plain",
+      "path": "/users/42",
+      "body_bytes": 0,
+      "engine": "hyper",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-1-candidate",
+        "ownership-registration-1-1-candidate",
+        "ownership-registration-2-1-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 40972.130867325475,
+          "minimum": 35683.48696229826,
+          "maximum": 57218.96675901485,
+          "samples": [
+            40972.130867325475,
+            57218.96675901485,
+            35683.48696229826
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 6.197830964846672,
+          "minimum": 5.988985800724441,
+          "maximum": 6.735414758278,
+          "samples": [
+            6.735414758278,
+            6.197830964846672,
+            5.988985800724441
+          ]
+        },
+        "p50_ms": {
+          "median": 0.987003,
+          "minimum": 0.818878,
+          "maximum": 1.013628,
+          "samples": [
+            0.987003,
+            0.818878,
+            1.013628
+          ]
+        },
+        "p99_ms": {
+          "median": 9.338253299999996,
+          "minimum": 5.839847019999999,
+          "maximum": 11.851319719999992,
+          "samples": [
+            9.338253299999996,
+            5.839847019999999,
+            11.851319719999992
+          ]
+        },
+        "p999_ms": {
+          "median": 20.1725257500016,
+          "minimum": 10.078503902000064,
+          "maximum": 34.339596500003175,
+          "samples": [
+            20.1725257500016,
+            10.078503902000064,
+            34.339596500003175
+          ]
+        },
+        "rss_kib": {
+          "median": 5892.0,
+          "minimum": 4972.0,
+          "maximum": 5908.0,
+          "samples": [
+            5892.0,
+            4972.0,
+            5908.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 5892.0,
+          "minimum": 5728.0,
+          "maximum": 5908.0,
+          "samples": [
+            5892.0,
+            5728.0,
+            5908.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.291207584086806,
+          "minimum": 16.044184333877638,
+          "maximum": 16.413300957996398,
+          "samples": [
+            16.291207584086806,
+            16.044184333877638,
+            16.413300957996398
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 25.410393788386845,
+          "minimum": 19.532682719974673,
+          "maximum": 33.158014700484635,
+          "samples": [
+            25.410393788386845,
+            33.158014700484635,
+            19.532682719974673
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 142.9642822963608,
+          "minimum": 115.37917356455846,
+          "maximum": 181.56388254958182,
+          "samples": [
+            142.9642822963608,
+            181.56388254958182,
+            115.37917356455846
+          ]
+        }
+      }
+    },
+    {
+      "case": 1,
+      "protocol": "plain",
+      "path": "/users/42",
+      "body_bytes": 0,
+      "engine": "axum",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-1-candidate",
+        "ownership-registration-1-1-candidate",
+        "ownership-registration-2-1-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 50362.70409030061,
+          "minimum": 33272.704485737355,
+          "maximum": 52225.203251685496,
+          "samples": [
+            33272.704485737355,
+            50362.70409030061,
+            52225.203251685496
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 7.749659822525308,
+          "minimum": 5.976046146207094,
+          "maximum": 7.916742128587113,
+          "samples": [
+            7.916742128587113,
+            7.749659822525308,
+            5.976046146207094
+          ]
+        },
+        "p50_ms": {
+          "median": 0.864752,
+          "minimum": 0.796044,
+          "maximum": 1.118753,
+          "samples": [
+            1.118753,
+            0.864752,
+            0.796044
+          ]
+        },
+        "p99_ms": {
+          "median": 7.333403259999999,
+          "minimum": 7.130680919999996,
+          "maximum": 11.705192749999998,
+          "samples": [
+            11.705192749999998,
+            7.130680919999996,
+            7.333403259999999
+          ]
+        },
+        "p999_ms": {
+          "median": 21.692444526000187,
+          "minimum": 18.439478125000424,
+          "maximum": 31.418455000002748,
+          "samples": [
+            31.418455000002748,
+            18.439478125000424,
+            21.692444526000187
+          ]
+        },
+        "rss_kib": {
+          "median": 6916.0,
+          "minimum": 6888.0,
+          "maximum": 6920.0,
+          "samples": [
+            6916.0,
+            6888.0,
+            6920.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 6916.0,
+          "minimum": 6888.0,
+          "maximum": 6920.0,
+          "samples": [
+            6916.0,
+            6888.0,
+            6920.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.242781582986936,
+          "minimum": 16.14460370806046,
+          "maximum": 16.560735082952306,
+          "samples": [
+            16.560735082952306,
+            16.242781582986936,
+            16.14460370806046
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 28.998989908080237,
+          "minimum": 23.861416659383806,
+          "maximum": 36.04539635090843,
+          "samples": [
+            23.861416659383806,
+            36.04539635090843,
+            28.998989908080237
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 155.45174383853026,
+          "minimum": 117.60828189353442,
+          "maximum": 177.44213854472034,
+          "samples": [
+            117.60828189353442,
+            177.44213854472034,
+            155.45174383853026
+          ]
+        }
+      }
+    },
+    {
+      "case": 2,
+      "protocol": "plain",
+      "path": "/error",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "variant": "baseline",
+      "trials": [
+        "ownership-registration-0-2-baseline",
+        "ownership-registration-1-2-baseline",
+        "ownership-registration-2-2-baseline"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 54929.72735828192,
+          "minimum": 40402.50126990782,
+          "maximum": 55276.56189309717,
+          "samples": [
+            54929.72735828192,
+            40402.50126990782,
+            55276.56189309717
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 8.538711089617346,
+          "minimum": 8.10723249220851,
+          "maximum": 9.890724384686333,
+          "samples": [
+            8.10723249220851,
+            9.890724384686333,
+            8.538711089617346
+          ]
+        },
+        "p50_ms": {
+          "median": 0.821967,
+          "minimum": 0.8198775,
+          "maximum": 0.964211,
+          "samples": [
+            0.8198775,
+            0.964211,
+            0.821967
+          ]
+        },
+        "p99_ms": {
+          "median": 6.2726547499999965,
+          "minimum": 6.163549199999999,
+          "maximum": 9.991422719999994,
+          "samples": [
+            6.2726547499999965,
+            9.991422719999994,
+            6.163549199999999
+          ]
+        },
+        "p999_ms": {
+          "median": 13.458089650000328,
+          "minimum": 13.175330880000008,
+          "maximum": 37.84997897600055,
+          "samples": [
+            13.458089650000328,
+            37.84997897600055,
+            13.175330880000008
+          ]
+        },
+        "rss_kib": {
+          "median": 6016.0,
+          "minimum": 5640.0,
+          "maximum": 7268.0,
+          "samples": [
+            7268.0,
+            6016.0,
+            5640.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 6792.0,
+          "minimum": 5944.0,
+          "maximum": 7268.0,
+          "samples": [
+            7268.0,
+            6792.0,
+            5944.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 29.842994124861434,
+          "minimum": 15.960413665976375,
+          "maximum": 73.37215299997479,
+          "samples": [
+            15.960413665976375,
+            29.842994124861434,
+            73.37215299997479
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 20.08679482668307,
+          "minimum": 9.649624156459513,
+          "maximum": 41.854585600374804,
+          "samples": [
+            41.854585600374804,
+            20.08679482668307,
+            9.649624156459513
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 78.88625685982274,
+          "minimum": 38.45212910681481,
+          "maximum": 171.93613883892561,
+          "samples": [
+            171.93613883892561,
+            78.88625685982274,
+            38.45212910681481
+          ]
+        }
+      }
+    },
+    {
+      "case": 2,
+      "protocol": "plain",
+      "path": "/error",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-2-candidate",
+        "ownership-registration-1-2-candidate",
+        "ownership-registration-2-2-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 27185.81102584538,
+          "minimum": 19754.590942571067,
+          "maximum": 52735.624625292236,
+          "samples": [
+            52735.624625292236,
+            19754.590942571067,
+            27185.81102584538
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 8.537669977525931,
+          "minimum": 8.337286431482632,
+          "maximum": 11.40095425602601,
+          "samples": [
+            8.537669977525931,
+            8.337286431482632,
+            11.40095425602601
+          ]
+        },
+        "p50_ms": {
+          "median": 1.341849,
+          "minimum": 0.841544,
+          "maximum": 1.3622575000000001,
+          "samples": [
+            0.841544,
+            1.3622575000000001,
+            1.341849
+          ]
+        },
+        "p99_ms": {
+          "median": 15.27788952,
+          "minimum": 6.68734014,
+          "maximum": 16.12761375,
+          "samples": [
+            6.68734014,
+            16.12761375,
+            15.27788952
+          ]
+        },
+        "p999_ms": {
+          "median": 34.784621144002166,
+          "minimum": 14.37771782800027,
+          "maximum": 429.7137028700018,
+          "samples": [
+            14.37771782800027,
+            429.7137028700018,
+            34.784621144002166
+          ]
+        },
+        "rss_kib": {
+          "median": 7340.0,
+          "minimum": 7092.0,
+          "maximum": 7548.0,
+          "samples": [
+            7340.0,
+            7548.0,
+            7092.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 7340.0,
+          "minimum": 7092.0,
+          "maximum": 7548.0,
+          "samples": [
+            7340.0,
+            7548.0,
+            7092.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.087358250049874,
+          "minimum": 16.012461165897548,
+          "maximum": 22.183564083185047,
+          "samples": [
+            16.012461165897548,
+            22.183564083185047,
+            16.087358250049874
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 28.90442873046346,
+          "minimum": 11.139350695558775,
+          "maximum": 42.182403629401044,
+          "samples": [
+            42.182403629401044,
+            11.139350695558775,
+            28.90442873046346
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 117.16695001767343,
+          "minimum": 46.30718022351751,
+          "maximum": 172.10787719937147,
+          "samples": [
+            172.10787719937147,
+            46.30718022351751,
+            117.16695001767343
+          ]
+        }
+      }
+    },
+    {
+      "case": 2,
+      "protocol": "plain",
+      "path": "/error",
+      "body_bytes": 0,
+      "engine": "hyper",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-2-candidate",
+        "ownership-registration-1-2-candidate",
+        "ownership-registration-2-2-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 51670.18060713309,
+          "minimum": 15589.190261337815,
+          "maximum": 56651.20054452956,
+          "samples": [
+            56651.20054452956,
+            51670.18060713309,
+            15589.190261337815
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 6.954392040088558,
+          "minimum": 5.8981976820112925,
+          "maximum": 14.878226178870133,
+          "samples": [
+            5.8981976820112925,
+            6.954392040088558,
+            14.878226178870133
+          ]
+        },
+        "p50_ms": {
+          "median": 0.865245,
+          "minimum": 0.817669,
+          "maximum": 2.0960885,
+          "samples": [
+            0.817669,
+            0.865245,
+            2.0960885
+          ]
+        },
+        "p99_ms": {
+          "median": 6.784318809999999,
+          "minimum": 5.8217007999999995,
+          "maximum": 31.56690982999999,
+          "samples": [
+            5.8217007999999995,
+            6.784318809999999,
+            31.56690982999999
+          ]
+        },
+        "p999_ms": {
+          "median": 13.331843405000125,
+          "minimum": 11.22137000000049,
+          "maximum": 99.14201433600054,
+          "samples": [
+            11.22137000000049,
+            13.331843405000125,
+            99.14201433600054
+          ]
+        },
+        "rss_kib": {
+          "median": 5900.0,
+          "minimum": 4668.0,
+          "maximum": 5908.0,
+          "samples": [
+            5900.0,
+            4668.0,
+            5908.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 5900.0,
+          "minimum": 5756.0,
+          "maximum": 5908.0,
+          "samples": [
+            5900.0,
+            5756.0,
+            5908.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.3724972079508,
+          "minimum": 16.069997583981603,
+          "maximum": 17.121806083945557,
+          "samples": [
+            16.069997583981603,
+            17.121806083945557,
+            16.3724972079508
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 31.1962585793861,
+          "minimum": 21.252353601320316,
+          "maximum": 31.481713865771518,
+          "samples": [
+            31.1962585793861,
+            31.481713865771518,
+            21.252353601320316
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 169.37491207304467,
+          "minimum": 108.00865485206769,
+          "maximum": 180.59728913045257,
+          "samples": [
+            180.59728913045257,
+            169.37491207304467,
+            108.00865485206769
+          ]
+        }
+      }
+    },
+    {
+      "case": 2,
+      "protocol": "plain",
+      "path": "/error",
+      "body_bytes": 0,
+      "engine": "axum",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-2-candidate",
+        "ownership-registration-1-2-candidate",
+        "ownership-registration-2-2-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 56478.66323551923,
+          "minimum": 55322.347817219175,
+          "maximum": 59411.581359269745,
+          "samples": [
+            59411.581359269745,
+            56478.66323551923,
+            55322.347817219175
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 5.944475631969007,
+          "minimum": 5.897582421209992,
+          "maximum": 5.956075466450757,
+          "samples": [
+            5.956075466450757,
+            5.897582421209992,
+            5.944475631969007
+          ]
+        },
+        "p50_ms": {
+          "median": 0.782392,
+          "minimum": 0.782211,
+          "maximum": 0.790218,
+          "samples": [
+            0.782211,
+            0.782392,
+            0.790218
+          ]
+        },
+        "p99_ms": {
+          "median": 6.147524249999999,
+          "minimum": 5.612017749999999,
+          "maximum": 6.4652732599999965,
+          "samples": [
+            5.612017749999999,
+            6.147524249999999,
+            6.4652732599999965
+          ]
+        },
+        "p999_ms": {
+          "median": 13.333533924000482,
+          "minimum": 11.196184625000086,
+          "maximum": 17.104238823000415,
+          "samples": [
+            11.196184625000086,
+            17.104238823000415,
+            13.333533924000482
+          ]
+        },
+        "rss_kib": {
+          "median": 6000.0,
+          "minimum": 5932.0,
+          "maximum": 6920.0,
+          "samples": [
+            6000.0,
+            6920.0,
+            5932.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 6692.0,
+          "minimum": 6000.0,
+          "maximum": 6920.0,
+          "samples": [
+            6000.0,
+            6920.0,
+            6692.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.079765666043386,
+          "minimum": 16.043581374920905,
+          "maximum": 16.85481487493962,
+          "samples": [
+            16.079765666043386,
+            16.85481487493962,
+            16.043581374920905
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 30.75705408091482,
+          "minimum": 29.6790741228353,
+          "maximum": 33.03054976240143,
+          "samples": [
+            33.03054976240143,
+            29.6790741228353,
+            30.75705408091482
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 168.5515370169855,
+          "minimum": 157.21167628721832,
+          "maximum": 180.19107119941918,
+          "samples": [
+            180.19107119941918,
+            157.21167628721832,
+            168.5515370169855
+          ]
+        }
+      }
+    },
+    {
+      "case": 3,
+      "protocol": "plain",
+      "path": "/echo",
+      "body_bytes": 1024,
+      "engine": "dynamic",
+      "variant": "baseline",
+      "trials": [
+        "ownership-registration-0-3-baseline",
+        "ownership-registration-1-3-baseline",
+        "ownership-registration-2-3-baseline"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 30928.898308920216,
+          "minimum": 24709.295899532164,
+          "maximum": 52587.978557322516,
+          "samples": [
+            52587.978557322516,
+            24709.295899532164,
+            30928.898308920216
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 12.14107422702102,
+          "minimum": 9.208381489704674,
+          "maximum": 14.887964587275384,
+          "samples": [
+            9.208381489704674,
+            12.14107422702102,
+            14.887964587275384
+          ]
+        },
+        "p50_ms": {
+          "median": 1.356933,
+          "minimum": 0.8716275,
+          "maximum": 1.494013,
+          "samples": [
+            0.8716275,
+            1.494013,
+            1.356933
+          ]
+        },
+        "p99_ms": {
+          "median": 11.60143014,
+          "minimum": 6.263144049999999,
+          "maximum": 15.17025519999999,
+          "samples": [
+            6.263144049999999,
+            15.17025519999999,
+            11.60143014
+          ]
+        },
+        "p999_ms": {
+          "median": 22.90022400000005,
+          "minimum": 11.127539615000224,
+          "maximum": 26.48200494000068,
+          "samples": [
+            11.127539615000224,
+            26.48200494000068,
+            22.90022400000005
+          ]
+        },
+        "rss_kib": {
+          "median": 7444.0,
+          "minimum": 7268.0,
+          "maximum": 7452.0,
+          "samples": [
+            7444.0,
+            7268.0,
+            7452.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 7444.0,
+          "minimum": 7268.0,
+          "maximum": 7452.0,
+          "samples": [
+            7444.0,
+            7268.0,
+            7452.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.303873792057857,
+          "minimum": 15.935928124934435,
+          "maximum": 18.0097226658836,
+          "samples": [
+            15.935928124934435,
+            18.0097226658836,
+            16.303873792057857
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 42.37167245102952,
+          "minimum": 24.99313333973075,
+          "maximum": 45.59694887573356,
+          "samples": [
+            45.59694887573356,
+            24.99313333973075,
+            42.37167245102952
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 157.44660028283974,
+          "minimum": 89.23610484265893,
+          "maximum": 182.47854641425,
+          "samples": [
+            182.47854641425,
+            89.23610484265893,
+            157.44660028283974
+          ]
+        }
+      }
+    },
+    {
+      "case": 3,
+      "protocol": "plain",
+      "path": "/echo",
+      "body_bytes": 1024,
+      "engine": "dynamic",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-3-candidate",
+        "ownership-registration-1-3-candidate",
+        "ownership-registration-2-3-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 46585.180907665126,
+          "minimum": 32651.772680246017,
+          "maximum": 53784.88155423116,
+          "samples": [
+            53784.88155423116,
+            46585.180907665126,
+            32651.772680246017
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 10.889032141743055,
+          "minimum": 8.652282716205463,
+          "maximum": 13.445665485540733,
+          "samples": [
+            8.652282716205463,
+            10.889032141743055,
+            13.445665485540733
+          ]
+        },
+        "p50_ms": {
+          "median": 0.98475,
+          "minimum": 0.862919,
+          "maximum": 1.200183,
+          "samples": [
+            0.862919,
+            0.98475,
+            1.200183
+          ]
+        },
+        "p99_ms": {
+          "median": 7.118518279999998,
+          "minimum": 6.080680159999996,
+          "maximum": 12.032829319999996,
+          "samples": [
+            6.080680159999996,
+            7.118518279999998,
+            12.032829319999996
+          ]
+        },
+        "p999_ms": {
+          "median": 12.67612651900008,
+          "minimum": 10.812800091000064,
+          "maximum": 25.19929100000027,
+          "samples": [
+            10.812800091000064,
+            12.67612651900008,
+            25.19929100000027
+          ]
+        },
+        "rss_kib": {
+          "median": 7404.0,
+          "minimum": 7000.0,
+          "maximum": 7724.0,
+          "samples": [
+            7000.0,
+            7404.0,
+            7724.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 7404.0,
+          "minimum": 7228.0,
+          "maximum": 7724.0,
+          "samples": [
+            7228.0,
+            7404.0,
+            7724.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.244197249878198,
+          "minimum": 15.792476792121306,
+          "maximum": 16.32677699998021,
+          "samples": [
+            15.792476792121306,
+            16.32677699998021,
+            16.244197249878198
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 44.20255981305342,
+          "minimum": 40.55237632656421,
+          "maximum": 46.608788740173416,
+          "samples": [
+            44.20255981305342,
+            46.608788740173416,
+            40.55237632656421
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 175.453679559871,
+          "minimum": 152.90679260981176,
+          "maximum": 182.60330143012624,
+          "samples": [
+            182.60330143012624,
+            175.453679559871,
+            152.90679260981176
+          ]
+        }
+      }
+    },
+    {
+      "case": 3,
+      "protocol": "plain",
+      "path": "/echo",
+      "body_bytes": 1024,
+      "engine": "hyper",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-3-candidate",
+        "ownership-registration-1-3-candidate",
+        "ownership-registration-2-3-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 38536.95389150173,
+          "minimum": 37871.736327625076,
+          "maximum": 55571.92949251663,
+          "samples": [
+            55571.92949251663,
+            38536.95389150173,
+            37871.736327625076
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 8.195242658658769,
+          "minimum": 6.201397294421499,
+          "maximum": 8.459985002957163,
+          "samples": [
+            6.201397294421499,
+            8.195242658658769,
+            8.459985002957163
+          ]
+        },
+        "p50_ms": {
+          "median": 1.033278,
+          "minimum": 0.841544,
+          "maximum": 1.102348,
+          "samples": [
+            0.841544,
+            1.033278,
+            1.102348
+          ]
+        },
+        "p99_ms": {
+          "median": 9.643691119999998,
+          "minimum": 5.8464728,
+          "maximum": 10.081453099999989,
+          "samples": [
+            5.8464728,
+            10.081453099999989,
+            9.643691119999998
+          ]
+        },
+        "p999_ms": {
+          "median": 23.519065088000048,
+          "minimum": 9.732021760000007,
+          "maximum": 29.045017825020913,
+          "samples": [
+            9.732021760000007,
+            29.045017825020913,
+            23.519065088000048
+          ]
+        },
+        "rss_kib": {
+          "median": 6140.0,
+          "minimum": 5772.0,
+          "maximum": 6168.0,
+          "samples": [
+            6168.0,
+            6140.0,
+            5772.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 6140.0,
+          "minimum": 5912.0,
+          "maximum": 6168.0,
+          "samples": [
+            6168.0,
+            6140.0,
+            5912.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 15.961352540878579,
+          "minimum": 15.845368209062144,
+          "maximum": 16.472120083868504,
+          "samples": [
+            15.845368209062144,
+            15.961352540878579,
+            16.472120083868504
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 29.681926941131398,
+          "minimum": 29.177901663713783,
+          "maximum": 32.62501023512647,
+          "samples": [
+            32.62501023512647,
+            29.681926941131398,
+            29.177901663713783
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 160.5652085834407,
+          "minimum": 157.00136878753494,
+          "maximum": 184.1767361600953,
+          "samples": [
+            184.1767361600953,
+            160.5652085834407,
+            157.00136878753494
+          ]
+        }
+      }
+    },
+    {
+      "case": 3,
+      "protocol": "plain",
+      "path": "/echo",
+      "body_bytes": 1024,
+      "engine": "axum",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-3-candidate",
+        "ownership-registration-1-3-candidate",
+        "ownership-registration-2-3-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 42365.91134644865,
+          "minimum": 34433.75652500832,
+          "maximum": 51048.13493079781,
+          "samples": [
+            51048.13493079781,
+            42365.91134644865,
+            34433.75652500832
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 10.042190647029205,
+          "minimum": 7.645878522821208,
+          "maximum": 11.24188674058285,
+          "samples": [
+            7.645878522821208,
+            10.042190647029205,
+            11.24188674058285
+          ]
+        },
+        "p50_ms": {
+          "median": 1.036737,
+          "minimum": 0.903669,
+          "maximum": 1.220141,
+          "samples": [
+            0.903669,
+            1.036737,
+            1.220141
+          ]
+        },
+        "p99_ms": {
+          "median": 8.1952495,
+          "minimum": 6.42078848,
+          "maximum": 10.75294689999999,
+          "samples": [
+            6.42078848,
+            8.1952495,
+            10.75294689999999
+          ]
+        },
+        "p999_ms": {
+          "median": 16.5447303270005,
+          "minimum": 11.623507004000277,
+          "maximum": 22.708167970000584,
+          "samples": [
+            11.623507004000277,
+            16.5447303270005,
+            22.708167970000584
+          ]
+        },
+        "rss_kib": {
+          "median": 6280.0,
+          "minimum": 5884.0,
+          "maximum": 7000.0,
+          "samples": [
+            6280.0,
+            7000.0,
+            5884.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 6800.0,
+          "minimum": 6676.0,
+          "maximum": 7000.0,
+          "samples": [
+            6676.0,
+            7000.0,
+            6800.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.075937665998936,
+          "minimum": 16.01889149984345,
+          "maximum": 16.086018540896475,
+          "samples": [
+            16.01889149984345,
+            16.086018540896475,
+            16.075937665998936
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 36.549876126305115,
+          "minimum": 36.120959913159595,
+          "maximum": 39.674285988012606,
+          "samples": [
+            36.549876126305115,
+            39.674285988012606,
+            36.120959913159595
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 176.61705367160837,
+          "minimum": 168.92314814976962,
+          "maximum": 180.75821913322142,
+          "samples": [
+            180.75821913322142,
+            176.61705367160837,
+            168.92314814976962
+          ]
+        }
+      }
+    },
+    {
+      "case": 4,
+      "protocol": "h2",
+      "path": "/error",
+      "body_bytes": 0,
+      "engine": "maximus",
+      "variant": "baseline",
+      "trials": [
+        "ownership-registration-0-4-baseline",
+        "ownership-registration-1-4-baseline",
+        "ownership-registration-2-4-baseline"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 46980.238593516944,
+          "minimum": 37697.840179440325,
+          "maximum": 53385.64070773102,
+          "samples": [
+            46980.238593516944,
+            53385.64070773102,
+            37697.840179440325
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 13.031233994617226,
+          "minimum": 10.20159938861597,
+          "maximum": 13.84922718921796,
+          "samples": [
+            13.031233994617226,
+            10.20159938861597,
+            13.84922718921796
+          ]
+        },
+        "p50_ms": {
+          "median": 0.986794,
+          "minimum": 0.836524,
+          "maximum": 1.169516,
+          "samples": [
+            0.986794,
+            0.836524,
+            1.169516
+          ]
+        },
+        "p99_ms": {
+          "median": 7.9694290999999975,
+          "minimum": 6.2162952,
+          "maximum": 8.499233559999997,
+          "samples": [
+            6.2162952,
+            7.9694290999999975,
+            8.499233559999997
+          ]
+        },
+        "p999_ms": {
+          "median": 14.720447510000215,
+          "minimum": 12.14113272000043,
+          "maximum": 16.585364812000417,
+          "samples": [
+            12.14113272000043,
+            14.720447510000215,
+            16.585364812000417
+          ]
+        },
+        "rss_kib": {
+          "median": 8708.0,
+          "minimum": 8648.0,
+          "maximum": 8768.0,
+          "samples": [
+            8648.0,
+            8708.0,
+            8768.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 8708.0,
+          "minimum": 8648.0,
+          "maximum": 8768.0,
+          "samples": [
+            8648.0,
+            8708.0,
+            8768.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.17246100003831,
+          "minimum": 16.013690499821678,
+          "maximum": 16.18978179199621,
+          "samples": [
+            16.18978179199621,
+            16.013690499821678,
+            16.17246100003831
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 51.01573556758183,
+          "minimum": 48.429209382427615,
+          "maximum": 56.73299441590244,
+          "samples": [
+            56.73299441590244,
+            51.01573556758183,
+            48.429209382427615
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 164.6186867436557,
+          "minimum": 150.25433049393308,
+          "maximum": 178.0096444181077,
+          "samples": [
+            178.0096444181077,
+            164.6186867436557,
+            150.25433049393308
+          ]
+        }
+      }
+    },
+    {
+      "case": 4,
+      "protocol": "h2",
+      "path": "/error",
+      "body_bytes": 0,
+      "engine": "maximus",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-4-candidate",
+        "ownership-registration-1-4-candidate",
+        "ownership-registration-2-4-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 53062.70462481208,
+          "minimum": 45392.505166899726,
+          "maximum": 57281.349054865204,
+          "samples": [
+            57281.349054865204,
+            53062.70462481208,
+            45392.505166899726
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 10.72195273530514,
+          "minimum": 10.37078703913085,
+          "maximum": 11.46643826571785,
+          "samples": [
+            10.72195273530514,
+            10.37078703913085,
+            11.46643826571785
+          ]
+        },
+        "p50_ms": {
+          "median": 0.8512535,
+          "minimum": 0.833752,
+          "maximum": 0.971846,
+          "samples": [
+            0.833752,
+            0.8512535,
+            0.971846
+          ]
+        },
+        "p99_ms": {
+          "median": 7.009014549999998,
+          "minimum": 5.1097328499999985,
+          "maximum": 7.3286,
+          "samples": [
+            5.1097328499999985,
+            7.009014549999998,
+            7.3286
+          ]
+        },
+        "p999_ms": {
+          "median": 13.562538670000468,
+          "minimum": 10.151753545000044,
+          "maximum": 13.731868433000232,
+          "samples": [
+            10.151753545000044,
+            13.562538670000468,
+            13.731868433000232
+          ]
+        },
+        "rss_kib": {
+          "median": 8848.0,
+          "minimum": 8024.0,
+          "maximum": 9032.0,
+          "samples": [
+            8024.0,
+            8848.0,
+            9032.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 8848.0,
+          "minimum": 8388.0,
+          "maximum": 9032.0,
+          "samples": [
+            8388.0,
+            8848.0,
+            9032.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 15.992163291899487,
+          "minimum": 15.976409832946956,
+          "maximum": 16.01994879101403,
+          "samples": [
+            16.01994879101403,
+            15.976409832946956,
+            15.992163291899487
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 51.6705886135702,
+          "minimum": 48.86737871141241,
+          "maximum": 57.50826747441088,
+          "samples": [
+            57.50826747441088,
+            51.6705886135702,
+            48.86737871141241
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 166.03627020944407,
+          "minimum": 154.14100988129738,
+          "maximum": 180.801632875673,
+          "samples": [
+            180.801632875673,
+            166.03627020944407,
+            154.14100988129738
+          ]
+        }
+      }
+    },
+    {
+      "case": 4,
+      "protocol": "h2",
+      "path": "/error",
+      "body_bytes": 0,
+      "engine": "hyper",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-4-candidate",
+        "ownership-registration-1-4-candidate",
+        "ownership-registration-2-4-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 50286.42325159671,
+          "minimum": 48762.605618836606,
+          "maximum": 54840.538518988935,
+          "samples": [
+            54840.538518988935,
+            48762.605618836606,
+            50286.42325159671
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 9.876390180454509,
+          "minimum": 8.7751790001445,
+          "maximum": 10.605362130415346,
+          "samples": [
+            9.876390180454509,
+            10.605362130415346,
+            8.7751790001445
+          ]
+        },
+        "p50_ms": {
+          "median": 0.888346,
+          "minimum": 0.865461,
+          "maximum": 0.909343,
+          "samples": [
+            0.865461,
+            0.909343,
+            0.888346
+          ]
+        },
+        "p99_ms": {
+          "median": 6.2750267599999985,
+          "minimum": 5.494730479999999,
+          "maximum": 6.727863079999997,
+          "samples": [
+            5.494730479999999,
+            6.727863079999997,
+            6.2750267599999985
+          ]
+        },
+        "p999_ms": {
+          "median": 12.609806000000157,
+          "minimum": 10.442665048000086,
+          "maximum": 15.264816250000253,
+          "samples": [
+            10.442665048000086,
+            15.264816250000253,
+            12.609806000000157
+          ]
+        },
+        "rss_kib": {
+          "median": 8524.0,
+          "minimum": 8008.0,
+          "maximum": 9240.0,
+          "samples": [
+            9240.0,
+            8008.0,
+            8524.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 8748.0,
+          "minimum": 8740.0,
+          "maximum": 9240.0,
+          "samples": [
+            9240.0,
+            8748.0,
+            8740.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.01258112490177,
+          "minimum": 15.90311116585508,
+          "maximum": 16.376266916980967,
+          "samples": [
+            15.90311116585508,
+            16.376266916980967,
+            16.01258112490177
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 47.36995335582937,
+          "minimum": 41.3385696432536,
+          "maximum": 51.089141711115914,
+          "samples": [
+            51.089141711115914,
+            47.36995335582937,
+            41.3385696432536
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 165.44114807939832,
+          "minimum": 156.8939498512868,
+          "maximum": 182.72165551096796,
+          "samples": [
+            182.72165551096796,
+            165.44114807939832,
+            156.8939498512868
+          ]
+        }
+      }
+    },
+    {
+      "case": 4,
+      "protocol": "h2",
+      "path": "/error",
+      "body_bytes": 0,
+      "engine": "axum",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-4-candidate",
+        "ownership-registration-1-4-candidate",
+        "ownership-registration-2-4-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 51327.42446547961,
+          "minimum": 36043.183319095246,
+          "maximum": 58310.47316289926,
+          "samples": [
+            58310.47316289926,
+            51327.42446547961,
+            36043.183319095246
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 10.982774025974026,
+          "minimum": 9.106076732857206,
+          "maximum": 11.802454750252467,
+          "samples": [
+            9.106076732857206,
+            10.982774025974026,
+            11.802454750252467
+          ]
+        },
+        "p50_ms": {
+          "median": 0.908336,
+          "minimum": 0.805835,
+          "maximum": 1.092848,
+          "samples": [
+            0.805835,
+            0.908336,
+            1.092848
+          ]
+        },
+        "p99_ms": {
+          "median": 5.851831659999998,
+          "minimum": 5.06230964,
+          "maximum": 10.355194849999997,
+          "samples": [
+            5.06230964,
+            5.851831659999998,
+            10.355194849999997
+          ]
+        },
+        "p999_ms": {
+          "median": 11.416454768000234,
+          "minimum": 11.362362768000065,
+          "maximum": 24.244223195000174,
+          "samples": [
+            11.362362768000065,
+            11.416454768000234,
+            24.244223195000174
+          ]
+        },
+        "rss_kib": {
+          "median": 8388.0,
+          "minimum": 8216.0,
+          "maximum": 9404.0,
+          "samples": [
+            8388.0,
+            9404.0,
+            8216.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 8756.0,
+          "minimum": 8744.0,
+          "maximum": 9404.0,
+          "samples": [
+            8756.0,
+            9404.0,
+            8744.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.08211149997078,
+          "minimum": 15.908745290944353,
+          "maximum": 16.124161124927923,
+          "samples": [
+            15.908745290944353,
+            16.08211149997078,
+            16.124161124927923
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 50.067166544767716,
+          "minimum": 39.57530534803884,
+          "maximum": 52.584736774243645,
+          "samples": [
+            50.067166544767716,
+            52.584736774243645,
+            39.57530534803884
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 178.76595371231096,
+          "minimum": 134.6863308530544,
+          "maximum": 181.07406004166418,
+          "samples": [
+            181.07406004166418,
+            178.76595371231096,
+            134.6863308530544
+          ]
+        }
+      }
+    },
+    {
+      "case": 5,
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": 131072,
+      "engine": "maximus",
+      "variant": "baseline",
+      "trials": [
+        "ownership-registration-0-5-baseline",
+        "ownership-registration-1-5-baseline",
+        "ownership-registration-2-5-baseline"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 4246.202789501815,
+          "minimum": 3137.9507433469525,
+          "maximum": 4411.465576114719,
+          "samples": [
+            4411.465576114719,
+            3137.9507433469525,
+            4246.202789501815
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 195.56816612255147,
+          "minimum": 193.09895843435422,
+          "maximum": 210.22445464982778,
+          "samples": [
+            210.22445464982778,
+            193.09895843435422,
+            195.56816612255147
+          ]
+        },
+        "p50_ms": {
+          "median": 13.658998,
+          "minimum": 13.2870415,
+          "maximum": 14.784662,
+          "samples": [
+            13.2870415,
+            14.784662,
+            13.658998
+          ]
+        },
+        "p99_ms": {
+          "median": 35.48689563999998,
+          "minimum": 31.815859399999994,
+          "maximum": 57.49201708,
+          "samples": [
+            31.815859399999994,
+            57.49201708,
+            35.48689563999998
+          ]
+        },
+        "p999_ms": {
+          "median": 101.33229671311204,
+          "minimum": 42.15217387000004,
+          "maximum": 2330.367547796,
+          "samples": [
+            42.15217387000004,
+            2330.367547796,
+            101.33229671311204
+          ]
+        },
+        "rss_kib": {
+          "median": 19200.0,
+          "minimum": 18772.0,
+          "maximum": 20500.0,
+          "samples": [
+            18772.0,
+            19200.0,
+            20500.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 20424.0,
+          "minimum": 18772.0,
+          "maximum": 20544.0,
+          "samples": [
+            18772.0,
+            20424.0,
+            20544.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 15.835725458106026,
+          "minimum": 15.637964415829629,
+          "maximum": 20.949354791082442,
+          "samples": [
+            15.637964415829629,
+            20.949354791082442,
+            15.835725458106026
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 78.68309559270571,
+          "minimum": 47.52224161212747,
+          "maximum": 88.98867928049141,
+          "samples": [
+            88.98867928049141,
+            47.52224161212747,
+            78.68309559270571
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 106.93445680653592,
+          "minimum": 64.88271899326443,
+          "maximum": 127.83097255142,
+          "samples": [
+            127.83097255142,
+            64.88271899326443,
+            106.93445680653592
+          ]
+        }
+      }
+    },
+    {
+      "case": 5,
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": 131072,
+      "engine": "maximus",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-5-candidate",
+        "ownership-registration-1-5-candidate",
+        "ownership-registration-2-5-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 4619.39084063201,
+          "minimum": 4242.444300587756,
+          "maximum": 4965.789157494917,
+          "samples": [
+            4965.789157494917,
+            4619.39084063201,
+            4242.444300587756
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 190.19369960622538,
+          "minimum": 184.48792828097112,
+          "maximum": 199.81001444995917,
+          "samples": [
+            184.48792828097112,
+            190.19369960622538,
+            199.81001444995917
+          ]
+        },
+        "p50_ms": {
+          "median": 12.708237,
+          "minimum": 11.929537,
+          "maximum": 13.839917,
+          "samples": [
+            11.929537,
+            12.708237,
+            13.839917
+          ]
+        },
+        "p99_ms": {
+          "median": 28.744823,
+          "minimum": 26.92798404,
+          "maximum": 33.803563579999995,
+          "samples": [
+            26.92798404,
+            28.744823,
+            33.803563579999995
+          ]
+        },
+        "p999_ms": {
+          "median": 38.85345600800084,
+          "minimum": 38.021303720001036,
+          "maximum": 46.915603666000685,
+          "samples": [
+            38.85345600800084,
+            38.021303720001036,
+            46.915603666000685
+          ]
+        },
+        "rss_kib": {
+          "median": 19832.0,
+          "minimum": 18336.0,
+          "maximum": 19916.0,
+          "samples": [
+            19916.0,
+            18336.0,
+            19832.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 19832.0,
+          "minimum": 19316.0,
+          "maximum": 20536.0,
+          "samples": [
+            20536.0,
+            19316.0,
+            19832.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 15.758377167163417,
+          "minimum": 15.686316000064835,
+          "maximum": 16.001637374982238,
+          "samples": [
+            15.686316000064835,
+            16.001637374982238,
+            15.758377167163417
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 82.4036858916423,
+          "minimum": 80.72851579227641,
+          "maximum": 87.63529307928759,
+          "samples": [
+            87.63529307928759,
+            82.4036858916423,
+            80.72851579227641
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 113.64988828226203,
+          "minimum": 110.23188375130647,
+          "maximum": 124.17507080642447,
+          "samples": [
+            124.17507080642447,
+            113.64988828226203,
+            110.23188375130647
+          ]
+        }
+      }
+    },
+    {
+      "case": 5,
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": 131072,
+      "engine": "hyper",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-5-candidate",
+        "ownership-registration-1-5-candidate",
+        "ownership-registration-2-5-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 6343.0833405309195,
+          "minimum": 5059.743276096665,
+          "maximum": 6721.0559766724145,
+          "samples": [
+            6721.0559766724145,
+            6343.0833405309195,
+            5059.743276096665
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 133.3307514554056,
+          "minimum": 127.528804833202,
+          "maximum": 151.51295357260454,
+          "samples": [
+            133.3307514554056,
+            127.528804833202,
+            151.51295357260454
+          ]
+        },
+        "p50_ms": {
+          "median": 9.13671,
+          "minimum": 8.746652,
+          "maximum": 11.254778,
+          "samples": [
+            8.746652,
+            9.13671,
+            11.254778
+          ]
+        },
+        "p99_ms": {
+          "median": 26.23662441999999,
+          "minimum": 23.161183799999993,
+          "maximum": 34.79183532,
+          "samples": [
+            23.161183799999993,
+            26.23662441999999,
+            34.79183532
+          ]
+        },
+        "p999_ms": {
+          "median": 37.16049084000514,
+          "minimum": 32.7734872680001,
+          "maximum": 63.2767523840003,
+          "samples": [
+            37.16049084000514,
+            32.7734872680001,
+            63.2767523840003
+          ]
+        },
+        "rss_kib": {
+          "median": 18292.0,
+          "minimum": 17992.0,
+          "maximum": 18944.0,
+          "samples": [
+            18944.0,
+            17992.0,
+            18292.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 18292.0,
+          "minimum": 18104.0,
+          "maximum": 18944.0,
+          "samples": [
+            18944.0,
+            18104.0,
+            18292.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 15.610706249950454,
+          "minimum": 15.566201332956553,
+          "maximum": 15.905329250032082,
+          "samples": [
+            15.610706249950454,
+            15.566201332956553,
+            15.905329250032082
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 77.97376983877585,
+          "minimum": 72.32557603280546,
+          "maximum": 86.11956938234405,
+          "samples": [
+            86.11956938234405,
+            77.97376983877585,
+            72.32557603280546
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 144.80149985133764,
+          "minimum": 132.63909013362579,
+          "maximum": 163.6924274331349,
+          "samples": [
+            163.6924274331349,
+            144.80149985133764,
+            132.63909013362579
+          ]
+        }
+      }
+    },
+    {
+      "case": 5,
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": 131072,
+      "engine": "axum",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-5-candidate",
+        "ownership-registration-1-5-candidate",
+        "ownership-registration-2-5-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 6349.738543749363,
+          "minimum": 5096.683329923752,
+          "maximum": 6656.919251639115,
+          "samples": [
+            6656.919251639115,
+            6349.738543749363,
+            5096.683329923752
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 134.16343997757667,
+          "minimum": 129.0188386175918,
+          "maximum": 148.34823320168442,
+          "samples": [
+            134.16343997757667,
+            129.0188386175918,
+            148.34823320168442
+          ]
+        },
+        "p50_ms": {
+          "median": 9.045911,
+          "minimum": 8.812527,
+          "maximum": 11.287237000000001,
+          "samples": [
+            8.812527,
+            9.045911,
+            11.287237000000001
+          ]
+        },
+        "p99_ms": {
+          "median": 26.23178588,
+          "minimum": 22.866485249999997,
+          "maximum": 32.80821034999999,
+          "samples": [
+            22.866485249999997,
+            26.23178588,
+            32.80821034999999
+          ]
+        },
+        "p999_ms": {
+          "median": 38.17742885500362,
+          "minimum": 37.20786937400016,
+          "maximum": 62.55895614000704,
+          "samples": [
+            38.17742885500362,
+            37.20786937400016,
+            62.55895614000704
+          ]
+        },
+        "rss_kib": {
+          "median": 18608.0,
+          "minimum": 17840.0,
+          "maximum": 18656.0,
+          "samples": [
+            18656.0,
+            18608.0,
+            17840.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 18608.0,
+          "minimum": 18180.0,
+          "maximum": 18656.0,
+          "samples": [
+            18656.0,
+            18608.0,
+            18180.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 15.950631417101249,
+          "minimum": 15.842223332962021,
+          "maximum": 16.473370249848813,
+          "samples": [
+            15.842223332962021,
+            15.950631417101249,
+            16.473370249848813
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 77.07094270149021,
+          "minimum": 68.86020181634726,
+          "maximum": 84.59917978882675,
+          "samples": [
+            84.59917978882675,
+            77.07094270149021,
+            68.86020181634726
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 141.49312594486327,
+          "minimum": 123.76348428268413,
+          "maximum": 158.69275714407877,
+          "samples": [
+            158.69275714407877,
+            141.49312594486327,
+            123.76348428268413
+          ]
+        }
+      }
+    },
+    {
+      "case": 6,
+      "protocol": "plain",
+      "path": "/plaintext",
+      "body_bytes": 0,
+      "engine": "maximus",
+      "variant": "baseline",
+      "trials": [
+        "ownership-registration-0-6-baseline",
+        "ownership-registration-1-6-baseline",
+        "ownership-registration-2-6-baseline"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 53879.587903683474,
+          "minimum": 47641.95190633529,
+          "maximum": 61277.5708912693,
+          "samples": [
+            53879.587903683474,
+            61277.5708912693,
+            47641.95190633529
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 8.801766256775332,
+          "minimum": 7.77251584381792,
+          "maximum": 8.817869406190795,
+          "samples": [
+            8.801766256775332,
+            7.77251584381792,
+            8.817869406190795
+          ]
+        },
+        "p50_ms": {
+          "median": 0.836294,
+          "minimum": 0.761132,
+          "maximum": 0.928429,
+          "samples": [
+            0.836294,
+            0.761132,
+            0.928429
+          ]
+        },
+        "p99_ms": {
+          "median": 6.437214579999998,
+          "minimum": 5.28162015,
+          "maximum": 7.4193193399999995,
+          "samples": [
+            6.437214579999998,
+            5.28162015,
+            7.4193193399999995
+          ]
+        },
+        "p999_ms": {
+          "median": 13.989953000000668,
+          "minimum": 10.329169440000245,
+          "maximum": 15.075004984000062,
+          "samples": [
+            13.989953000000668,
+            10.329169440000245,
+            15.075004984000062
+          ]
+        },
+        "rss_kib": {
+          "median": 5952.0,
+          "minimum": 5944.0,
+          "maximum": 6984.0,
+          "samples": [
+            5952.0,
+            5944.0,
+            6984.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 6844.0,
+          "minimum": 5952.0,
+          "maximum": 6984.0,
+          "samples": [
+            5952.0,
+            6844.0,
+            6984.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.263603958068416,
+          "minimum": 15.932295915903524,
+          "maximum": 17.941479166969657,
+          "samples": [
+            15.932295915903524,
+            17.941479166969657,
+            16.263603958068416
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 39.82483792726678,
+          "minimum": 38.74849643564771,
+          "maximum": 44.65233408638052,
+          "samples": [
+            44.65233408638052,
+            39.82483792726678,
+            38.74849643564771
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 161.37017873811163,
+          "minimum": 154.91393583462724,
+          "maximum": 179.5980701779307,
+          "samples": [
+            179.5980701779307,
+            161.37017873811163,
+            154.91393583462724
+          ]
+        }
+      }
+    },
+    {
+      "case": 6,
+      "protocol": "plain",
+      "path": "/plaintext",
+      "body_bytes": 0,
+      "engine": "maximus",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-6-candidate",
+        "ownership-registration-1-6-candidate",
+        "ownership-registration-2-6-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 56071.36675477886,
+          "minimum": 40965.14133780025,
+          "maximum": 68481.3007259094,
+          "samples": [
+            56071.36675477886,
+            68481.3007259094,
+            40965.14133780025
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 8.43572671847209,
+          "minimum": 6.412293818045885,
+          "maximum": 10.327055109396994,
+          "samples": [
+            8.43572671847209,
+            6.412293818045885,
+            10.327055109396994
+          ]
+        },
+        "p50_ms": {
+          "median": 0.828295,
+          "minimum": 0.692355,
+          "maximum": 1.052431,
+          "samples": [
+            0.828295,
+            0.692355,
+            1.052431
+          ]
+        },
+        "p99_ms": {
+          "median": 5.844316199999999,
+          "minimum": 4.7688695299999955,
+          "maximum": 8.830856639999999,
+          "samples": [
+            5.844316199999999,
+            4.7688695299999955,
+            8.830856639999999
+          ]
+        },
+        "p999_ms": {
+          "median": 10.947828385000038,
+          "minimum": 8.674186751000132,
+          "maximum": 16.527044664000208,
+          "samples": [
+            10.947828385000038,
+            8.674186751000132,
+            16.527044664000208
+          ]
+        },
+        "rss_kib": {
+          "median": 7136.0,
+          "minimum": 7028.0,
+          "maximum": 7152.0,
+          "samples": [
+            7136.0,
+            7028.0,
+            7152.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 7136.0,
+          "minimum": 7100.0,
+          "maximum": 7152.0,
+          "samples": [
+            7136.0,
+            7100.0,
+            7152.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.113295249873772,
+          "minimum": 16.0222785838414,
+          "maximum": 25.27002550009638,
+          "samples": [
+            16.0222785838414,
+            25.27002550009638,
+            16.113295249873772
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 39.38379395145579,
+          "minimum": 26.06651900677693,
+          "maximum": 44.28368888277617,
+          "samples": [
+            44.28368888277617,
+            26.06651900677693,
+            39.38379395145579
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 155.5387002555938,
+          "minimum": 115.10956330411719,
+          "maximum": 179.65573903470792,
+          "samples": [
+            179.65573903470792,
+            115.10956330411719,
+            155.5387002555938
+          ]
+        }
+      }
+    },
+    {
+      "case": 6,
+      "protocol": "plain",
+      "path": "/plaintext",
+      "body_bytes": 0,
+      "engine": "hyper",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-6-candidate",
+        "ownership-registration-1-6-candidate",
+        "ownership-registration-2-6-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 46888.017998272735,
+          "minimum": 46052.72167884009,
+          "maximum": 57824.155757401546,
+          "samples": [
+            57824.155757401546,
+            46888.017998272735,
+            46052.72167884009
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 6.0135194802948995,
+          "minimum": 5.988598751108988,
+          "maximum": 6.637046344118397,
+          "samples": [
+            6.0135194802948995,
+            5.988598751108988,
+            6.637046344118397
+          ]
+        },
+        "p50_ms": {
+          "median": 0.885985,
+          "minimum": 0.808211,
+          "maximum": 0.941305,
+          "samples": [
+            0.808211,
+            0.885985,
+            0.941305
+          ]
+        },
+        "p99_ms": {
+          "median": 7.754063,
+          "minimum": 5.7808452599999995,
+          "maximum": 8.950838129999992,
+          "samples": [
+            5.7808452599999995,
+            8.950838129999992,
+            7.754063
+          ]
+        },
+        "p999_ms": {
+          "median": 16.415328848000517,
+          "minimum": 10.967408474000116,
+          "maximum": 20.008418593000563,
+          "samples": [
+            10.967408474000116,
+            20.008418593000563,
+            16.415328848000517
+          ]
+        },
+        "rss_kib": {
+          "median": 5116.0,
+          "minimum": 4700.0,
+          "maximum": 5848.0,
+          "samples": [
+            4700.0,
+            5116.0,
+            5848.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 5756.0,
+          "minimum": 5736.0,
+          "maximum": 5848.0,
+          "samples": [
+            5736.0,
+            5756.0,
+            5848.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 15.989260124973953,
+          "minimum": 15.842685041949153,
+          "maximum": 16.04529062495567,
+          "samples": [
+            15.842685041949153,
+            15.989260124973953,
+            16.04529062495567
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 28.575886265772564,
+          "minimum": 26.342963758661483,
+          "maximum": 32.925081740804714,
+          "samples": [
+            32.925081740804714,
+            26.342963758661483,
+            28.575886265772564
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 158.50290651915358,
+          "minimum": 157.4213553551841,
+          "maximum": 184.77460053323423,
+          "samples": [
+            184.77460053323423,
+            157.4213553551841,
+            158.50290651915358
+          ]
+        }
+      }
+    },
+    {
+      "case": 6,
+      "protocol": "plain",
+      "path": "/plaintext",
+      "body_bytes": 0,
+      "engine": "axum",
+      "variant": "candidate",
+      "trials": [
+        "ownership-registration-0-6-candidate",
+        "ownership-registration-1-6-candidate",
+        "ownership-registration-2-6-candidate"
+      ],
+      "statistics": {
+        "rps": {
+          "median": 55242.0167874831,
+          "minimum": 46589.590275541304,
+          "maximum": 58193.29138117295,
+          "samples": [
+            58193.29138117295,
+            55242.0167874831,
+            46589.590275541304
+          ]
+        },
+        "cpu_us_per_request": {
+          "median": 6.51790865246927,
+          "minimum": 5.51451281550189,
+          "maximum": 7.258429747572594,
+          "samples": [
+            6.51790865246927,
+            5.51451281550189,
+            7.258429747572594
+          ]
+        },
+        "p50_ms": {
+          "median": 0.80492,
+          "minimum": 0.793357,
+          "maximum": 0.951679,
+          "samples": [
+            0.80492,
+            0.793357,
+            0.951679
+          ]
+        },
+        "p99_ms": {
+          "median": 6.761755959999995,
+          "minimum": 5.772528499999998,
+          "maximum": 7.432688689999996,
+          "samples": [
+            5.772528499999998,
+            6.761755959999995,
+            7.432688689999996
+          ]
+        },
+        "p999_ms": {
+          "median": 14.997417500000171,
+          "minimum": 10.800517268000261,
+          "maximum": 15.027280107000385,
+          "samples": [
+            10.800517268000261,
+            14.997417500000171,
+            15.027280107000385
+          ]
+        },
+        "rss_kib": {
+          "median": 6876.0,
+          "minimum": 6076.0,
+          "maximum": 6916.0,
+          "samples": [
+            6916.0,
+            6876.0,
+            6076.0
+          ]
+        },
+        "peak_rss_kib": {
+          "median": 6876.0,
+          "minimum": 6692.0,
+          "maximum": 6916.0,
+          "samples": [
+            6916.0,
+            6876.0,
+            6692.0
+          ]
+        },
+        "cpu_interval_seconds": {
+          "median": 16.066040916135535,
+          "minimum": 15.808942124946043,
+          "maximum": 16.402173958020285,
+          "samples": [
+            15.808942124946043,
+            16.066040916135535,
+            16.402173958020285
+          ]
+        },
+        "server_cpu_percent": {
+          "median": 30.928052665357097,
+          "minimum": 28.453145512712673,
+          "maximum": 35.990251308604996,
+          "samples": [
+            35.990251308604996,
+            28.453145512712673,
+            30.928052665357097
+          ]
+        },
+        "client_cpu_percent": {
+          "median": 158.7041084551966,
+          "minimum": 156.69641149874832,
+          "maximum": 184.04416165258942,
+          "samples": [
+            184.04416165258942,
+            158.7041084551966,
+            156.69641149874832
+          ]
+        }
+      }
+    }
+  ],
+  "paired_changes": [
+    {
+      "case": 0,
+      "protocol": "plain",
+      "path": "/plaintext",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "round": 0,
+      "baseline_trial": "ownership-registration-0-0-baseline",
+      "candidate_trial": "ownership-registration-0-0-candidate",
+      "percent_changes": {
+        "rps": -0.028200865383354312,
+        "cpu_us_per_request": 5.041233826823266,
+        "p50_ms": 0.9411389180462804,
+        "p99_ms": -0.857517745154901,
+        "p999_ms": -3.4598180636984166,
+        "rss_kib": -3.705848291835556,
+        "peak_rss_kib": -3.705848291835556,
+        "cpu_interval_seconds": 0.24082168563483997,
+        "server_cpu_percent": 4.752790320776512,
+        "client_cpu_percent": 0.1536081181586768
+      }
+    },
+    {
+      "case": 0,
+      "protocol": "plain",
+      "path": "/plaintext",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "round": 1,
+      "baseline_trial": "ownership-registration-1-0-baseline",
+      "candidate_trial": "ownership-registration-1-0-candidate",
+      "percent_changes": {
+        "rps": 1.9011729049582593,
+        "cpu_us_per_request": -2.930915671080858,
+        "p50_ms": -2.0091150350486697,
+        "p99_ms": 1.6910020630679146,
+        "p999_ms": -7.209939049413716,
+        "rss_kib": -3.8596491228070184,
+        "peak_rss_kib": 3.2163742690058506,
+        "cpu_interval_seconds": 0.15921402777649973,
+        "server_cpu_percent": -1.242524101870146,
+        "client_cpu_percent": -0.3198096394360084
+      }
+    },
+    {
+      "case": 0,
+      "protocol": "plain",
+      "path": "/plaintext",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "round": 2,
+      "baseline_trial": "ownership-registration-2-0-baseline",
+      "candidate_trial": "ownership-registration-2-0-candidate",
+      "percent_changes": {
+        "rps": 6.12327901283618,
+        "cpu_us_per_request": -15.455589825999382,
+        "p50_ms": -5.82452400765473,
+        "p99_ms": -4.996815420816903,
+        "p999_ms": -3.319986112465967,
+        "rss_kib": 4.302325581395339,
+        "peak_rss_kib": 4.302325581395339,
+        "cpu_interval_seconds": -4.055135156256961,
+        "server_cpu_percent": -6.506697847307219,
+        "client_cpu_percent": -0.43475606357407104
+      }
+    },
+    {
+      "case": 1,
+      "protocol": "plain",
+      "path": "/users/42",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "round": 0,
+      "baseline_trial": "ownership-registration-0-1-baseline",
+      "candidate_trial": "ownership-registration-0-1-candidate",
+      "percent_changes": {
+        "rps": -0.08126226167739503,
+        "cpu_us_per_request": -1.7282985098759696,
+        "p50_ms": 0.5686740593018325,
+        "p99_ms": -3.009277547225364,
+        "p999_ms": -6.016475813354594,
+        "rss_kib": 2.829099307159355,
+        "peak_rss_kib": 2.829099307159355,
+        "cpu_interval_seconds": -4.531933331077154,
+        "server_cpu_percent": 2.858168753328605,
+        "client_cpu_percent": 4.612804232825041
+      }
+    },
+    {
+      "case": 1,
+      "protocol": "plain",
+      "path": "/users/42",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "round": 1,
+      "baseline_trial": "ownership-registration-1-1-baseline",
+      "candidate_trial": "ownership-registration-1-1-candidate",
+      "percent_changes": {
+        "rps": 3.5964322602779486,
+        "cpu_us_per_request": -7.702724584384568,
+        "p50_ms": -2.5505861580370826,
+        "p99_ms": -5.641254184176825,
+        "p999_ms": -14.376894473725487,
+        "rss_kib": 7.72480386240193,
+        "peak_rss_kib": 7.72480386240193,
+        "cpu_interval_seconds": -2.5580139196060614,
+        "server_cpu_percent": -1.8706968364722631,
+        "client_cpu_percent": 2.932387552594662
+      }
+    },
+    {
+      "case": 1,
+      "protocol": "plain",
+      "path": "/users/42",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "round": 2,
+      "baseline_trial": "ownership-registration-2-1-baseline",
+      "candidate_trial": "ownership-registration-2-1-candidate",
+      "percent_changes": {
+        "rps": -29.184895014429557,
+        "cpu_us_per_request": 13.977708053835025,
+        "p50_ms": 23.53835783299234,
+        "p99_ms": 48.556351759141435,
+        "p999_ms": 33.500977162802755,
+        "rss_kib": 0.29171528588098905,
+        "peak_rss_kib": 1.6919486581096876,
+        "cpu_interval_seconds": -0.9803514394170931,
+        "server_cpu_percent": -18.48290444505649,
+        "client_cpu_percent": -20.387228259680267
+      }
+    },
+    {
+      "case": 2,
+      "protocol": "plain",
+      "path": "/error",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "round": 0,
+      "baseline_trial": "ownership-registration-0-2-baseline",
+      "candidate_trial": "ownership-registration-0-2-candidate",
+      "percent_changes": {
+        "rps": -3.9943812549414925,
+        "cpu_us_per_request": 5.309302351093237,
+        "p50_ms": 2.6426508838210516,
+        "p99_ms": 6.6110029409797155,
+        "p999_ms": 6.833274275297452,
+        "rss_kib": 0.9906439185470628,
+        "peak_rss_kib": 0.9906439185470628,
+        "cpu_interval_seconds": 0.32610370263852495,
+        "server_cpu_percent": 0.7832308558881174,
+        "client_cpu_percent": 0.09988496985311457
+      }
+    },
+    {
+      "case": 2,
+      "protocol": "plain",
+      "path": "/error",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "round": 1,
+      "baseline_trial": "ownership-registration-1-2-baseline",
+      "candidate_trial": "ownership-registration-1-2-candidate",
+      "percent_changes": {
+        "rps": -51.105524852035636,
+        "cpu_us_per_request": -15.706007899773923,
+        "p50_ms": 41.282094894167365,
+        "p99_ms": 61.41458731114528,
+        "p999_ms": 1035.3076395167072,
+        "rss_kib": 25.46542553191489,
+        "peak_rss_kib": 11.130742049469955,
+        "cpu_interval_seconds": -25.66575595474688,
+        "server_cpu_percent": -44.54391160126061,
+        "client_cpu_percent": -41.298798971025775
+      }
+    },
+    {
+      "case": 2,
+      "protocol": "plain",
+      "path": "/error",
+      "body_bytes": 0,
+      "engine": "dynamic",
+      "round": 2,
+      "baseline_trial": "ownership-registration-2-2-baseline",
+      "candidate_trial": "ownership-registration-2-2-candidate",
+      "percent_changes": {
+        "rps": -50.818556554907055,
+        "cpu_us_per_request": 33.5207871114062,
+        "p50_ms": 63.24852457580414,
+        "p99_ms": 147.87486923930132,
+        "p999_ms": 164.01326434089634,
+        "rss_kib": 25.744680851063826,
+        "peak_rss_kib": 19.3135935397039,
+        "cpu_interval_seconds": -78.0742998640705,
+        "server_cpu_percent": 199.53942518180537,
+        "client_cpu_percent": 204.70861494353016
+      }
+    },
+    {
+      "case": 3,
+      "protocol": "plain",
+      "path": "/echo",
+      "body_bytes": 1024,
+      "engine": "dynamic",
+      "round": 0,
+      "baseline_trial": "ownership-registration-0-3-baseline",
+      "candidate_trial": "ownership-registration-0-3-candidate",
+      "percent_changes": {
+        "rps": 2.2760011503465183,
+        "cpu_us_per_request": -6.039050121033229,
+        "p50_ms": -0.9991079905120048,
+        "p99_ms": -2.9132954398518707,
+        "p999_ms": -2.8284736328944016,
+        "rss_kib": -5.9645351961311155,
+        "peak_rss_kib": -2.901665771090811,
+        "cpu_interval_seconds": -0.9001755761478103,
+        "server_cpu_percent": -3.0580753692101226,
+        "client_cpu_percent": 0.06836694961007694
+      }
+    },
+    {
+      "case": 3,
+      "protocol": "plain",
+      "path": "/echo",
+      "body_bytes": 1024,
+      "engine": "dynamic",
+      "round": 1,
+      "baseline_trial": "ownership-registration-1-3-baseline",
+      "candidate_trial": "ownership-registration-1-3-candidate",
+      "percent_changes": {
+        "rps": 88.53301646910607,
+        "cpu_us_per_request": -10.312448979938171,
+        "p50_ms": -34.08691892239224,
+        "p99_ms": -53.07581720840133,
+        "p999_ms": -52.13305583274408,
+        "rss_kib": 1.871216290588884,
+        "peak_rss_kib": 1.871216290588884,
+        "cpu_interval_seconds": -9.344650648571328,
+        "server_cpu_percent": 86.48637650438562,
+        "client_cpu_percent": 96.6173667813391
+      }
+    },
+    {
+      "case": 3,
+      "protocol": "plain",
+      "path": "/echo",
+      "body_bytes": 1024,
+      "engine": "dynamic",
+      "round": 2,
+      "baseline_trial": "ownership-registration-2-3-baseline",
+      "candidate_trial": "ownership-registration-2-3-candidate",
+      "percent_changes": {
+        "rps": 5.570435629868209,
+        "cpu_us_per_request": -9.687684930197726,
+        "p50_ms": -11.551786270950737,
+        "p99_ms": 3.718500002104008,
+        "p999_ms": 10.039495683536593,
+        "rss_kib": 3.6500268384326295,
+        "peak_rss_kib": 3.6500268384326295,
+        "cpu_interval_seconds": -0.3660267672626949,
+        "server_cpu_percent": -4.293661352565059,
+        "client_cpu_percent": -2.883395173266745
+      }
+    },
+    {
+      "case": 4,
+      "protocol": "h2",
+      "path": "/error",
+      "body_bytes": 0,
+      "engine": "maximus",
+      "round": 0,
+      "baseline_trial": "ownership-registration-0-4-baseline",
+      "candidate_trial": "ownership-registration-0-4-candidate",
+      "percent_changes": {
+        "rps": 21.926475406980515,
+        "cpu_us_per_request": -17.721124954597357,
+        "p50_ms": -15.509012012638902,
+        "p99_ms": -17.800994232062884,
+        "p999_ms": -16.38544953654304,
+        "rss_kib": -7.215541165587414,
+        "peak_rss_kib": -3.0064754856614195,
+        "cpu_interval_seconds": -1.0490135269527912,
+        "server_cpu_percent": 1.3665294181812726,
+        "client_cpu_percent": 1.5684478594920837
+      }
+    },
+    {
+      "case": 4,
+      "protocol": "h2",
+      "path": "/error",
+      "body_bytes": 0,
+      "engine": "maximus",
+      "round": 1,
+      "baseline_trial": "ownership-registration-1-4-baseline",
+      "candidate_trial": "ownership-registration-1-4-candidate",
+      "percent_changes": {
+        "rps": -0.6049118801194298,
+        "cpu_us_per_request": 1.6584424076059756,
+        "p50_ms": 1.7607982556387958,
+        "p99_ms": -12.051234008719646,
+        "p999_ms": -7.865989394773032,
+        "rss_kib": 1.6077170418006492,
+        "peak_rss_kib": 1.6077170418006492,
+        "cpu_interval_seconds": -0.23280496694461084,
+        "server_cpu_percent": 1.2836295286204003,
+        "client_cpu_percent": 0.8611315603530567
+      }
+    },
+    {
+      "case": 4,
+      "protocol": "h2",
+      "path": "/error",
+      "body_bytes": 0,
+      "engine": "maximus",
+      "round": 2,
+      "baseline_trial": "ownership-registration-2-4-baseline",
+      "candidate_trial": "ownership-registration-2-4-candidate",
+      "percent_changes": {
+        "rps": 20.41142131971774,
+        "cpu_us_per_request": -17.205212182201635,
+        "p50_ms": -16.901863676939865,
+        "p99_ms": -13.773401468920188,
+        "p999_ms": -17.204905718658203,
+        "rss_kib": 3.0109489051094895,
+        "peak_rss_kib": 3.0109489051094895,
+        "cpu_interval_seconds": -1.1148439816203393,
+        "server_cpu_percent": 0.9047625071157528,
+        "client_cpu_percent": 2.5867336898627524
+      }
+    },
+    {
+      "case": 5,
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": 131072,
+      "engine": "maximus",
+      "round": 0,
+      "baseline_trial": "ownership-registration-0-5-baseline",
+      "candidate_trial": "ownership-registration-0-5-candidate",
+      "percent_changes": {
+        "rps": 12.565519821383365,
+        "cpu_us_per_request": -12.242403678357094,
+        "p50_ms": -10.216755174581193,
+        "p99_ms": -15.363015339450481,
+        "p999_ms": -7.825736039551967,
+        "rss_kib": 6.094182825484773,
+        "peak_rss_kib": 9.396974216918807,
+        "cpu_interval_seconds": 0.309193594188395,
+        "server_cpu_percent": -1.5208521040501743,
+        "client_cpu_percent": -2.8599498791460287
+      }
+    },
+    {
+      "case": 5,
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": 131072,
+      "engine": "maximus",
+      "round": 1,
+      "baseline_trial": "ownership-registration-1-5-baseline",
+      "candidate_trial": "ownership-registration-1-5-candidate",
+      "percent_changes": {
+        "rps": 47.210431853527,
+        "cpu_us_per_request": -1.5045440180955216,
+        "p50_ms": -14.044453637154508,
+        "p99_ms": -50.00206209498329,
+        "p999_ms": -98.36844176121657,
+        "rss_kib": -4.5000000000000036,
+        "peak_rss_kib": -5.424990207598901,
+        "cpu_interval_seconds": -23.61751693759232,
+        "server_cpu_percent": 73.4002502748381,
+        "client_cpu_percent": 75.16203088538904
+      }
+    },
+    {
+      "case": 5,
+      "protocol": "h2",
+      "path": "/echo",
+      "body_bytes": 131072,
+      "engine": "maximus",
+      "round": 2,
+      "baseline_trial": "ownership-registration-2-5-baseline",
+      "candidate_trial": "ownership-registration-2-5-candidate",
+      "percent_changes": {
+        "rps": -0.08851411720964819,
+        "cpu_us_per_request": 2.1689871166197694,
+        "p50_ms": 1.3245407898881068,
+        "p99_ms": -4.743531463210249,
+        "p999_ms": -53.701233281205226,
+        "rss_kib": -3.2585365853658566,
+        "peak_rss_kib": -3.4657320872274133,
+        "cpu_interval_seconds": -0.4884417272024377,
+        "server_cpu_percent": 2.5995675235740423,
+        "client_cpu_percent": 3.0835962918259296
+      }
+    },
+    {
+      "case": 6,
+      "protocol": "plain",
+      "path": "/plaintext",
+      "body_bytes": 0,
+      "engine": "maximus",
+      "round": 0,
+      "baseline_trial": "ownership-registration-0-6-baseline",
+      "candidate_trial": "ownership-registration-0-6-candidate",
+      "percent_changes": {
+        "rps": 4.067920591771168,
+        "cpu_us_per_request": -4.158705510061422,
+        "p50_ms": -0.9564818114203844,
+        "p99_ms": -9.21048028819943,
+        "p999_ms": -21.74506672753286,
+        "rss_kib": 19.892473118279575,
+        "peak_rss_kib": 19.892473118279575,
+        "cpu_interval_seconds": 0.5647815507120679,
+        "server_cpu_percent": -0.8255899969108027,
+        "client_cpu_percent": 0.03210995347560086
+      }
+    },
+    {
+      "case": 6,
+      "protocol": "plain",
+      "path": "/plaintext",
+      "body_bytes": 0,
+      "engine": "maximus",
+      "round": 1,
+      "baseline_trial": "ownership-registration-1-6-baseline",
+      "candidate_trial": "ownership-registration-1-6-candidate",
+      "percent_changes": {
+        "rps": 11.755899801286795,
+        "cpu_us_per_request": -17.50040853057796,
+        "p50_ms": -9.03614616124404,
+        "p99_ms": -9.70820705461003,
+        "p999_ms": -16.022417858604456,
+        "rss_kib": 18.23687752355316,
+        "peak_rss_kib": 3.7405026300409094,
+        "cpu_interval_seconds": 40.84694614599342,
+        "server_cpu_percent": -34.54708075803611,
+        "client_cpu_percent": -28.66738811082995
+      }
+    },
+    {
+      "case": 6,
+      "protocol": "plain",
+      "path": "/plaintext",
+      "body_bytes": 0,
+      "engine": "maximus",
+      "round": 2,
+      "baseline_trial": "ownership-registration-2-6-baseline",
+      "candidate_trial": "ownership-registration-2-6-candidate",
+      "percent_changes": {
+        "rps": -14.014561329606611,
+        "cpu_us_per_request": 17.11508340264871,
+        "p50_ms": 13.35611016028151,
+        "p99_ms": 19.02515898446284,
+        "p999_ms": 9.6321008287644,
+        "rss_kib": 2.405498281786933,
+        "peak_rss_kib": 2.405498281786933,
+        "cpu_interval_seconds": -0.9242029539219931,
+        "server_cpu_percent": 1.6395410770664753,
+        "client_cpu_percent": 0.4032977521360559
+      }
+    }
+  ],
+  "allocation_summaries": [
+    {
+      "path": "GET",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 88.93,
+          "minimum": 69.17,
+          "maximum": 95.74,
+          "samples": [
+            87.36,
+            88.93,
+            95.35,
+            95.74,
+            69.17
+          ]
+        }
+      }
+    },
+    {
+      "path": "HEAD",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 80.86,
+          "minimum": 66.53,
+          "maximum": 86.82,
+          "samples": [
+            86.82,
+            75.7,
+            80.86,
+            81.41,
+            66.53
+          ]
+        }
+      }
+    },
+    {
+      "path": "POST",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 90.68,
+          "minimum": 84.41,
+          "maximum": 126.42,
+          "samples": [
+            94.46,
+            84.41,
+            84.77,
+            126.42,
+            90.68
+          ]
+        }
+      }
+    },
+    {
+      "path": "PUT",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 82.1,
+          "minimum": 69.5,
+          "maximum": 131.93,
+          "samples": [
+            131.93,
+            82.1,
+            69.5,
+            80.37,
+            85.98
+          ]
+        }
+      }
+    },
+    {
+      "path": "static-text-content-type",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 2.0,
+          "minimum": 2.0,
+          "maximum": 2.0,
+          "samples": [
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 656.0,
+          "minimum": 656.0,
+          "maximum": 656.0,
+          "samples": [
+            656.0,
+            656.0,
+            656.0,
+            656.0,
+            656.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 50.35,
+          "minimum": 43.51,
+          "maximum": 72.56,
+          "samples": [
+            72.56,
+            50.35,
+            45.46,
+            55.13,
+            43.51
+          ]
+        }
+      }
+    },
+    {
+      "path": "static-error",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 3.0,
+          "minimum": 3.0,
+          "maximum": 3.0,
+          "samples": [
+            3.0,
+            3.0,
+            3.0,
+            3.0,
+            3.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 665.0,
+          "minimum": 665.0,
+          "maximum": 665.0,
+          "samples": [
+            665.0,
+            665.0,
+            665.0,
+            665.0,
+            665.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 43.99,
+          "minimum": 35.79,
+          "maximum": 54.04,
+          "samples": [
+            48.66,
+            42.72,
+            35.79,
+            43.99,
+            54.04
+          ]
+        }
+      }
+    },
+    {
+      "path": "owned-error",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 3.0,
+          "minimum": 3.0,
+          "maximum": 3.0,
+          "samples": [
+            3.0,
+            3.0,
+            3.0,
+            3.0,
+            3.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 665.0,
+          "minimum": 665.0,
+          "maximum": 665.0,
+          "samples": [
+            665.0,
+            665.0,
+            665.0,
+            665.0,
+            665.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 41.71,
+          "minimum": 35.67,
+          "maximum": 49.32,
+          "samples": [
+            49.32,
+            41.71,
+            35.67,
+            43.18,
+            36.47
+          ]
+        }
+      }
+    },
+    {
+      "path": "dynamic-register-64",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 389.0,
+          "minimum": 389.0,
+          "maximum": 389.0,
+          "samples": [
+            389.0,
+            389.0,
+            389.0,
+            389.0,
+            389.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 20280.0,
+          "minimum": 20280.0,
+          "maximum": 20280.0,
+          "samples": [
+            20280.0,
+            20280.0,
+            20280.0,
+            20280.0,
+            20280.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 33498.85,
+          "minimum": 26560.08,
+          "maximum": 61534.77,
+          "samples": [
+            61534.77,
+            60192.68,
+            29069.25,
+            33498.85,
+            26560.08
+          ]
+        }
+      }
+    },
+    {
+      "path": "dynamic-GET",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 2.0,
+          "minimum": 2.0,
+          "maximum": 2.0,
+          "samples": [
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 609.0,
+          "minimum": 609.0,
+          "maximum": 609.0,
+          "samples": [
+            609.0,
+            609.0,
+            609.0,
+            609.0,
+            609.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 111.71,
+          "minimum": 96.74,
+          "maximum": 117.3,
+          "samples": [
+            109.96,
+            111.71,
+            115.9,
+            117.3,
+            96.74
+          ]
+        }
+      }
+    },
+    {
+      "path": "dynamic-POST",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 2.0,
+          "minimum": 2.0,
+          "maximum": 2.0,
+          "samples": [
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 609.0,
+          "minimum": 609.0,
+          "maximum": 609.0,
+          "samples": [
+            609.0,
+            609.0,
+            609.0,
+            609.0,
+            609.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 135.34,
+          "minimum": 97.85,
+          "maximum": 174.8,
+          "samples": [
+            158.61,
+            109.83,
+            97.85,
+            174.8,
+            135.34
+          ]
+        }
+      }
+    },
+    {
+      "path": "dynamic-PATCH",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 5.0,
+          "minimum": 5.0,
+          "maximum": 5.0,
+          "samples": [
+            5.0,
+            5.0,
+            5.0,
+            5.0,
+            5.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 698.0,
+          "minimum": 698.0,
+          "maximum": 698.0,
+          "samples": [
+            698.0,
+            698.0,
+            698.0,
+            698.0,
+            698.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 129.48,
+          "minimum": 117.96,
+          "maximum": 152.39,
+          "samples": [
+            152.39,
+            129.48,
+            128.48,
+            139.7,
+            117.96
+          ]
+        }
+      }
+    },
+    {
+      "path": "http1-keepalive-complete",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 15.0081,
+          "minimum": 15.0076,
+          "maximum": 15.058,
+          "samples": [
+            15.0281,
+            15.0076,
+            15.058,
+            15.0076,
+            15.0081
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 2629.6936,
+          "minimum": 2629.4656,
+          "maximum": 2652.448,
+          "samples": [
+            2638.8464,
+            2629.4656,
+            2652.448,
+            2629.4656,
+            2629.6936
+          ]
+        },
+        "ns_per_request": {
+          "median": 4446.4,
+          "minimum": 4287.94,
+          "maximum": 5546.93,
+          "samples": [
+            5546.93,
+            4327.53,
+            4609.78,
+            4446.4,
+            4287.94
+          ]
+        }
+      }
+    },
+    {
+      "path": "http2-invalid-first-frame",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 33.33,
+          "minimum": 33.3,
+          "maximum": 33.458,
+          "samples": [
+            33.308,
+            33.458,
+            33.442,
+            33.33,
+            33.3
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 14397.88,
+          "minimum": 14383.8,
+          "maximum": 14455.448,
+          "samples": [
+            14387.448,
+            14455.448,
+            14448.552,
+            14397.88,
+            14383.8
+          ]
+        },
+        "ns_per_request": {
+          "median": 21093.44,
+          "minimum": 17713.76,
+          "maximum": 32926.18,
+          "samples": [
+            32926.18,
+            17713.76,
+            22779.19,
+            17738.43,
+            21093.44
+          ]
+        }
+      }
+    },
+    {
+      "path": "http2-large-static",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 34.9228,
+          "minimum": 34.883,
+          "maximum": 34.9433,
+          "samples": [
+            34.883,
+            34.9228,
+            34.8845,
+            34.9433,
+            34.9276
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 7943.7968,
+          "minimum": 7925.648,
+          "maximum": 7953.0162,
+          "samples": [
+            7925.648,
+            7943.7968,
+            7926.292,
+            7953.0162,
+            7945.9856
+          ]
+        },
+        "ns_per_request": {
+          "median": 21870.86,
+          "minimum": 21352.17,
+          "maximum": 23384.49,
+          "samples": [
+            23384.49,
+            21667.99,
+            22220.57,
+            21352.17,
+            21870.86
+          ]
+        }
+      }
+    },
+    {
+      "path": "http2-large-owned",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 35.9098,
+          "minimum": 35.8922,
+          "maximum": 35.9321,
+          "samples": [
+            35.9321,
+            35.9216,
+            35.8922,
+            35.9098,
+            35.9066
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 40705.8688,
+          "minimum": 40697.8432,
+          "maximum": 40716.0376,
+          "samples": [
+            40716.0376,
+            40711.2496,
+            40697.8432,
+            40705.8688,
+            40704.4096
+          ]
+        },
+        "ns_per_request": {
+          "median": 22399.73,
+          "minimum": 22271.42,
+          "maximum": 22873.5,
+          "samples": [
+            22399.73,
+            22271.42,
+            22873.5,
+            22343.91,
+            22660.07
+          ]
+        }
+      }
+    },
+    {
+      "path": "http2-keepalive-complete",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 30.014,
+          "minimum": 30.0121,
+          "maximum": 30.0298,
+          "samples": [
+            30.0128,
+            30.0298,
+            30.014,
+            30.0121,
+            30.0293
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 6901.384,
+          "minimum": 6900.5176,
+          "maximum": 6908.5888,
+          "samples": [
+            6900.8368,
+            6908.5888,
+            6901.384,
+            6900.5176,
+            6908.2322
+          ]
+        },
+        "ns_per_request": {
+          "median": 6426.53,
+          "minimum": 6343.72,
+          "maximum": 6881.97,
+          "samples": [
+            6586.25,
+            6343.72,
+            6423.42,
+            6426.53,
+            6881.97
+          ]
+        }
+      }
+    },
+    {
+      "path": "http2-owned-keepalive-complete",
+      "variant": "baseline-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 31.0215,
+          "minimum": 31.0125,
+          "maximum": 31.0271,
+          "samples": [
+            31.0271,
+            31.0135,
+            31.0125,
+            31.0215,
+            31.0254
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 6917.804,
+          "minimum": 6913.7,
+          "maximum": 6920.2425,
+          "samples": [
+            6920.2425,
+            6914.156,
+            6913.7,
+            6917.804,
+            6919.5824
+          ]
+        },
+        "ns_per_request": {
+          "median": 6471.49,
+          "minimum": 6410.94,
+          "maximum": 7473.34,
+          "samples": [
+            6570.06,
+            6410.94,
+            6455.65,
+            6471.49,
+            7473.34
+          ]
+        }
+      }
+    },
+    {
+      "path": "GET",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 78.13,
+          "minimum": 73.98,
+          "maximum": 126.58,
+          "samples": [
+            85.01,
+            126.58,
+            73.98,
+            78.13,
+            75.2
+          ]
+        }
+      }
+    },
+    {
+      "path": "HEAD",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 90.97,
+          "minimum": 75.39,
+          "maximum": 125.41,
+          "samples": [
+            90.97,
+            125.41,
+            75.39,
+            86.08,
+            115.92
+          ]
+        }
+      }
+    },
+    {
+      "path": "POST",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 84.97,
+          "minimum": 82.17,
+          "maximum": 113.2,
+          "samples": [
+            84.97,
+            82.95,
+            113.2,
+            87.3,
+            82.17
+          ]
+        }
+      }
+    },
+    {
+      "path": "PUT",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 0.0,
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "samples": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 89.91,
+          "minimum": 69.75,
+          "maximum": 128.62,
+          "samples": [
+            128.62,
+            96.69,
+            69.75,
+            71.53,
+            89.91
+          ]
+        }
+      }
+    },
+    {
+      "path": "static-text-content-type",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 2.0,
+          "minimum": 2.0,
+          "maximum": 2.0,
+          "samples": [
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 656.0,
+          "minimum": 656.0,
+          "maximum": 656.0,
+          "samples": [
+            656.0,
+            656.0,
+            656.0,
+            656.0,
+            656.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 55.45,
+          "minimum": 50.25,
+          "maximum": 81.53,
+          "samples": [
+            50.25,
+            67.06,
+            55.45,
+            81.53,
+            53.07
+          ]
+        }
+      }
+    },
+    {
+      "path": "static-error",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 2.0,
+          "minimum": 2.0,
+          "maximum": 2.0,
+          "samples": [
+            2.0,
+            2.0,
+            2.0,
+            2.0,
+            2.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 656.0,
+          "minimum": 656.0,
+          "maximum": 656.0,
+          "samples": [
+            656.0,
+            656.0,
+            656.0,
+            656.0,
+            656.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 34.25,
+          "minimum": 30.44,
+          "maximum": 39.63,
+          "samples": [
+            34.25,
+            39.63,
+            30.44,
+            34.87,
+            32.83
+          ]
+        }
+      }
+    },
+    {
+      "path": "owned-error",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 3.0,
+          "minimum": 3.0,
+          "maximum": 3.0,
+          "samples": [
+            3.0,
+            3.0,
+            3.0,
+            3.0,
+            3.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 665.0,
+          "minimum": 665.0,
+          "maximum": 665.0,
+          "samples": [
+            665.0,
+            665.0,
+            665.0,
+            665.0,
+            665.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 42.71,
+          "minimum": 36.9,
+          "maximum": 497.26,
+          "samples": [
+            497.26,
+            46.77,
+            36.9,
+            39.88,
+            42.71
+          ]
+        }
+      }
+    },
+    {
+      "path": "dynamic-register-64",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 325.0,
+          "minimum": 325.0,
+          "maximum": 325.0,
+          "samples": [
+            325.0,
+            325.0,
+            325.0,
+            325.0,
+            325.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 16184.0,
+          "minimum": 16184.0,
+          "maximum": 16184.0,
+          "samples": [
+            16184.0,
+            16184.0,
+            16184.0,
+            16184.0,
+            16184.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 32144.26,
+          "minimum": 29510.92,
+          "maximum": 34849.69,
+          "samples": [
+            33863.02,
+            34849.69,
+            29711.33,
+            29510.92,
+            32144.26
+          ]
+        }
+      }
+    },
+    {
+      "path": "dynamic-GET",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 1.0,
+          "minimum": 1.0,
+          "maximum": 1.0,
+          "samples": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 608.0,
+          "minimum": 608.0,
+          "maximum": 608.0,
+          "samples": [
+            608.0,
+            608.0,
+            608.0,
+            608.0,
+            608.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 94.63,
+          "minimum": 87.89,
+          "maximum": 164.52,
+          "samples": [
+            104.41,
+            164.52,
+            91.19,
+            87.89,
+            94.63
+          ]
+        }
+      }
+    },
+    {
+      "path": "dynamic-POST",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 1.0,
+          "minimum": 1.0,
+          "maximum": 1.0,
+          "samples": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 608.0,
+          "minimum": 608.0,
+          "maximum": 608.0,
+          "samples": [
+            608.0,
+            608.0,
+            608.0,
+            608.0,
+            608.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 113.89,
+          "minimum": 89.92,
+          "maximum": 139.21,
+          "samples": [
+            113.89,
+            139.21,
+            116.55,
+            89.92,
+            90.4
+          ]
+        }
+      }
+    },
+    {
+      "path": "dynamic-PATCH",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 5.0,
+          "minimum": 5.0,
+          "maximum": 5.0,
+          "samples": [
+            5.0,
+            5.0,
+            5.0,
+            5.0,
+            5.0
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 698.0,
+          "minimum": 698.0,
+          "maximum": 698.0,
+          "samples": [
+            698.0,
+            698.0,
+            698.0,
+            698.0,
+            698.0
+          ]
+        },
+        "ns_per_request": {
+          "median": 132.31,
+          "minimum": 127.43,
+          "maximum": 157.92,
+          "samples": [
+            132.31,
+            157.92,
+            137.06,
+            127.43,
+            130.7
+          ]
+        }
+      }
+    },
+    {
+      "path": "http1-keepalive-complete",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 15.0066,
+          "minimum": 15.0048,
+          "maximum": 15.0464,
+          "samples": [
+            15.0066,
+            15.0066,
+            15.0464,
+            15.0062,
+            15.0048
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 2628.881,
+          "minimum": 2628.1888,
+          "maximum": 2647.1912,
+          "samples": [
+            2629.0096,
+            2628.881,
+            2647.1912,
+            2628.6986,
+            2628.1888
+          ]
+        },
+        "ns_per_request": {
+          "median": 4744.23,
+          "minimum": 4268.83,
+          "maximum": 5347.13,
+          "samples": [
+            5347.13,
+            4789.01,
+            4357.63,
+            4744.23,
+            4268.83
+          ]
+        }
+      }
+    },
+    {
+      "path": "http2-invalid-first-frame",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 33.423,
+          "minimum": 33.331,
+          "maximum": 33.535,
+          "samples": [
+            33.337,
+            33.5,
+            33.535,
+            33.423,
+            33.331
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 14439.488,
+          "minimum": 14397.936,
+          "maximum": 14490.96,
+          "samples": [
+            14400.672,
+            14475.0,
+            14490.96,
+            14439.488,
+            14397.936
+          ]
+        },
+        "ns_per_request": {
+          "median": 19153.85,
+          "minimum": 17678.18,
+          "maximum": 24669.24,
+          "samples": [
+            24669.24,
+            17867.89,
+            17678.18,
+            19465.47,
+            19153.85
+          ]
+        }
+      }
+    },
+    {
+      "path": "http2-large-static",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 34.9095,
+          "minimum": 34.8957,
+          "maximum": 34.941,
+          "samples": [
+            34.9095,
+            34.9258,
+            34.9024,
+            34.941,
+            34.8957
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 7937.6034,
+          "minimum": 7931.4792,
+          "maximum": 7952.096,
+          "samples": [
+            7937.6034,
+            7945.1648,
+            7934.3658,
+            7952.096,
+            7931.4792
+          ]
+        },
+        "ns_per_request": {
+          "median": 21856.22,
+          "minimum": 21683.38,
+          "maximum": 23500.44,
+          "samples": [
+            22342.07,
+            21748.89,
+            21856.22,
+            21683.38,
+            23500.44
+          ]
+        }
+      }
+    },
+    {
+      "path": "http2-large-owned",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 35.9124,
+          "minimum": 35.759,
+          "maximum": 35.9345,
+          "samples": [
+            35.9124,
+            35.9066,
+            35.9345,
+            35.9294,
+            35.759
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 40707.0544,
+          "minimum": 40637.104,
+          "maximum": 40717.132,
+          "samples": [
+            40707.0544,
+            40704.4096,
+            40717.132,
+            40714.8064,
+            40637.104
+          ]
+        },
+        "ns_per_request": {
+          "median": 22596.14,
+          "minimum": 22333.9,
+          "maximum": 27350.62,
+          "samples": [
+            22596.14,
+            22685.63,
+            22333.9,
+            22474.06,
+            27350.62
+          ]
+        }
+      }
+    },
+    {
+      "path": "http2-keepalive-complete",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 30.0145,
+          "minimum": 30.0087,
+          "maximum": 30.0192,
+          "samples": [
+            30.0192,
+            30.0098,
+            30.0152,
+            30.0145,
+            30.0087
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 6901.612,
+          "minimum": 6898.9672,
+          "maximum": 6903.7552,
+          "samples": [
+            6903.7552,
+            6899.4688,
+            6901.9312,
+            6901.612,
+            6898.9672
+          ]
+        },
+        "ns_per_request": {
+          "median": 6438.76,
+          "minimum": 6402.4,
+          "maximum": 7432.36,
+          "samples": [
+            6424.86,
+            6438.76,
+            6482.27,
+            6402.4,
+            7432.36
+          ]
+        }
+      }
+    },
+    {
+      "path": "http2-owned-keepalive-complete",
+      "variant": "final-reviewed",
+      "statistics": {
+        "allocations_per_request": {
+          "median": 31.0102,
+          "minimum": 31.0028,
+          "maximum": 31.0125,
+          "samples": [
+            31.0125,
+            31.0104,
+            31.0102,
+            31.0028,
+            31.0047
+          ]
+        },
+        "allocated_bytes_per_request": {
+          "median": 6912.5361,
+          "minimum": 6909.2768,
+          "maximum": 6913.7,
+          "samples": [
+            6913.7,
+            6912.7424,
+            6912.5361,
+            6909.2768,
+            6910.1432
+          ]
+        },
+        "ns_per_request": {
+          "median": 6468.72,
+          "minimum": 6338.48,
+          "maximum": 6960.63,
+          "samples": [
+            6511.42,
+            6338.48,
+            6468.72,
+            6435.86,
+            6960.63
+          ]
+        }
+      }
+    }
+  ],
+  "allocation_exit_status": {
+    "baseline-reviewed": [
+      101,
+      101,
+      101,
+      101,
+      101
+    ],
+    "final-reviewed": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "baseline_failure": "expected final guard: route registration must not allocate temporary segment lists; complete CSV emitted before guard"
+  },
+  "profile": {
+    "source_commit": "b5bb664bd6faf9b417cd8af5235ec12e7f0037de",
+    "binary": "75a3c08056ed5caf320c59c5e094777ba632249ce8df6d8a236b7ed4df913045  /target/oct20-baseline/maximus-comparison",
+    "samples": 2740,
+    "lost_samples": 0,
+    "responses": 69091,
+    "event": "cpu-clock",
+    "frequency_hz": 199,
+    "record_seconds": 20,
+    "client_seconds": 15,
+    "protocol": "verified TLS1.3 HTTP2",
+    "payload_bytes": 131072,
+    "top_entries": [
+      "13.61%  maximus-0  libc.so.6           [.] 0x000000000009d200",
+      "9.85%  maximus-0  maximus-comparison  [.] ring_core_0_17_14__aes_gcm_dec_kernel",
+      "8.54%  maximus-0  maximus-comparison  [.] ring_core_0_17_14__aes_gcm_enc_kernel",
+      "2.63%  maximus-0  [vdso]              [.] __kernel_clock_gettime",
+      "2.63%  maximus-0  [unknown]           [k] 0xffffbb3b598d28cc",
+      "2.52%  maximus-0  [unknown]           [k] 0xffffbb3b5997df40",
+      "2.04%  maximus-0  maximus-comparison  [.] <compio_runtime::time::future::TimerFuture as core::future::future::Future>::poll",
+      "1.61%  maximus-0  [unknown]           [k] 0xffffbb3b59c6a2ac",
+      "1.57%  maximus-0  [unknown]           [k] 0xffffbb3b598d2668",
+      "1.17%  maximus-0  libc.so.6           [.] malloc",
+      "1.09%  maximus-0  maximus-comparison  [.] compio_io::compat::sync_stream::SyncStreamReadHalf<S>::fill_read_buf::{{closure}}",
+      "1.02%  maximus-0  libc.so.6           [.] 0x000000000009d214",
+      "1.02%  maximus-0  maximus-comparison  [.] <compio_runtime::time::future::TimerFuture as core::ops::drop::Drop>::drop",
+      "0.95%  maximus-0  maximus-comparison  [.] maximus::transport::Transport::serve::{{closure}}",
+      "0.88%  maximus-0  libc.so.6           [.] cfree"
+    ],
+    "limitations": [
+      "sampled CPU time, not hardware PMU cycles",
+      "kernel symbol restrictions",
+      "unresolved libc symbols",
+      "profile traffic excluded from measured comparisons"
+    ]
+  },
+  "checks": {
+    "local_test_executions": 171,
+    "linux_test_executions": 148,
+    "linux_ignored_privileged_bpf": 1,
+    "independent_clients": "reviewed-interop.log passes protocol/features, concurrent uploads, 2062 wire cases, post-stress health",
+    "fuzz_request_executions": 8206347,
+    "fuzz_http1_executions": 1198013,
+    "fuzz_seconds_each": 61
+  },
+  "footprints": {
+    "comparison": {
+      "baseline_bytes": 9752760,
+      "candidate_bytes": 9686504,
+      "baseline_text": 7136205,
+      "candidate_text": 7113533
+    },
+    "hello": {
+      "baseline_bytes": 1279584,
+      "candidate_bytes": 1279584,
+      "baseline_text": 827893,
+      "candidate_text": 827549,
+      "stripped_baseline_bytes": 922400,
+      "stripped_candidate_bytes": 922400
+    },
+    "conformance": {
+      "baseline_bytes": 2953672,
+      "candidate_bytes": 2953728,
+      "baseline_text": 2151396,
+      "candidate_text": 2151180,
+      "stripped_baseline_bytes": 2233184,
+      "stripped_candidate_bytes": 2233184
+    }
+  },
+  "artifact_sha256": {
+    "artifacts/bench/ownership-registration-0-0-baseline.csv": "2b48fb4d2f598f7581e136f32f9f2a8f8ec1317b0e3837c97a99997ec96eae17",
+    "artifacts/bench/ownership-registration-0-0-candidate.csv": "789308013a4cbf2c421708a300748cb5aff4fb1404a13c58f706e6acd9fda61d",
+    "artifacts/bench/ownership-registration-0-1-baseline.csv": "d959496955f524f4c6166a8a3412c89b72a02fe9e1b96b3df9cf91ed5d4db239",
+    "artifacts/bench/ownership-registration-0-1-candidate.csv": "dcc009d343ce04e70a0ee88d4c2a2235912550665442aaab4b3b7cab2b3be1d0",
+    "artifacts/bench/ownership-registration-0-2-baseline.csv": "64a3e7cc744baa0a7db64732333c9a357acaed8c7b7bf264d5f1ea4e75afb8a2",
+    "artifacts/bench/ownership-registration-0-2-candidate.csv": "4015c908b06fda2b733ae0c27f1763545129ddc143456c74a907dbf31a7c79f7",
+    "artifacts/bench/ownership-registration-0-3-baseline.csv": "b86b8a1878f8bd6a9d80176980538f1e6176d46b63fbeccef91a364e1ea863e6",
+    "artifacts/bench/ownership-registration-0-3-candidate.csv": "775389ebd66e6621a18f4a45714ceba3ad77ca5a527f7dc5858c0682945b8758",
+    "artifacts/bench/ownership-registration-0-4-baseline.csv": "26f2215cf0a76cdf5ec6ff4fb35c781a20ae4d92a42e3e2a5c6dc6c81a0cb146",
+    "artifacts/bench/ownership-registration-0-4-candidate.csv": "becaeda8be9e034a12fb2bc2b4dce71a09db6c920d1f09c0194af6b0f24dc65b",
+    "artifacts/bench/ownership-registration-0-5-baseline.csv": "88f27e765c20cb813d75109f78bb6c21b8c74e8565e8eaca73aac757f1361549",
+    "artifacts/bench/ownership-registration-0-5-candidate.csv": "ed7b35a805386989f99b20b60f227b78164005fc7db97626f7b198ac8352a6b8",
+    "artifacts/bench/ownership-registration-0-6-baseline.csv": "cf865407529ece4d4609553c9c03ddd842e9f5b21d3e10b4cb9ad3661d35b515",
+    "artifacts/bench/ownership-registration-0-6-candidate.csv": "b07e11a41a3d4f88c026b70c08cbaffeff32d5332bf9ca1873f8b48b86407a25",
+    "artifacts/bench/ownership-registration-1-0-baseline.csv": "3b7f6e181eb87f850360a290409abd552ce0c9ababbf0b51be8bf306a5daac98",
+    "artifacts/bench/ownership-registration-1-0-candidate.csv": "53ea11f93bb5e36077fa352d1292c122779c61c8d232458c046c43e820dd3e40",
+    "artifacts/bench/ownership-registration-1-1-baseline.csv": "b2a6fe9996dbbfa0b627fecd242073c456cfa63f6bccecbeace5757ed166e817",
+    "artifacts/bench/ownership-registration-1-1-candidate.csv": "402dbc9149db4f9339498de1f53f163732a2329ba8939092130e68df67ed4cab",
+    "artifacts/bench/ownership-registration-1-2-baseline.csv": "c3fbdfa5f043430206040e8bb5f1a8c776ab5905170285aa6e38615d6216ac12",
+    "artifacts/bench/ownership-registration-1-2-candidate.csv": "912dbb8b41b8651c347f3d41a4b368480fc1e49e165b1eaa12f3a417d4c2b5f9",
+    "artifacts/bench/ownership-registration-1-3-baseline.csv": "676a0e3e4908675c56a87752a0724412167e543871eba1cc6f8ab69a8572a950",
+    "artifacts/bench/ownership-registration-1-3-candidate.csv": "59ea63d72d0663e7da26d73a830a53c6bb480d3754973a009eb846af92df59c8",
+    "artifacts/bench/ownership-registration-1-4-baseline.csv": "39fff02a21d3ae5ed536b9543d5a7d0ba555ea05c8218cecdb63d941745db9e8",
+    "artifacts/bench/ownership-registration-1-4-candidate.csv": "7ca970f09b127ce0861c929197a5858d3a720ed14e2d10d2fe1ec3c7fcfd6fbd",
+    "artifacts/bench/ownership-registration-1-5-baseline.csv": "d207f2be94afe44106f50c93ce97fd1aa12bb00f920fdbe2a2a5e7338f6b1a96",
+    "artifacts/bench/ownership-registration-1-5-candidate.csv": "feb26ca2032029410289822c212f05fd8fa4d12338b984e82fa7c0f4d26805d4",
+    "artifacts/bench/ownership-registration-1-6-baseline.csv": "e4b514374332f2fc1ac300bc52ed6f8dbc99256034e7bea77c671f767d829b11",
+    "artifacts/bench/ownership-registration-1-6-candidate.csv": "7d62bcdb93d72d46d926c244fb31c23da46d921ac618aeaf20c0638c3d972e76",
+    "artifacts/bench/ownership-registration-2-0-baseline.csv": "ed3d9b05bca9eb8d1aea27a167789633b5bee81205b72becb42b5675fc17febd",
+    "artifacts/bench/ownership-registration-2-0-candidate.csv": "ff645b05f61c7be8dec9b59d64dbb90ee545e0daa1481295870cbd4112a20e15",
+    "artifacts/bench/ownership-registration-2-1-baseline.csv": "ca44b381f43576c203b9b440ac6e4c7c77c65818fc8873e3b925c8605e42fdc8",
+    "artifacts/bench/ownership-registration-2-1-candidate.csv": "a80ff8353183d266badb881dd07bdf5872f9994b4816446609af3cf26d4a03aa",
+    "artifacts/bench/ownership-registration-2-2-baseline.csv": "ca322bf1cef9e3d9726f5067fd30c0592de4b1018dede04345be21d853391086",
+    "artifacts/bench/ownership-registration-2-2-candidate.csv": "a42bbb5cb8ae5c80f5dfc68d6b02b17fc3e4f2eb3b1689baa309fa2fd13e8d75",
+    "artifacts/bench/ownership-registration-2-3-baseline.csv": "47a86e7b7a36e4aefb259431b8691c058b485b124dd6ee108e84d124e48e70e2",
+    "artifacts/bench/ownership-registration-2-3-candidate.csv": "fb9de8d753012611efd1b3ec8e6c506c13d9c831159bf53f3a5d7dd90d7fd1d5",
+    "artifacts/bench/ownership-registration-2-4-baseline.csv": "011226e5e678bfe2f9f4a944063636d7d309b9fb8396a7613e0afdead20f58d2",
+    "artifacts/bench/ownership-registration-2-4-candidate.csv": "49dab1109c7f98c3c2d37b1a6eddc79ed55628964e08b98cfe6310ee8205ea2f",
+    "artifacts/bench/ownership-registration-2-5-baseline.csv": "9b3f387713d2a02d12d3e132f6e662c73dbd6100ce4946361a8f60d80bb095e0",
+    "artifacts/bench/ownership-registration-2-5-candidate.csv": "546433d1c4830078bd32ae952244bc6ddffa231d37424682fb10790501360468",
+    "artifacts/bench/ownership-registration-2-6-baseline.csv": "85861e6a1d5bda6d94578c086993a2124010e1dfbfa61ddb532378b0784fb9d7",
+    "artifacts/bench/ownership-registration-2-6-candidate.csv": "deb8c6a59e304d4645b5e0f0e6528c829599a8d6aff9fda8bf9cbfeb60d383d3",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-0.csv": "aa1413fd50cc363ba88f9966cf6175cdeee4e9d56d094ba59cbdd396fc53fe4e",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-1.csv": "637054ade11cb21f8a5b0dd949b388194e70a27114b0f72be8e50c5262161d96",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-2.csv": "a87b9836862d599e003f597cfcf3b9d3e3f38bc629f77be98d0e51eeb7804399",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-3.csv": "e9ece7865d425dae971c57445668fd87884f11c92ad455e946a8b94061991cff",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-4.csv": "63945b73cee20363e26ed239654ddb50c94a4293280b299098b9ec8122e5cb2f",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-0.csv": "5933599556c43c0d2528f4438556823a1da754001323e5eaf03cd42cf7fa8d75",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-1.csv": "d4924ddbd1bbbd94aa1c04481c05f1a3cd0bfcaa53864a8b12b2dd4ddaaeb24c",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-2.csv": "cc982043c3197e3851f8f7a2c67e82583888221001ca02ff6662b212c6713341",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-3.csv": "2d2918380e5feb76357a214d743bdc0281952216f8068ad5bfcd210ff8d9202d",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-4.csv": "1be91b8c0e8d6b8dfb94eeb4e70407e37f682685282d271d66b96c516c22e9a9",
+    "artifacts/performance-2026-10-20/reviewed-source-manifest.json": "c9cd9456ba8a7055c80ef0435c79dd2575d82ac980b003719cfcfd60be2ea994",
+    "artifacts/performance-2026-10-20/baseline-source-manifest.json": "ac7f89b8d6095bec8353eaf60e6125f6b97d858735bddfba9fd3115737bd9782",
+    "artifacts/performance-2026-10-20/reviewed.patch": "2225a307a7061a37e1f469d959f62f7d2997246aeecdc0f97fdade2722933b83",
+    "artifacts/performance-2026-10-20/baseline-reviewed-build.log": "b6133aa84c9f654c5d1c3d8fb8bbef5d306f9b9963c96746cb1f30bf0376c8a2",
+    "artifacts/performance-2026-10-20/final-reviewed-build.log": "6560ba37a17bf83a6f868f55a01b242210dd0c11bddb86f970437b291364568d",
+    "artifacts/performance-2026-10-20/reviewed-check.log": "bd82a0b403eccf13851f5f52353d1ef4480829b2d03d660a565db8730bca0a78",
+    "artifacts/performance-2026-10-20/reviewed-linux.log": "17763bbf75e0cd3ccda87ccbe3276be4825e2ac3f8309807a00af1cdfdd2c6b3",
+    "artifacts/performance-2026-10-20/reviewed-interop.log": "204292445408348086d70c18ac50effccb1b0381e6cebefd88946a9743f7bf11",
+    "artifacts/performance-2026-10-20/downstream.log": "cec2e1985d1e7daf3351c691d41c5b101e21678cb0689d9abd6e82dea8cd9d27",
+    "artifacts/performance-2026-10-20/fuzz-request.log": "e824802c532812420270de303b7df27c3496d255443679f84c0e978562a71925",
+    "artifacts/performance-2026-10-20/fuzz-http1.log": "12e4e37baf8e909b69e1b622fcc9b8e162fbaadbc5e6288f76f34a8db1f227f3",
+    "artifacts/performance-2026-10-20/size-baseline-hello.log": "561026a17e4508c8b9d652cbf2935921ae4836420206bb28df9e778d39483624",
+    "artifacts/performance-2026-10-20/size-reviewed-hello.log": "5246a2a3c629ba5a801afa86e2b041cad64f669b16ec0629994a082f4fe2d478",
+    "artifacts/performance-2026-10-20/size-baseline-conformance.log": "bdf8c455a8f879387a4d1418f774781f935ed6ebd85d74078d74414fce7e526a",
+    "artifacts/performance-2026-10-20/size-reviewed-conformance.log": "b6642b804a0a669e55cf3d9db2c1867c5bdbccdfe59136a09907490f5f1081bd",
+    "artifacts/performance-2026-10-20/stripped-size.log": "078580e4870e81ca73dfe4de315398333c6899341b27eb1fc03d79d12f633e1d",
+    "artifacts/performance-2026-10-20/profile.sh": "a721c6f5711f38027d5d164a1f98207f12db77d8da3c4658261ae65cfc4b6735",
+    "benches/results/ownership-registration-trials.csv": "decbc8f8b6805a72cf7b4b03419e09c794fced9438abe4d51f0e00373ee49cf9",
+    "benches/results/ownership-registration-allocations.csv": "fae1d65a9b520f7f5311cf5eb9164c5d96b5a60d3cc344a3a76aec6c2ac9b5b5",
+    "benches/results/ownership-registration-profile.json": "37e3e4c53f5ab275ea4855b10fe7bada5fc5f4fe22219e7d352b5ac5d9694230",
+    "artifacts/bench/ownership-registration-0-0-baseline-environment.json": "c2c3b7d64da9a3e5eea9636effba9f91df925496a4c387b43f9435c45c9b810f",
+    "artifacts/bench/ownership-registration-0-0-candidate-environment.json": "a4ea5161e2412b929fbe60d4dcb74878d220aa6575de711ec6395a7241411d39",
+    "artifacts/bench/ownership-registration-0-1-baseline-environment.json": "20eb567bfab596015d37de4fbfe205a823230396b6807b8d35b800bf2911a263",
+    "artifacts/bench/ownership-registration-0-1-candidate-environment.json": "3686ffd962627fc716a354d2e73e7b4816efa934d5dc075d3c737b2748282fea",
+    "artifacts/bench/ownership-registration-0-2-baseline-environment.json": "044b56e9249e04f684646e4908090c06fbf635e7dc411ca9b5c426071671c9fd",
+    "artifacts/bench/ownership-registration-0-2-candidate-environment.json": "297a4f7e1f97b09ec2b29677c7663ba3d36c9f46fd7b67bd71d234e7980076f0",
+    "artifacts/bench/ownership-registration-0-3-baseline-environment.json": "cd4ac32fe2852ffefba29e1cdaf8d9979d13a549762494a3cbd995dc9a9a9c0c",
+    "artifacts/bench/ownership-registration-0-3-candidate-environment.json": "b6fd889f2774076f11ab269d54229409ef2d8b505562628e9ac5f98b3b842c2a",
+    "artifacts/bench/ownership-registration-0-4-baseline-environment.json": "9791eecfe6dddd9e960fecb2ae7c77fc1a44b348e71d754a3557f93c01d97b36",
+    "artifacts/bench/ownership-registration-0-4-candidate-environment.json": "3c432d3b3fb60c949e370e3cb35923902532c787cbe9b1505480d4878d502f4a",
+    "artifacts/bench/ownership-registration-0-5-baseline-environment.json": "f414f0e6adf9de6e5f8fa40f87aeba5d9a6dc7242ff75db460a338fae64982fe",
+    "artifacts/bench/ownership-registration-0-5-candidate-environment.json": "92d1218cb6867317be382d401d0bf2946089309949d07c69651107e6bfc30107",
+    "artifacts/bench/ownership-registration-0-6-baseline-environment.json": "355e75c5591ca3e48015ab5c6cead09c764e635a191c2c16a35bf63597e52505",
+    "artifacts/bench/ownership-registration-0-6-candidate-environment.json": "755fcfcf7343ba534db71f892a5ce4b7444a3a16b7b468c9f7c5180d2868babc",
+    "artifacts/bench/ownership-registration-1-0-baseline-environment.json": "4ae10f9bc032b34469403ff7bf2c97931ee3f1acd98e7ef72998a3ae25bda77c",
+    "artifacts/bench/ownership-registration-1-0-candidate-environment.json": "d2c42c1b5d440da28ea9205c54b5ac10bb97a625d36a5f5893ad9d09d5582747",
+    "artifacts/bench/ownership-registration-1-1-baseline-environment.json": "42a0598718ac32c5bc4195dafa31d1dfdb540878d275b8c75b154304983a7a27",
+    "artifacts/bench/ownership-registration-1-1-candidate-environment.json": "f5da4614d732c2011651e6d797f174c7c41602801f03532aa9844ec9964fa49b",
+    "artifacts/bench/ownership-registration-1-2-baseline-environment.json": "1a90bbdd8888ace92687277f7125f05538c798db8990dabe1dc121ac9aa75929",
+    "artifacts/bench/ownership-registration-1-2-candidate-environment.json": "dee3d5d06e246ca934b43d7849861137bd311e36a4656b3f79360977a9c03232",
+    "artifacts/bench/ownership-registration-1-3-baseline-environment.json": "6cc895f72553042541a3a9e9d9cfdd0df6671f8a7655daf579c9a6fdf76b331d",
+    "artifacts/bench/ownership-registration-1-3-candidate-environment.json": "c671121607298ee5a8dc3daee853db8ab007c231f9e14bc719c768240041717a",
+    "artifacts/bench/ownership-registration-1-4-baseline-environment.json": "0a07f7c015799f939753bce80115781dad6950088a664fbba31b15272e6f39b1",
+    "artifacts/bench/ownership-registration-1-4-candidate-environment.json": "ce7187d46337805ea2120cf19f474dbbc82a3649da5ce432e641f8bfcc036c9a",
+    "artifacts/bench/ownership-registration-1-5-baseline-environment.json": "8fca65de3564605e3586a48237c3d6b7f86d4a01cd48a5ae49a39ec5ad5004ce",
+    "artifacts/bench/ownership-registration-1-5-candidate-environment.json": "b0c620b1929f183f283bcb135fd02afb7a811ce54e8abc560317f939ab369067",
+    "artifacts/bench/ownership-registration-1-6-baseline-environment.json": "14fc7fb4494140557e90bf61ad63037593f76c163fc4685ebb3fa802493968ad",
+    "artifacts/bench/ownership-registration-1-6-candidate-environment.json": "338c70f72f133ad7e511ef71fa3db47c017b8c88ed9e157523cca4d9831e161a",
+    "artifacts/bench/ownership-registration-2-0-baseline-environment.json": "904c1ad9327c2c16989a70fa226c1ab0144d1b8a07e4da6f9c74a0fccef12486",
+    "artifacts/bench/ownership-registration-2-0-candidate-environment.json": "6b1d5174021e818f115d4ffb61fb6664b878b435017c4ce851985107a317f423",
+    "artifacts/bench/ownership-registration-2-1-baseline-environment.json": "1f1d4483f17fa3e342a1d94d2e0cd8cb7c62313b34f180447a093c3989bc0924",
+    "artifacts/bench/ownership-registration-2-1-candidate-environment.json": "a18f4f6c6da0c3d8261ef8063756b3b3fbb820d17b848304ac73a963b6c4f96d",
+    "artifacts/bench/ownership-registration-2-2-baseline-environment.json": "8565d1c7128d24b42fc9eb9ee6d56ad567e805ce7489bbbc3cc919909a19f5c3",
+    "artifacts/bench/ownership-registration-2-2-candidate-environment.json": "6d143458acf7eab9f70e15728517a96931adc58cd8847196532d59d0a8fcc5a0",
+    "artifacts/bench/ownership-registration-2-3-baseline-environment.json": "499551bf6c9e1ca582de73f82be5f835c0d111768a39a5f2e8ecaea576e0424b",
+    "artifacts/bench/ownership-registration-2-3-candidate-environment.json": "16f7e2b21aa3f1ef804f10232e10fff4b87d02ae2ab4ee5f657e875f2dd2d93b",
+    "artifacts/bench/ownership-registration-2-4-baseline-environment.json": "205fc609598335eacad12ccb7859d3c4416abf4f7a91fca5ad592a5e1ea0fabf",
+    "artifacts/bench/ownership-registration-2-4-candidate-environment.json": "ee10a50caddca37d23e3a6865bdfeeac2971a90e8ba4e6f87d07a48fe9e322b3",
+    "artifacts/bench/ownership-registration-2-5-baseline-environment.json": "27961f33dc6a8e21e0e38ae9052b19f1aebdfadd834059667a4e4bb52987f5c9",
+    "artifacts/bench/ownership-registration-2-5-candidate-environment.json": "2addd8042589c40832d323f873bcf39bb94a0692c12cea6d0d6843300a5c8541",
+    "artifacts/bench/ownership-registration-2-6-baseline-environment.json": "066c9e7aa54e4dbb029ef585acc28b29a188f2fb34572ad204e266569f8f8931",
+    "artifacts/bench/ownership-registration-2-6-candidate-environment.json": "91eaec6fbd464be8cea999abfd36f046ada56ac69e9b715245b94d522024b92d",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-0.exit": "39b8dc3fc8b44765c8e6f1adee04c5b465e555ab791cc42d0d9e810d5b64297c",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-0.log": "652db84bffd6a51a43c11305cc6d51f826486777396622c0b0253be4c53689de",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-1.exit": "39b8dc3fc8b44765c8e6f1adee04c5b465e555ab791cc42d0d9e810d5b64297c",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-1.log": "652db84bffd6a51a43c11305cc6d51f826486777396622c0b0253be4c53689de",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-2.exit": "39b8dc3fc8b44765c8e6f1adee04c5b465e555ab791cc42d0d9e810d5b64297c",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-2.log": "652db84bffd6a51a43c11305cc6d51f826486777396622c0b0253be4c53689de",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-3.exit": "39b8dc3fc8b44765c8e6f1adee04c5b465e555ab791cc42d0d9e810d5b64297c",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-3.log": "652db84bffd6a51a43c11305cc6d51f826486777396622c0b0253be4c53689de",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-4.exit": "39b8dc3fc8b44765c8e6f1adee04c5b465e555ab791cc42d0d9e810d5b64297c",
+    "artifacts/performance-2026-10-20/alloc-baseline-reviewed-4.log": "652db84bffd6a51a43c11305cc6d51f826486777396622c0b0253be4c53689de",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-0.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-1.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-2.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-3.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-4.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "artifacts/performance-2026-10-20/alloc-final-reviewed-4.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/bench/ownership-registration-0-0-baseline-dynamic-plaintext-w1-r0-n0.json": "ce7afbb6852db7b239b4c663661b12e46ebe46e38f5c4b4f1195c6060a40453d",
+    "artifacts/bench/ownership-registration-0-0-candidate-dynamic-plaintext-w1-r0-n0.json": "4e604fc55a823aba8a9fb663c83a4736a6b5ac6154d9bb3bec3a556578c053c7",
+    "artifacts/bench/ownership-registration-0-0-candidate-hyper-plaintext-w1-r0-n0.json": "cdf19c1eadaf64686a3f2f054532614ea7a258420aa1ba8546ff06913078543b",
+    "artifacts/bench/ownership-registration-0-0-candidate-axum-plaintext-w1-r0-n0.json": "c9294aa2c7ad77f68a3f5c79aadb752e2449e813f8b7e0adfe28b559936dbc48",
+    "artifacts/bench/ownership-registration-0-1-baseline-dynamic-users-42-w1-r0-n0.json": "6fe4f5a67a5d34332886f4c97bc7f47b160b4eb629464ab052d921bc138d611c",
+    "artifacts/bench/ownership-registration-0-1-candidate-dynamic-users-42-w1-r0-n0.json": "2d5b04c5af9466111f9708a0ca94758c43b443d1f4a6a51f346f27454a1bd1a0",
+    "artifacts/bench/ownership-registration-0-1-candidate-hyper-users-42-w1-r0-n0.json": "c9e70d624b1f17b57fe4a61118585d35ea75c71fcb060de361cbdc2679e58936",
+    "artifacts/bench/ownership-registration-0-1-candidate-axum-users-42-w1-r0-n0.json": "f7f3d6a9600bb45a37e3d6fe5220f609754c728cc9d98bfe5679b7cc3fee2b63",
+    "artifacts/bench/ownership-registration-0-2-baseline-dynamic-error-w1-r0-n0.json": "3fbd1d9d4ab75df9231b06dec5e290a746ff260134cc11a4c2cf10ecc660dd63",
+    "artifacts/bench/ownership-registration-0-2-candidate-dynamic-error-w1-r0-n0.json": "86289525033a56187efa439f66b47807209a8d577c0659726df7e716b32a8068",
+    "artifacts/bench/ownership-registration-0-2-candidate-hyper-error-w1-r0-n0.json": "d61c5c4c0df9f4d801ae92f0203d4dcc53801e4b22ffd23a45f4baaba744a4fd",
+    "artifacts/bench/ownership-registration-0-2-candidate-axum-error-w1-r0-n0.json": "7f5ea4143d8a160f0797c1d946509df460e43d8b4e89e5bce0fcb7bbaa8efd56",
+    "artifacts/bench/ownership-registration-0-3-baseline-dynamic-echo-w1-r0-n0.json": "6e4f4b4a0d7fbbbf4da7b7a81e96a8c936f220b848b86ff097e146cbf573905f",
+    "artifacts/bench/ownership-registration-0-3-candidate-dynamic-echo-w1-r0-n0.json": "5c67f729ecdd508c79e9e1095c2775b11becb01ce5b5d9c2a31ae18bc63e439a",
+    "artifacts/bench/ownership-registration-0-3-candidate-hyper-echo-w1-r0-n0.json": "1a0bae9a62fe598098ca53d56c8f97cf1b9d06b1fbfb67631a8efc9477eb2e29",
+    "artifacts/bench/ownership-registration-0-3-candidate-axum-echo-w1-r0-n0.json": "0f6a9e5e18a30ac48f10f68740db780c5bec8c951d674a17562707831af27169",
+    "artifacts/bench/ownership-registration-0-4-baseline-maximus-error-w1-r0-n0.json": "c5c1d40a0b031ef2ead507bb74731f1cdaa3b663180e58ec41eb70238adcb09c",
+    "artifacts/bench/ownership-registration-0-4-candidate-maximus-error-w1-r0-n0.json": "10db649ecb8d975d4654eff9bba3e0748cadb9b3270accfb8f07ba25508a0e9d",
+    "artifacts/bench/ownership-registration-0-4-candidate-hyper-error-w1-r0-n0.json": "67bc70788eab6b96e2a08c1bda972f356c2d9709f9bf57332fa21826e8e54761",
+    "artifacts/bench/ownership-registration-0-4-candidate-axum-error-w1-r0-n0.json": "eaacafc190ca45ddf8d306ef8edaf2e2ab3bf397993ea4f7cb4cd7b8df3a2710",
+    "artifacts/bench/ownership-registration-0-5-baseline-maximus-echo-w1-r0-n0.json": "7b3297edff6b1f13cfa618a2df0a993e2b503fc21f04cb2a794d0f2629a121b1",
+    "artifacts/bench/ownership-registration-0-5-candidate-maximus-echo-w1-r0-n0.json": "5af3cbbc7e9851918f737cf5977a2bb1285943a958deaac46a9bbc823106105c",
+    "artifacts/bench/ownership-registration-0-5-candidate-hyper-echo-w1-r0-n0.json": "dae0dcb18aa93ff57a076ed722788f71ea149c1ed39a37d28b55475bc768564d",
+    "artifacts/bench/ownership-registration-0-5-candidate-axum-echo-w1-r0-n0.json": "89ce0eeb3202a210ccd92dfe4c8949a7293c7c4e379d65c75fd08afa9c5d5146",
+    "artifacts/bench/ownership-registration-0-6-baseline-maximus-plaintext-w1-r0-n0.json": "3db6c8bf007421cf8a4ba39730fac64603e08777221e3a2a89f54fb8f0ad682a",
+    "artifacts/bench/ownership-registration-0-6-candidate-maximus-plaintext-w1-r0-n0.json": "4feee1ba37781161a649b1211317dad9dc55dfa1504955ad96e265845d380e53",
+    "artifacts/bench/ownership-registration-0-6-candidate-hyper-plaintext-w1-r0-n0.json": "dc446dc5fe67d440d1bd6c12803c9b1448fcb1ab36bd08d788c5f9164db867f9",
+    "artifacts/bench/ownership-registration-0-6-candidate-axum-plaintext-w1-r0-n0.json": "18e434f670fd20e0788a4777d631c7d366484e0bec58f9028ec985d3b2649c42",
+    "artifacts/bench/ownership-registration-1-0-baseline-dynamic-plaintext-w1-r0-n0.json": "7192bc199fef4579c49d7fb2bb6ffc8d5b5baab6952ff67168f00d8fb4b2c9ce",
+    "artifacts/bench/ownership-registration-1-0-candidate-hyper-plaintext-w1-r0-n0.json": "09c9f1dc0f6aface32cba169743bdb37587de0fcf640f9c05d2a169e7bbd1280",
+    "artifacts/bench/ownership-registration-1-0-candidate-axum-plaintext-w1-r0-n0.json": "9ef1148824f598e671ae4b8d2064a13614a1a3f2e06bd595e456d0bf6c4218ab",
+    "artifacts/bench/ownership-registration-1-0-candidate-dynamic-plaintext-w1-r0-n0.json": "e0b21593e96e0b8f4e0c014a03696c9e1235e4dcf4d299d8674da231ddc759f8",
+    "artifacts/bench/ownership-registration-1-1-baseline-dynamic-users-42-w1-r0-n0.json": "18d058ad7ec6e04db8f79e1debdd7dc868412ee7bb2adb823826c01732dea6ef",
+    "artifacts/bench/ownership-registration-1-1-candidate-hyper-users-42-w1-r0-n0.json": "e12f22527fe126b316ef45784c0258f09d4b1b3eb52f0dffcd6eb1dfcbc5c56e",
+    "artifacts/bench/ownership-registration-1-1-candidate-axum-users-42-w1-r0-n0.json": "ae7a94a584a81d9d4ba4fa035fe4e2dd74e4880463adbfd32b87530b3a15c3d0",
+    "artifacts/bench/ownership-registration-1-1-candidate-dynamic-users-42-w1-r0-n0.json": "0cbd202d3e660a3d80a8c0291f7199f8828928f69c80249379efed0217716d0f",
+    "artifacts/bench/ownership-registration-1-2-baseline-dynamic-error-w1-r0-n0.json": "8ad348609ff0695d374908d9fef84791596c4bfe72b9dd8204513f48bb1bd95a",
+    "artifacts/bench/ownership-registration-1-2-candidate-hyper-error-w1-r0-n0.json": "88de82958e4bc3d59b1c334f72d96633c0ee32d8d958d3086d4117b20892eec1",
+    "artifacts/bench/ownership-registration-1-2-candidate-axum-error-w1-r0-n0.json": "c74c25bc1668ed70100cfeab96628eb2dbccf73bad8c6676e9bce7b0c7b621ab",
+    "artifacts/bench/ownership-registration-1-2-candidate-dynamic-error-w1-r0-n0.json": "eae6bd48b1a591c59a6eca705514fd5e7da5e3fd7cf3264ef2184eda82d9fb8a",
+    "artifacts/bench/ownership-registration-1-3-baseline-dynamic-echo-w1-r0-n0.json": "cc229c1a8414697d771664c6d80d6996cff5c56666492aaabe3246ee006e648a",
+    "artifacts/bench/ownership-registration-1-3-candidate-hyper-echo-w1-r0-n0.json": "e08395d1cfa04f2dbfde6c0b6a81f650cca17240b6e74ab8d7cf400ac25bb0f1",
+    "artifacts/bench/ownership-registration-1-3-candidate-axum-echo-w1-r0-n0.json": "5e20ee07237cdf8a8a342f9331ecb97e9b6187661b162989cfbd5b3e0280167b",
+    "artifacts/bench/ownership-registration-1-3-candidate-dynamic-echo-w1-r0-n0.json": "142aea8c8d595da5bc91b488d6fceb84e48c044bb8d5d3c20e335940c74e5601",
+    "artifacts/bench/ownership-registration-1-4-baseline-maximus-error-w1-r0-n0.json": "57b22dd749d98c1b7d6e3f0700f4e91e817e8c3bcbe8d2a2b79d3067882b7ea2",
+    "artifacts/bench/ownership-registration-1-4-candidate-hyper-error-w1-r0-n0.json": "ae60b24d5c89891d11445ad4884801dda5292e58de2b990929651a4a156fdb3f",
+    "artifacts/bench/ownership-registration-1-4-candidate-axum-error-w1-r0-n0.json": "5b55b122064adddfdacb18f038063e6e193919190a10616b8bb56aecdee47d06",
+    "artifacts/bench/ownership-registration-1-4-candidate-maximus-error-w1-r0-n0.json": "69713bf4e6253925fda0fc6e14ec1d8b837910c4a14542ba99fe7d4e7336f703",
+    "artifacts/bench/ownership-registration-1-5-baseline-maximus-echo-w1-r0-n0.json": "a2d9f03746c6baf8815814a17b58116aebdf8b1682ae9a0229ad96c9c02d620e",
+    "artifacts/bench/ownership-registration-1-5-candidate-hyper-echo-w1-r0-n0.json": "ff75518bf4ee18d393bf05397651175c0e0012e4762320a8511053bcbb526ca4",
+    "artifacts/bench/ownership-registration-1-5-candidate-axum-echo-w1-r0-n0.json": "3979c3a266efde3df1e4d7b1a36969c6043efee761c0c1d8397a2e80caf6a2e8",
+    "artifacts/bench/ownership-registration-1-5-candidate-maximus-echo-w1-r0-n0.json": "232ce5e67379c211a35ce1e036b1cb685d8148cd28334ffe20b8e415e3e29c3a",
+    "artifacts/bench/ownership-registration-1-6-baseline-maximus-plaintext-w1-r0-n0.json": "38e335c31585d1fb9674c8764284f0f5123a11bbf2ca38a994cd741d771dd0b4",
+    "artifacts/bench/ownership-registration-1-6-candidate-hyper-plaintext-w1-r0-n0.json": "eeb304918a32cdf46b70ed9fb7fb8717b1145cb545ec6944007be70f617dfe9c",
+    "artifacts/bench/ownership-registration-1-6-candidate-axum-plaintext-w1-r0-n0.json": "4fbce42cc98a6a7bbfc9edea9c80f48cdb0672cbbe8baaeec4b3085e410879a9",
+    "artifacts/bench/ownership-registration-1-6-candidate-maximus-plaintext-w1-r0-n0.json": "e9223c53933ccaa2ed4f2466304645d419c8a8aec013fa14268b909cf85ab99b",
+    "artifacts/bench/ownership-registration-2-0-baseline-dynamic-plaintext-w1-r0-n0.json": "cf36854f8c6c8685b27d79b94fcfee181a7bdbd5d9814ad874d055b63f7dbbda",
+    "artifacts/bench/ownership-registration-2-0-candidate-axum-plaintext-w1-r0-n0.json": "f5f9f10a79ac77a46858674470bb0284d075abbbac0a9e43df9fb4ad06c790da",
+    "artifacts/bench/ownership-registration-2-0-candidate-dynamic-plaintext-w1-r0-n0.json": "9357f450b84d945fbec8a0b9b47db8f8312fedf4e8fd736c2f0eb85c1533129e",
+    "artifacts/bench/ownership-registration-2-0-candidate-hyper-plaintext-w1-r0-n0.json": "bc244aff1c32710bf971944a67a733699eefc1fb4fbc07b1e366cefb55642808",
+    "artifacts/bench/ownership-registration-2-1-baseline-dynamic-users-42-w1-r0-n0.json": "a744bd5e608649f46def167e2e3a54eabcd6b0f5758085ea2cb6f7c4cf9d7cda",
+    "artifacts/bench/ownership-registration-2-1-candidate-axum-users-42-w1-r0-n0.json": "770c22996c1b411b7cabfbd3388d8805129a52e489b7ab0fdaed5339f28edc42",
+    "artifacts/bench/ownership-registration-2-1-candidate-dynamic-users-42-w1-r0-n0.json": "30da5d4bedce22f65fb2dca847814b133fd85096d3e6899eb6677c4369027ab9",
+    "artifacts/bench/ownership-registration-2-1-candidate-hyper-users-42-w1-r0-n0.json": "abf59090f11f41899c77e4d62d744455392c09fcc0a34f9f1895dc0402c4f190",
+    "artifacts/bench/ownership-registration-2-2-baseline-dynamic-error-w1-r0-n0.json": "f792707178420f262328b83d44e09925262050d02ce9200270d882e53e085572",
+    "artifacts/bench/ownership-registration-2-2-candidate-axum-error-w1-r0-n0.json": "f73a9e7ca5dbceb20eaa7538f34dd28950a4b022ac5d515085986cc5a773bf44",
+    "artifacts/bench/ownership-registration-2-2-candidate-dynamic-error-w1-r0-n0.json": "d91c8d3ab85cc5bdb6f5697694c74820cc22c798fc7949ee5ee21f206cabc0d0",
+    "artifacts/bench/ownership-registration-2-2-candidate-hyper-error-w1-r0-n0.json": "b9f7126dbc771041d56a542a2fead7b469f59385d67a0f28c8a21849855bcbde",
+    "artifacts/bench/ownership-registration-2-3-baseline-dynamic-echo-w1-r0-n0.json": "63a883b4d389d64cafea49dcbfb2ecf7662518340787f688733ddbe7c97547de",
+    "artifacts/bench/ownership-registration-2-3-candidate-axum-echo-w1-r0-n0.json": "5068271baf1e0d290a5918739a153e65fab9df437dbf631a016d47a1a347fdd4",
+    "artifacts/bench/ownership-registration-2-3-candidate-dynamic-echo-w1-r0-n0.json": "bbf940a8f0b9c66d072c60bfc9b0f305170e0df84211ec48453ba3f8288342f3",
+    "artifacts/bench/ownership-registration-2-3-candidate-hyper-echo-w1-r0-n0.json": "0aa702f7432b1a1573c5b77accd5484ab235876e0b2c888c10ef7a5054564fc8",
+    "artifacts/bench/ownership-registration-2-4-baseline-maximus-error-w1-r0-n0.json": "39c30b8db536c9096403a55d9cdaac00a3c6a3ae55450bccb3721f463ec81bfa",
+    "artifacts/bench/ownership-registration-2-4-candidate-axum-error-w1-r0-n0.json": "79851058ce18383577e808a1f6011a1a2852a3a0fe37958c58d3cb534dddd4bc",
+    "artifacts/bench/ownership-registration-2-4-candidate-maximus-error-w1-r0-n0.json": "2b09ee18a1ca3600f0848c6f7115850c331e51570059adf76e6beb278f2596c9",
+    "artifacts/bench/ownership-registration-2-4-candidate-hyper-error-w1-r0-n0.json": "20df61e32be4d8c18a988064c36c8f515fb844e55fee44f48b39e6eadf3de6d0",
+    "artifacts/bench/ownership-registration-2-5-baseline-maximus-echo-w1-r0-n0.json": "0a93cf976bd7a5db46db6e2065b4a5bb48ea07d59e0a5daea663da8182458c13",
+    "artifacts/bench/ownership-registration-2-5-candidate-axum-echo-w1-r0-n0.json": "febe58f36d1a6b8bce9d6453c0452200a769d21d2ac4b3930858b27fbb13ca84",
+    "artifacts/bench/ownership-registration-2-5-candidate-maximus-echo-w1-r0-n0.json": "e5df1bb3587a0b45dd8321f155b4757d19c7631f9a43908a2c15e8987987bc93",
+    "artifacts/bench/ownership-registration-2-5-candidate-hyper-echo-w1-r0-n0.json": "99eb6d69d3a739f9f5805b19119d44a0f82cf4b8f1753acbb3cdce93366d842b",
+    "artifacts/bench/ownership-registration-2-6-baseline-maximus-plaintext-w1-r0-n0.json": "233a6f56167f52fbe733315064eb6d1d6369f6175bbe4413647b8100b24f4e96",
+    "artifacts/bench/ownership-registration-2-6-candidate-axum-plaintext-w1-r0-n0.json": "f7f8da8d51bbcc985e04a7cc3068d462960b3b41bf5ffe6a354d4f3ecfbb488d",
+    "artifacts/bench/ownership-registration-2-6-candidate-maximus-plaintext-w1-r0-n0.json": "211bd919a0b687dbc32db74170304afc34288e719424215275917d4d577fd42b",
+    "artifacts/bench/ownership-registration-2-6-candidate-hyper-plaintext-w1-r0-n0.json": "41aac927fa8bb2370a65250246fe4e01788f3532418a2e1010b8d2f1f250aed8"
+  },
+  "analysis_script": "#!/usr/bin/env python3\n\"\"\"Analyze only the initial ownership/registration candidate, without running workloads.\"\"\"\nfrom pathlib import Path\nimport collections,csv,hashlib,json,re,statistics\nROOT=Path(__file__).resolve().parents[2]\nART=ROOT/'artifacts/performance-2026-10-20'\nBENCH=ROOT/'artifacts/bench'\nRESULT=ROOT/'benches/results'\ndef digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()\ndef records(p):return list(csv.DictReader(p.open()))\nmetrics=['rps','cpu_us_per_request','p50_ms','p99_ms','p999_ms','rss_kib','peak_rss_kib','cpu_interval_seconds','server_cpu_percent','client_cpu_percent']\ndef stats(rows,names):\n return {k:dict(median=statistics.median(v),minimum=min(v),maximum=max(v),samples=v) for k in names for v in [[float(r[k]) for r in rows]]}\nfiles=sorted(p for p in BENCH.glob('ownership-registration-*.csv') if re.fullmatch(r'ownership-registration-\\d+-\\d+-(baseline|candidate)\\.csv',p.name))\nassert len(files)==42\nraw=[]\nfor p in files:\n for row in records(p):raw.append(dict(trial_label=p.stem,variant=p.stem.rsplit('-',1)[1],**row))\nexport=records(RESULT/'ownership-registration-trials.csv')\nkey=lambda r:(r['trial_label'],r['engine'])\nassert sorted(raw,key=key)==sorted(export,key=key)\nassert len(raw)==84\nfor r in raw:\n assert int(r['requests'])>0 and r['requests']==r['iterations_started']==r['iterations_completed']\n assert all(float(r[k])==0 for k in ['failures','checks_failed','dropped','exit'])\n summary=json.loads((BENCH/(r['trial_label']+'-'+r['engine']+'-'+r['path'].strip('/').replace('/','-')+'-w1-r0-n0.json')).read_text())\n m=summary['metrics']; assert m['http_reqs']['values']['count']==int(r['requests'])\n assert m['checks']['values']['passes']==int(r['requests']) and m['checks']['values']['fails']==0\n assert m['http_req_failed']['values']['passes']==0\noutcomes=json.loads((BENCH/'ownership-registration-outcomes.json').read_text());assert len(outcomes)==42 and all(x['passed'] for x in outcomes)\ngroups=collections.defaultdict(list)\nfor r in sorted(raw,key=lambda r:int(r['trial_label'].split('-')[2])):\n groups[(int(r['trial_label'].split('-')[3]),r['protocol'],r['path'],int(r['body_bytes']),r['engine'],r['variant'])].append(r)\nsummaries=[]\nfor k,v in groups.items():\n assert len(v)==3\n summaries.append(dict(case=k[0],protocol=k[1],path=k[2],body_bytes=k[3],engine=k[4],variant=k[5],trials=[r['trial_label'] for r in v],statistics=stats(v,metrics)))\npairs=[]\nfor k,v in groups.items():\n if k[5]!='baseline':continue\n c=groups[(*k[:5],'candidate')]\n for b,a in zip(v,c):\n  assert b['trial_label'].split('-')[2:4]==a['trial_label'].split('-')[2:4]\n  pairs.append(dict(case=k[0],protocol=k[1],path=k[2],body_bytes=k[3],engine=k[4],round=int(b['trial_label'].split('-')[2]),baseline_trial=b['trial_label'],candidate_trial=a['trial_label'],percent_changes={m:100*(float(a[m])/float(b[m])-1) for m in metrics}))\nassert len(pairs)==21\nalloc=[]\nfor variant in ['baseline-reviewed','final-reviewed']:\n for trial in range(5):\n  p=ART/f'alloc-{variant}-{trial}.csv'; assert (ART/f'alloc-{variant}-{trial}.exit').read_text().strip()==('101' if variant=='baseline-reviewed' else '0')\n  alloc.extend(dict(variant=variant,trial=str(trial),**r) for r in records(p))\nassert alloc==records(RESULT/'ownership-registration-allocations.csv')\nag=collections.defaultdict(list)\nfor r in alloc:ag[(r['path'],r['variant'])].append(r)\nasum=[dict(path=k[0],variant=k[1],statistics=stats(v,['allocations_per_request','allocated_bytes_per_request','ns_per_request'])) for k,v in ag.items()]\nmanifest={v:json.loads((ART/f'{v}-source-manifest.json').read_text()) for v in ['baseline','reviewed']}\nassert manifest['baseline']['benches/baselines/src/main.rs']==manifest['reviewed']['benches/baselines/src/main.rs']\nassert manifest['baseline']['Cargo.lock']==manifest['reviewed']['Cargo.lock']\nchanged=[p for p in manifest['baseline'] if manifest['baseline'][p]!=manifest['reviewed'].get(p)]\nenv=json.loads((BENCH/'ownership-registration-0-0-baseline-environment.json').read_text())\nidentities=json.loads((ART/'build-evidence.json').read_text())\ntracked=['ownership-registration-trials.csv','ownership-registration-allocations.csv','ownership-registration-profile.json']\nartifacts=files+[ART/f'alloc-{v}-{i}.csv' for v in ['baseline-reviewed','final-reviewed'] for i in range(5)]+[ART/f for f in ['reviewed-source-manifest.json','baseline-source-manifest.json','reviewed.patch','baseline-reviewed-build.log','final-reviewed-build.log','reviewed-check.log','reviewed-linux.log','reviewed-interop.log','downstream.log','fuzz-request.log','fuzz-http1.log','size-baseline-hello.log','size-reviewed-hello.log','size-baseline-conformance.log','size-reviewed-conformance.log','stripped-size.log','profile.sh']]+[RESULT/f for f in tracked]\nartifacts += sorted(BENCH.glob('ownership-registration-*-environment.json'))\nartifacts += [ART/f'alloc-{v}-{i}.{ext}' for v in ['baseline-reviewed','final-reviewed'] for i in range(5) for ext in ['exit','log']]\nartifacts += [BENCH/(r['trial_label']+'-'+r['engine']+'-'+r['path'].strip('/').replace('/','-')+'-w1-r0-n0.json') for r in raw]\nevidence=dict(schema=1,date='2026-10-20',decision='initial candidate not qualified; preserve adverse dynamic HTTP/1 error result',scope='Three performance changes: borrowed Error payload, literal dynamic-route metadata elision with pattern.contains, and two-pass direct shape String construction. Plus rejected-CONNECT closure fix. Persistent Fuse and length-based route classification are excluded.',source_baseline=identities['source_baseline'],snapshot_changed_files=changed,source_manifest_sha256={v:digest(ART/f'{v}-source-manifest.json') for v in manifest},product_source_hashes={v:{p:h for p,h in d.items() if p.startswith('crates/') and '/src/' in p} for v,d in manifest.items()},measurement_tools=identities['measurement_tools'],builds={k:identities[k] for k in ['baseline-reviewed-build.log','final-reviewed-build.log']},environment=env,methodology=dict(rounds=3,cases=7,measurements=84,baseline_candidate_pairs=21,duration='15s',warmup='separate 3s client process',vus=64,server_cpus='0',client_cpus='1,2',worker_count=1,mode='closed-loop constant VUs',order='baseline then candidate in rounds 0/2; reverse in round 1; candidate/Hyper/Axum order rotated by round',tls='TLS1.3 with CA verification. New RSA2048 key/certificate per runner invocation; candidate and competitor engines share one invocation certificate, paired baseline has a distinct key/certificate.',cpu_scope='Server cgroup usage delta during broader before/after interval divided by completed responses. Client CPU includes measured client container lifetime. Not exact request-only CPU attribution.',rss_scope='Endpoint observations only; no periodic samples configured. peak_rss_kib is max(before,after), not continuous peak.',confounders=['shared three-CPU Linux ARM64 VM','four lifeing service containers active','unrelated Positron cargo test process observed; no causal attribution','no exclusive host or physical-core reservation','three pairs insufficient for universal no-regression inference','TLS Hyper fixture retains shared router clone adapter; comparator policies differ']),validity=dict(trials=len(raw),checked_measured_responses=sum(int(r['requests']) for r in raw),positive_equal_counters=True,zero_failures=True,zero_failed_checks=True,zero_drops=True,zero_nonzero_exits=True,warmup_responses_excluded=True),socket_summaries=summaries,paired_changes=pairs,allocation_summaries=asum,allocation_exit_status={'baseline-reviewed':[101]*5,'final-reviewed':[0]*5,'baseline_failure':'expected final guard: route registration must not allocate temporary segment lists; complete CSV emitted before guard'},profile=json.loads((RESULT/'ownership-registration-profile.json').read_text()),checks=dict(local_test_executions=171,linux_test_executions=148,linux_ignored_privileged_bpf=1,independent_clients='reviewed-interop.log passes protocol/features, concurrent uploads, 2062 wire cases, post-stress health',fuzz_request_executions=8206347,fuzz_http1_executions=1198013,fuzz_seconds_each=61),footprints=dict(comparison=dict(baseline_bytes=9752760,candidate_bytes=9686504,baseline_text=7136205,candidate_text=7113533),hello=dict(baseline_bytes=1279584,candidate_bytes=1279584,baseline_text=827893,candidate_text=827549,stripped_baseline_bytes=922400,stripped_candidate_bytes=922400),conformance=dict(baseline_bytes=2953672,candidate_bytes=2953728,baseline_text=2151396,candidate_text=2151180,stripped_baseline_bytes=2233184,stripped_candidate_bytes=2233184)),artifact_sha256={str(p.relative_to(ROOT)):digest(p) for p in artifacts},analysis_script=Path(__file__).read_text())\n(RESULT/'ownership-registration-evidence.json').write_text(json.dumps(evidence,indent=2)+'\\n')\nprint(json.dumps(evidence['validity'],indent=2));print('changed files',changed)\nprint('measurement interval range',min(float(r['cpu_interval_seconds']) for r in raw),max(float(r['cpu_interval_seconds']) for r in raw))\nfor p in pairs:\n if p['engine']=='dynamic' and p['path']=='/error':print('adverse pair',p['round'],{k:round(v,3) for k,v in p['percent_changes'].items()})\n"
+}

@@ -1,0 +1,10 @@
+{
+  "scope": "Benchmark reference only; known rejected-CONNECT defect means this is not an admissible final implementation. Compare common valid workloads and footprint, not invalid behavior as throughput.",
+  "repository_commit": "b5bb664bd6faf9b417cd8af5235ec12e7f0037de",
+  "target": "crates/http1/src/lib.rs",
+  "source": "benches/qualification-candidates/original-http1.rs",
+  "sha256": "b224c5aa7f9ed5f49dd9b37d434035dc66377154deebe9d0d9dd81d7352636c7",
+  "production_source_differences_from_corrected_baseline": [
+    "crates/http1/src/lib.rs"
+  ]
+}

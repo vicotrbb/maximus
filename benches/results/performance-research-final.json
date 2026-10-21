@@ -1,0 +1,140 @@
+{
+  "decision": "No performance optimization from this investigation is accepted or retained. Only rejected-final CONNECT closure and baseline-compatible regression tests remain in product sources. Dedicated idle Linux socket qualification remains outstanding.",
+  "head": "b5bb664bd6faf9b417cd8af5235ec12e7f0037de",
+  "source": {
+    "scope": "Final restored product/tests after registered CONNECT101 header preservation control; performance experiments archived. No performance acceptance claim.",
+    "head": "b5bb664bd6faf9b417cd8af5235ec12e7f0037de",
+    "sha256": {
+      "Cargo.lock": "8d5cf3dbc9060e69fe7551a2ce06b5af11246463eff4711342639e212e7b588f",
+      "Cargo.toml": "dc75d44b5044033898c3aa3d03a48eb74d3727646824a9e2e2142f3e1268f154",
+      "crates/core/Cargo.toml": "2edbbf75b646630888583cff099a63f514bfeb3c461ad7916b3a6d58e57c4b92",
+      "crates/core/src/body.rs": "6db454d4bbfa2b7a66baa25e074f5d642958fe7ab60cafd2bf0db6ccbf40cdce",
+      "crates/core/src/date.rs": "fa6be8123b0753026261845ed8d57faa1d39d3e76b1a35ad294e5f75e55603ad",
+      "crates/core/src/features.rs": "6006ff1c89c29155032fb06c74fd651a86b589e35e72b6518bf01c56ccf1b188",
+      "crates/core/src/lib.rs": "e9e9e277f8fe334846a75d3e1238a5403abde927b21b97ddefe4953a8a2e3254",
+      "crates/core/src/pipeline.rs": "b47bf22abf77fbe9851c4625b1ad9b4c8b02a989bbec8d73a3d88e17c01efe27",
+      "crates/core/src/policy.rs": "17f44301c4c46ef92ad136989a0d73cc6d1987e9ca1311471dcd57d5c7520618",
+      "crates/core/src/request.rs": "7724b3bf8f316b0973d9254f06b4192a35abde07cea5fbdf0b6ae4d316e50a3c",
+      "crates/core/src/sse.rs": "dd5af06b4a25436f0861d83ebeeed8ad8b8d191a7b436656c8f0063b73d401d0",
+      "crates/core/tests/api.rs": "25930e550f52fcc746bc945706258fde7d832ca86fe0555b52873653b64cbe51",
+      "crates/core/tests/features.rs": "258d4aeed9d50c340f82987f4be5ffdd8ec0b84b95ab1d80d907d88ea933fc4b",
+      "crates/core/tests/pipeline.rs": "109e54976e46fb5da20bd10a359e9d16032b8d8bb251a8907a8e76cba5ec4ed0",
+      "crates/framework/Cargo.toml": "7d2caae27ba87df0067e64f9e5b0c5d18b53ecf45af6a09ddcf21c0da476cc52",
+      "crates/framework/src/compression.rs": "8136175658204d1cfa3fd99d6f9cbd1470cd87ab720684256c492787e9911f75",
+      "crates/framework/src/cors.rs": "75bde23f9b877936dcf9537b5d4fa1e214298ef9418b1a451ea024740b456587",
+      "crates/framework/src/lib.rs": "807290b64a209d9d44d5866ccd8d44060237cba8de4b79a2b42c858fc535a4e5",
+      "crates/framework/src/server.rs": "fae875644d26a4e78862b042f391e543745445c60b0515d348a15ae563208580",
+      "crates/framework/src/telemetry.rs": "0530801b5ba0a20b727ed47857359d46c8e57d83c09467cc7624176b408cbdc4",
+      "crates/framework/src/transport.rs": "9bf192b75ca8be90dd1409695e867cab75ed0194d7d9586cdd4415b00613b4b4",
+      "crates/framework/src/websocket.rs": "317d4bbf9d14164c1ac118deb6164f0e2c5c4f59b6b8e1d2f9da1119a1bec712",
+      "crates/framework/tests/http2.rs": "9b6709f18e199e6af6704231b8c0ba551d95e9d364490069245b39aa63a033aa",
+      "crates/framework/tests/native_http1.rs": "bac231106bc0fa3a1b90052c0f7c0d69ec1aba2ca255f020fc5d5b74cd196427",
+      "crates/framework/tests/policies.rs": "f5d8426d4b56384e39eae7f6c46438aa8a527e87e595cf69bca3aeb689548718",
+      "crates/framework/tests/routing.rs": "71a6588ac4118347a97ad02ba849db48bf3a3be06ca735f678fd67e175cee395",
+      "crates/framework/tests/server.rs": "badc4b93200a72b123dbd5ecfce487909b5edc1dd27e9dff7fb95a6d7497ecf4",
+      "crates/framework/tests/support/mod.rs": "ea12f53f9a4f7210af9164a9bdc358bed4305a9a3d5774d0371839b95a66b1e0",
+      "crates/framework/tests/telemetry.rs": "5bfbc77d4a7301d175bd9eb6223e4abd72e9b29f6110723f427647c6a9ce4327",
+      "crates/framework/tests/tls.rs": "6148906c0756dbc3c0674278113b56f516768fc083c4a46e0f2267953676cf89",
+      "crates/framework/tests/websocket.rs": "be7a2daaed0d5668753155e5cb97ee62d3211b1d1ea3a80bee2d73144c6335fe",
+      "crates/http1/Cargo.toml": "40438b837cfd6280fc0fe25470b64093032658f56adf39ff74d3821142b9b9b8",
+      "crates/http1/src/activity.rs": "d005eaf7139c76ac00975b81d5990519c6a62f2e453a41b3e6975ab73e723a0e",
+      "crates/http1/src/io.rs": "e33020bd117665cb545058494ad779bae436131d2cc2b5971682abaf9779d737",
+      "crates/http1/src/lib.rs": "0462fee9f0cb43de95f475a1f3b6d0bafd6aa051aacd216c0358fd611f0a95ae",
+      "crates/http1/src/upgrade.rs": "0b291878b495a13e5f1d82502da493cec817353e61f0128c8c5e644d79ee7371",
+      "crates/http1/tests/io.rs": "2b701d921103669fef879d63ea6ea736040b669a98f35d489529ec2c28f45639",
+      "crates/http2/Cargo.toml": "4ede5810abf702bcfab9e8f4b7652192cc68b0a6954919dd26dda9b76a333be8",
+      "crates/http2/src/frame.rs": "2818b22a169a60ea7aef2938ede21e5ff6801ca52dec22901f18cb1cd776e8e0",
+      "crates/http2/src/hpack.rs": "49aa07cc413908e02818ee602854100125d8831ac3cf441acd897ae46ab10393",
+      "crates/http2/src/lib.rs": "677d76f337d0e7e91c68fad394b974a35a550fc558c64d0d73556a5c8e0df585",
+      "crates/http2/tests/wire.rs": "d6641fa90f622003e25789b729ef24760d1862da8249bc440625130373f6e7ea",
+      "crates/http3/Cargo.toml": "32579b366ee81d1268c225b01b1ec6c8ab67d0750f6f67191c89566aa9ebf3e0",
+      "crates/http3/src/lib.rs": "7ad782135c52f7fda1c8804c5b16c657612aeea5b8ca0ae683a1d0c3446f0537",
+      "crates/http3/tests/interop.rs": "e31177ee42760584d5afa456d697d418f0ffed5f39a03b24a434af861fd380c3",
+      "crates/io/Cargo.toml": "7964d4d93231d4ce5c31d2322c24d25d7d0291a8b30854ec3d9969467a431ea2",
+      "crates/io/examples/kernel.rs": "d5b67f78798fe2e0553ee098c19b9018dfc54c29757798ab5fa15e9c36dbb473",
+      "crates/io/src/lib.rs": "128a0e058dd188425ffd923a19462c4a6a9d9a0f98eeb2bfd15a2ec5cc10bb6f",
+      "crates/io/tests/backend.rs": "90e808da41cc87cedbf4e3ff6305f7e3184b1d9bc7580cae493797e5f18dbf42",
+      "crates/macros/Cargo.toml": "7483149239e6d5c2085b9d5bd010f18e3d532b686c2aa05e48b479a8f8ad507f",
+      "crates/macros/src/lib.rs": "bcb583cc4287809942d606aa1d0bf62ecbeec82c3ff707ec84c5685b3ff870ef",
+      "crates/net/Cargo.toml": "08b8d4d3bf260ac924c3099e06cef11fe135c9a34603e9c359c2dc4b6184c619",
+      "crates/net/src/ebpf.rs": "2e720a72b1a608513edac8ec8855211c3fb872c9bf15089ab1eed0bc6b082472",
+      "crates/net/src/lib.rs": "8947176a87b074cd40bada2c21f302c1bd8f83dab0ab1c7d5c5d8475db97da07",
+      "crates/net/tests/ebpf.rs": "83109218197ce2131c815b63b0a1d9a66e482d5f8855a90695235df085ce5ff2",
+      "crates/net/tests/sockets.rs": "5430dd6b582e6d0600888238bf6fbdd23b14e951556de9d40d244a5b66be5f1f",
+      "crates/router/Cargo.toml": "3c55a619d23888fe852f58726cd1427dee2b334b97a8623be56b51c474427710",
+      "crates/router/src/lib.rs": "969a5d4c0604cb333217e8df685f97fbd5255afe8e56af64cbee4c7f40248665",
+      "crates/router/tests/routes.rs": "00434def50bbffb0fa9a70ce62d5a220d798741e5c1c7f71e7acf81467517bb9",
+      "crates/runtime/Cargo.toml": "863328238432c0d786f2fbdcac990aa45bd43c0cdac14c15ee2ac043497994dd",
+      "crates/runtime/src/lib.rs": "d3d3e55dd76ddb565da579d89b42f4168807080c2279987533862fb0f9205b03",
+      "crates/runtime/tests/workers.rs": "5b2c0a7c22c90272faa768f34a6ac02ae57d2ba6067f651e0d2f73934b370de9",
+      "crates/tls/Cargo.toml": "d37328ae8f4600c1f77b604e1e9dfb3e67c4a86afd5c8535a40b17a9ae694c80",
+      "crates/tls/src/lib.rs": "006c9dcc9e1257ec15e64d938467396f46cc7580afc13e99e3dc8c2342e23c40",
+      "crates/tls/tests/config.rs": "975e964c6728699a4be1a6ec4e262cc3d3d558e774583d9df6875f263a54c324"
+    }
+  },
+  "production_patch": "diff --git a/crates/http1/src/lib.rs b/crates/http1/src/lib.rs\nindex f420669..2d803e0 100644\n--- a/crates/http1/src/lib.rs\n+++ b/crates/http1/src/lib.rs\n@@ -600,16 +600,18 @@ async fn connection<R: ReadIo, W: WriteIo, H: Handler>(\n             response.headers_mut().remove(\"transfer-encoding\");\n             *response.body_mut() = Body::empty();\n         }\n+        let switching = response.status() == StatusCode::SWITCHING_PROTOCOLS || tunnel;\n         let close = (version == http::Version::HTTP_10\n             && !is_head\n             && response.body().size_hint().exact().is_none()\n             && !response.headers().contains_key(\"content-length\"))\n             || head.close\n+            // RFC 9931 \u00a78: optimistic tunnel bytes must not become HTTP requests.\n+            || connect && !switching\n             || count == limits.requests_per_connection\n             || response.status().is_client_error()\n             || token(response.headers(), \"connection\", \"close\")\n             || shutdown.is_cancelled();\n-        let switching = response.status() == StatusCode::SWITCHING_PROTOCOLS || tunnel;\n         write_response(\n             &mut write,\n             &mut output,\n",
+  "checks": {
+    "check": {
+      "command": "scripts/check.sh",
+      "directly_observed_exit": 0,
+      "execution_session": 3069,
+      "log": "artifacts/performance-2026-10-20/final-restored-check.log",
+      "sha256": "2b9001d35af605194734e2428ef9b688c1f1f31c4f504ddf711927f6408409c1",
+      "passing_test_executions": 178,
+      "failed_test_executions": 0,
+      "ignored_test_executions": 0
+    },
+    "linux": {
+      "command": "scripts/test-linux.sh",
+      "directly_observed_exit": 0,
+      "execution_session": 69923,
+      "log": "artifacts/performance-2026-10-20/final-restored-linux.log",
+      "sha256": "86fd1eaa789dfb282635c38a74625335f1ea6500e804e5122bc93489e3ae4e25",
+      "passing_test_executions": 152,
+      "failed_test_executions": 0,
+      "ignored_test_executions": 1
+    },
+    "interop": {
+      "command": "scripts/test-interop-linux.sh",
+      "directly_observed_exit": 0,
+      "execution_session": 69923,
+      "log": "artifacts/performance-2026-10-20/final-restored-interop.log",
+      "sha256": "8476140d2f1d785df35362592ddba0a4f79b888b8836de30966f6ed70955ba0b",
+      "coverage": "Independent H1 plain/TLS, H2 TLS, WebSocket, H3 QUIC, uploads, extraction, SSE, gzip/CORS/HEAD, 2062 wire mutations/disconnects,16concurrentclients,post-stresshealth."
+    },
+    "connect101-red": {
+      "sha256": "9354ad38bcb9a61f01cdf4ed7f70b9dc80c903566237045c1fa398647c86cda0",
+      "log": "artifacts/performance-2026-10-20/connect101-red.log",
+      "scope": "Focused regression reproduction before fix",
+      "directly_observed_exit": 101
+    },
+    "connect101-green": {
+      "sha256": "b58ba379e5810497936c33f6e24ee3b73d54e8229de08a3b0b71f8940750daba",
+      "log": "artifacts/performance-2026-10-20/connect101-green.log",
+      "scope": "Focused regression verification after fix",
+      "directly_observed_exit": 0
+    },
+    "nginx-metadata-red": {
+      "sha256": "cbbad3e701840981fd3c316b6a978a06fbdea3f7bb55da221f396343f9292bda",
+      "log": "artifacts/performance-2026-10-20/nginx-metadata-red.log",
+      "scope": "Focused regression reproduction before fix",
+      "directly_observed_exit": 1
+    },
+    "nginx-metadata-green": {
+      "sha256": "0202e62215f87b008c1d92c0575c63ab8aa29d78b388523910b7c9040ca3ad8f",
+      "log": "artifacts/performance-2026-10-20/nginx-metadata-green.log",
+      "scope": "Focused regression verification after fix",
+      "directly_observed_exit": 0
+    }
+  },
+  "limitations": [
+    "Passing correctness checks do not prove universal non-regression or framework leadership.",
+    "Earlier candidate protocol controls exclude the later registered CONNECT101 header regression control.",
+    "CPU-clock measurements account for a guest thread, not physical cycles or proven absence of host contention.",
+    "Historical runner hashes retain pre-nginx-fix bytes; do not overwrite their recorded identities."
+  ],
+  "benchmark_tool_sha256": {
+    "benches/run.py": "53db06505f2c77e0981fc64dff75e1a3d710ec2c93441ebcedf7db7345b67719",
+    "benches/test_run.py": "d20641a9fbc0850d63a4b0e655eb89555365af5d6359644cc30af2608bbc155a"
+  }
+}

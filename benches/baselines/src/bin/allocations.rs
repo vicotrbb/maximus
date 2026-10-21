@@ -90,7 +90,30 @@ fn main() {
                 );
             }
             end("static-text-content-type", N, started);
-            dynamic_allocations(N).await;
+            for owned in [false, true] {
+                let started = start();
+                for _ in 0..N {
+                    let message = if owned {
+                        std::borrow::Cow::Owned("bad input".to_owned())
+                    } else {
+                        std::borrow::Cow::Borrowed("bad input")
+                    };
+                    let mut response = maximus::Error::bad_request(message).into_response();
+                    assert_eq!(response.status(), maximus::StatusCode::BAD_REQUEST);
+                    assert_eq!(
+                        response.headers()["content-type"],
+                        "text/plain; charset=utf-8"
+                    );
+                    assert_eq!(response.body_mut().take_bytes().unwrap(), "bad input");
+                    black_box(response);
+                }
+                end(
+                    if owned { "owned-error" } else { "static-error" },
+                    N,
+                    started,
+                );
+            }
+            dynamic_allocations(N).await
         });
     let server = Server::new("127.0.0.1:0".parse().unwrap())
         .limits(maximus::Limits {
@@ -266,23 +289,34 @@ fn http2_allocations(count: usize, owned: bool, large: bool) -> usize {
 }
 
 async fn dynamic_allocations(count: usize) {
-    let started = start();
-    for _ in 0..100 {
-        let mut router = DynamicRouter::new(64);
-        for id in 0..32 {
-            for method in ["GET", "POST"] {
-                router
-                    .add(
-                        method,
-                        &format!("/items/{id}/{{value}}"),
-                        |_: Request| async { Body::empty() },
-                    )
-                    .unwrap();
+    for literal in [false, true] {
+        let started = start();
+        for _ in 0..100 {
+            let mut router = DynamicRouter::new(64);
+            for id in 0..32 {
+                for method in ["GET", "POST"] {
+                    let pattern = if literal {
+                        format!("/items/{id}")
+                    } else {
+                        format!("/items/{id}/{{value}}")
+                    };
+                    router
+                        .add(method, &pattern, |_: Request| async { Body::empty() })
+                        .unwrap();
+                }
             }
+            black_box(router);
         }
-        black_box(router);
+        end(
+            if literal {
+                "dynamic-register-64-literal"
+            } else {
+                "dynamic-register-64"
+            },
+            100,
+            started,
+        );
     }
-    end("dynamic-register-64", 100, started);
     let mut router = DynamicRouter::new(2);
     for method in ["GET", "POST"] {
         router

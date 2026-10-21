@@ -1,0 +1,490 @@
+{
+  "scope": "Exact frozen H1 completion/Error/CONNECT candidate; profiles separate from timed campaigns",
+  "limitations": [
+    "CPU-clock sampling is not hardware cycle measurement",
+    "Kernel symbol restrictions and unresolved libc symbols remain",
+    "No paired causal percentage attribution or performance acceptance"
+  ],
+  "profiles": [
+    {
+      "name": "profile-h1-empty-h1-plain",
+      "protocol": "plain",
+      "body_bytes": 0,
+      "checked_responses": 5100540,
+      "samples": 2955,
+      "lost": 0,
+      "binary_sha256": "6ea0cb75fc30f8caff4895b2a56f7508e0e6d8d36126a21f295c2a08e165528a",
+      "event": "cpu-clock",
+      "frequency_hz": 199,
+      "profile_seconds": 20,
+      "client_seconds": 15,
+      "call_graph": "dwarf,16384",
+      "server_cpus": "0",
+      "client_cpus": "1,2",
+      "top_entries": [
+        {
+          "percent": 4.74,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b59720170"
+        },
+        {
+          "percent": 4.7,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "<compio_runtime::time::future::TimerFuture as core::future::future::Future>::poll"
+        },
+        {
+          "percent": 4.2,
+          "command": "maximus-0",
+          "object": "[vdso]",
+          "kind": ".",
+          "symbol": "__kernel_clock_gettime"
+        },
+        {
+          "percent": 2.94,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b59908540"
+        },
+        {
+          "percent": 2.61,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b59c6a2ac"
+        },
+        {
+          "percent": 2.47,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "maximus_core::policy::dispatch_request::{{closure}}"
+        },
+        {
+          "percent": 2.1,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "maximus_http1::append_output::{{closure}}"
+        },
+        {
+          "percent": 1.83,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "http::header::name::StandardHeader::from_bytes"
+        },
+        {
+          "percent": 1.69,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b5981837c"
+        },
+        {
+          "percent": 1.59,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "maximus_http1::Reader<R>::fill::{{closure}}"
+        },
+        {
+          "percent": 1.59,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "maximus_http1::parse_head"
+        },
+        {
+          "percent": 1.56,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "maximus_http1::write_response::{{closure}}"
+        },
+        {
+          "percent": 1.42,
+          "command": "maximus-0",
+          "object": "libc.so.6",
+          "kind": ".",
+          "symbol": "0x000000000009d200"
+        },
+        {
+          "percent": 1.39,
+          "command": "maximus-0",
+          "object": "libc.so.6",
+          "kind": ".",
+          "symbol": "malloc"
+        },
+        {
+          "percent": 1.39,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b59857d30"
+        },
+        {
+          "percent": 1.35,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "maximus_core::policy::validate_path"
+        },
+        {
+          "percent": 1.32,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "http::header::name::parse_hdr"
+        },
+        {
+          "percent": 1.22,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "<core::pin::Pin<P> as core::future::future::Future>::poll"
+        },
+        {
+          "percent": 1.15,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b59908590"
+        },
+        {
+          "percent": 1.12,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "<compio_net::tcp::TcpStream as compio_io::write::AsyncWrite>::write::{{closure}}"
+        },
+        {
+          "percent": 1.08,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "compio_driver::sys::driver::fusion::Driver::push"
+        },
+        {
+          "percent": 1.08,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b58e10374"
+        },
+        {
+          "percent": 0.95,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b58e103a4"
+        },
+        {
+          "percent": 0.95,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b59c77778"
+        },
+        {
+          "percent": 0.91,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "<core::str::pattern::CharSearcher as core::str::pattern::Searcher>::next_match"
+        },
+        {
+          "percent": 0.85,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "<compio_runtime::time::future::TimerFuture as core::ops::drop::Drop>::drop"
+        },
+        {
+          "percent": 0.78,
+          "command": "maximus-0",
+          "object": "libc.so.6",
+          "kind": ".",
+          "symbol": "cfree"
+        },
+        {
+          "percent": 0.78,
+          "command": "maximus-0",
+          "object": "libc.so.6",
+          "kind": ".",
+          "symbol": "0x000000000009d100"
+        },
+        {
+          "percent": 0.78,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "compio_driver::sys::driver::iour::Driver::poll_entries"
+        },
+        {
+          "percent": 0.74,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "maximus_http1::Reader<R>::head::{{closure}}"
+        }
+      ],
+      "raw_sha256": {
+        "artifacts/performance-2026-10-20/profile-h1-empty-h1-plain/binary.txt": "5bb580d603d3e2cd98f47668fa1d063f638ffcf572f9352259cc0ae3c642067d",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h1-plain/summary.json": "f90bb8a79bad64c5094d10fa3504be3e2a16e3bec7a2111643116aed9bc1d3b0",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h1-plain/record.log": "b08260cd4c05c6d11be5553d4789366d6912709e33d61265474c96bb2c515156",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h1-plain/report.txt": "93b4ce5e3be24e56642bdc10f95a01b9614b7db0fda781c58e99c179d2051f50",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h1-plain/buildids.txt": "591564b3c086deb0025c9a448cf20461923bddb450d6e31bbeca23ecabfd9bf5",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h1-plain/script-errors.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h1-plain/report-errors.log": "f060916a0433ca57831f00d70f219d7f3e9e6b2db87b82cc23f05d47e10dfaa7",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h1-plain/stacks.folded": "58b8d39c6724b8cf9da8f69804ed3238026b8a9e917adab09b02c9d5510311ee",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h1-plain/flamegraph.svg": "3c787b5c6329c8bb97874dc72beceb4d122d4b6078e78f95a3f6ee63545fa046"
+      },
+      "flamegraph": "artifacts/performance-2026-10-20/profile-h1-empty-h1-plain/flamegraph.svg"
+    },
+    {
+      "name": "profile-h1-empty-h2-large",
+      "protocol": "h2",
+      "body_bytes": 131072,
+      "checked_responses": 79223,
+      "samples": 2662,
+      "lost": 0,
+      "binary_sha256": "6ea0cb75fc30f8caff4895b2a56f7508e0e6d8d36126a21f295c2a08e165528a",
+      "event": "cpu-clock",
+      "frequency_hz": 199,
+      "profile_seconds": 20,
+      "client_seconds": 15,
+      "call_graph": "dwarf,16384",
+      "server_cpus": "0",
+      "client_cpus": "1,2",
+      "top_entries": [
+        {
+          "percent": 15.1,
+          "command": "maximus-0",
+          "object": "libc.so.6",
+          "kind": ".",
+          "symbol": "0x000000000009d200"
+        },
+        {
+          "percent": 10.52,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "ring_core_0_17_14__aes_gcm_dec_kernel"
+        },
+        {
+          "percent": 10.22,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "ring_core_0_17_14__aes_gcm_enc_kernel"
+        },
+        {
+          "percent": 3.94,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b5997df40"
+        },
+        {
+          "percent": 3.23,
+          "command": "maximus-0",
+          "object": "[vdso]",
+          "kind": ".",
+          "symbol": "__kernel_clock_gettime"
+        },
+        {
+          "percent": 2.74,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "<compio_runtime::time::future::TimerFuture as core::future::future::Future>::poll"
+        },
+        {
+          "percent": 2.67,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b598d28cc"
+        },
+        {
+          "percent": 2.18,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b598d2668"
+        },
+        {
+          "percent": 1.16,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b59c6a2ac"
+        },
+        {
+          "percent": 0.94,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b598d2658"
+        },
+        {
+          "percent": 0.86,
+          "command": "maximus-0",
+          "object": "libc.so.6",
+          "kind": ".",
+          "symbol": "0x000000000009d214"
+        },
+        {
+          "percent": 0.86,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b598d28b4"
+        },
+        {
+          "percent": 0.83,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "<compio_runtime::time::future::TimerFuture as core::ops::drop::Drop>::drop"
+        },
+        {
+          "percent": 0.83,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "rustls::conn::ConnectionCore<Data>::process_new_packets"
+        },
+        {
+          "percent": 0.71,
+          "command": "maximus-0",
+          "object": "libc.so.6",
+          "kind": ".",
+          "symbol": "malloc"
+        },
+        {
+          "percent": 0.71,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b59908540"
+        },
+        {
+          "percent": 0.68,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "compio_io::compat::sync_stream::SyncStreamReadHalf<S>::fill_read_buf::{{closure}}"
+        },
+        {
+          "percent": 0.64,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "maximus_http2::Connection<H>::poll"
+        },
+        {
+          "percent": 0.64,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b59720170"
+        },
+        {
+          "percent": 0.64,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b597ff0b4"
+        },
+        {
+          "percent": 0.6,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "maximus::transport::Transport::serve::{{closure}}"
+        },
+        {
+          "percent": 0.6,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "rustls::vecbuf::ChunkVecBuffer::write_to"
+        },
+        {
+          "percent": 0.6,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b5981837c"
+        },
+        {
+          "percent": 0.56,
+          "command": "maximus-0",
+          "object": "libc.so.6",
+          "kind": ".",
+          "symbol": "0x000000000009d218"
+        },
+        {
+          "percent": 0.56,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b58e10374"
+        },
+        {
+          "percent": 0.53,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b5987aee4"
+        },
+        {
+          "percent": 0.49,
+          "command": "maximus-0",
+          "object": "libc.so.6",
+          "kind": ".",
+          "symbol": "cfree"
+        },
+        {
+          "percent": 0.49,
+          "command": "maximus-0",
+          "object": "libc.so.6",
+          "kind": ".",
+          "symbol": "0x000000000009e2e8"
+        },
+        {
+          "percent": 0.45,
+          "command": "maximus-0",
+          "object": "[unknown]",
+          "kind": "k",
+          "symbol": "0xffffbb3b59858324"
+        },
+        {
+          "percent": 0.38,
+          "command": "maximus-0",
+          "object": "maximus-comparison",
+          "kind": ".",
+          "symbol": "rustls::msgs::message::outbound::read_opaque_message_header"
+        }
+      ],
+      "raw_sha256": {
+        "artifacts/performance-2026-10-20/profile-h1-empty-h2-large/binary.txt": "5bb580d603d3e2cd98f47668fa1d063f638ffcf572f9352259cc0ae3c642067d",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h2-large/summary.json": "5daa058d57160e0c3ddad59b7e8176b4cf0d45b28e3fc8c5c81cd34be08e8bc0",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h2-large/record.log": "957fc4e8fc1d63aaf6bde3fadeb68b235dec5a423ab2b9fd4fe31b15aa29fed1",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h2-large/report.txt": "3aabdff9f99694ed38ae3eeb273ca605f70f30881ab9cd5b436b79297ea7e122",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h2-large/buildids.txt": "591564b3c086deb0025c9a448cf20461923bddb450d6e31bbeca23ecabfd9bf5",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h2-large/script-errors.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h2-large/report-errors.log": "f060916a0433ca57831f00d70f219d7f3e9e6b2db87b82cc23f05d47e10dfaa7",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h2-large/stacks.folded": "296ef48b818035ed7d3b917c328f017045b5b35043839da3af5a3d3af92f5c4c",
+        "artifacts/performance-2026-10-20/profile-h1-empty-h2-large/flamegraph.svg": "128be50a6e6bdb6e374bc1281c9275de0090c71a03ccee1f9ee88afdda2b3296"
+      },
+      "flamegraph": "artifacts/performance-2026-10-20/profile-h1-empty-h2-large/flamegraph.svg"
+    }
+  ]
+}
