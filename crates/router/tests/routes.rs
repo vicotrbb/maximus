@@ -129,3 +129,57 @@ fn dynamic_shapes_preserve_precedence_captures_and_allow_order() {
         }
     });
 }
+
+#[test]
+fn literal_dynamic_routes_clear_previous_capture_metadata() {
+    compio::runtime::Runtime::new().unwrap().block_on(async {
+        let mut router = DynamicRouter::new(1);
+        router
+            .add("GET", "/fixed", |req: Request| async move {
+                assert!(req.path::<String>("previous").is_err());
+                Body::empty()
+            })
+            .unwrap();
+        let mut request = Request::new(
+            maximus_core::http::Request::builder()
+                .uri("/fixed")
+                .body(Body::empty())
+                .unwrap(),
+        );
+        request.set_route("/{previous}");
+        assert_eq!(router.handle(request).await.status(), StatusCode::OK);
+    });
+}
+
+#[test]
+fn long_capture_names_preserve_shape_duplicates_and_empty_segments() {
+    use http_body_util::BodyExt;
+    compio::runtime::Runtime::new().unwrap().block_on(async {
+        let name = "n".repeat(4096);
+        let pattern = format!("/{{{name}}}//tail/");
+        let mut router = DynamicRouter::new(2);
+        router
+            .add("GET", &pattern, move |req: Request| {
+                let value = req.path::<String>(&name);
+                async move { value }
+            })
+            .unwrap();
+        assert!(
+            router
+                .add("GET", "/{renamed}//tail/", |_| async { Body::empty() })
+                .is_err()
+        );
+        let request = Request::new(
+            maximus_core::http::Request::builder()
+                .uri("/value//tail/")
+                .body(Body::empty())
+                .unwrap(),
+        );
+        let response = router.handle(request).await;
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(
+            response.into_body().collect().await.unwrap().to_bytes(),
+            "value"
+        );
+    });
+}

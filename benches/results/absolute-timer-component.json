@@ -1,0 +1,163 @@
+{
+  "scope": "Standalone runtime mechanism probe; no HTTP engine measurement or performance qualification",
+  "runtime": "compio-runtime 0.12.6 via compio 0.19.2",
+  "rust": "1.96.1 Linux ARM64",
+  "driver": "IoUring",
+  "cpus": "0",
+  "expired_and_future_deadline_checks": "passed in each of fourteen process-local cases",
+  "warmup_operations_per_case": 10000,
+  "operations_per_case": 2000000,
+  "rounds": 7,
+  "order": "relative first in even rounds, absolute first in odd rounds",
+  "context": "actual Runtime::block_on poll context",
+  "binary_sha256": "8d586f2ec2dcdd1dd45624a133602637a192004ff162d57587b969ff517bfd15",
+  "summaries": {
+    "relative": {
+      "median_ns": 59.645,
+      "future_bytes": 120
+    },
+    "absolute": {
+      "median_ns": 27.157,
+      "future_bytes": 96
+    }
+  },
+  "pairs": [
+    {
+      "round": 0,
+      "percent_change": -67.72137413315633
+    },
+    {
+      "round": 1,
+      "percent_change": -51.00755894715954
+    },
+    {
+      "round": 2,
+      "percent_change": -52.66158102104117
+    },
+    {
+      "round": 3,
+      "percent_change": -56.59010572701191
+    },
+    {
+      "round": 4,
+      "percent_change": -67.40625834424708
+    },
+    {
+      "round": 5,
+      "percent_change": -54.65665275169987
+    },
+    {
+      "round": 6,
+      "percent_change": -51.29629977284247
+    }
+  ],
+  "rows": [
+    {
+      "round": "0",
+      "mode": "relative",
+      "operations": "2000000",
+      "ns_per_operation": "87.386",
+      "future_bytes": "120"
+    },
+    {
+      "round": "0",
+      "mode": "absolute",
+      "operations": "2000000",
+      "ns_per_operation": "28.207",
+      "future_bytes": "96"
+    },
+    {
+      "round": "1",
+      "mode": "absolute",
+      "operations": "2000000",
+      "ns_per_operation": "27.157",
+      "future_bytes": "96"
+    },
+    {
+      "round": "1",
+      "mode": "relative",
+      "operations": "2000000",
+      "ns_per_operation": "55.431",
+      "future_bytes": "120"
+    },
+    {
+      "round": "2",
+      "mode": "relative",
+      "operations": "2000000",
+      "ns_per_operation": "59.645",
+      "future_bytes": "120"
+    },
+    {
+      "round": "2",
+      "mode": "absolute",
+      "operations": "2000000",
+      "ns_per_operation": "28.235",
+      "future_bytes": "96"
+    },
+    {
+      "round": "3",
+      "mode": "absolute",
+      "operations": "2000000",
+      "ns_per_operation": "27.386",
+      "future_bytes": "96"
+    },
+    {
+      "round": "3",
+      "mode": "relative",
+      "operations": "2000000",
+      "ns_per_operation": "63.087",
+      "future_bytes": "120"
+    },
+    {
+      "round": "4",
+      "mode": "relative",
+      "operations": "2000000",
+      "ns_per_operation": "78.647",
+      "future_bytes": "120"
+    },
+    {
+      "round": "4",
+      "mode": "absolute",
+      "operations": "2000000",
+      "ns_per_operation": "25.634",
+      "future_bytes": "96"
+    },
+    {
+      "round": "5",
+      "mode": "absolute",
+      "operations": "2000000",
+      "ns_per_operation": "24.874",
+      "future_bytes": "96"
+    },
+    {
+      "round": "5",
+      "mode": "relative",
+      "operations": "2000000",
+      "ns_per_operation": "54.857",
+      "future_bytes": "120"
+    },
+    {
+      "round": "6",
+      "mode": "relative",
+      "operations": "2000000",
+      "ns_per_operation": "53.267",
+      "future_bytes": "120"
+    },
+    {
+      "round": "6",
+      "mode": "absolute",
+      "operations": "2000000",
+      "ns_per_operation": "25.943",
+      "future_bytes": "96"
+    }
+  ],
+  "artifact_sha256": {
+    "artifacts/performance-2026-10-20/timer-probe/Cargo.toml": "a35a0fb6e427b1b64ec2b22b6dc72f7f1c35abbd907ae5f435057a53d95d36e6",
+    "artifacts/performance-2026-10-20/timer-probe/Cargo.lock": "4e3a0b3430ebfa700b7f615925f020c8ba2f832e999fb5e2f480534211de22c0",
+    "artifacts/performance-2026-10-20/timer-probe/src/main.rs": "2bae833506d6d79704682b206a57ca1960084bf8bcec64e4523ff8784d4ef9c1",
+    "artifacts/performance-2026-10-20/timer-probe-context.csv": "6f0f901d1b6fd6f5cb05e77c93a06a80db949752726da4ca7140a72f6dd0770e",
+    "artifacts/performance-2026-10-20/timer-probe-context.stderr": "743c3f4b6e865e1ca247ab0283e2c8721c4568aa055438078094789968df0dba",
+    "artifacts/performance-2026-10-20/timer-probe-final-clippy.log": "2c44378bb4ed49d19096e6de549a0bf53f1f5ed1a99e1d1e2d127a414890bee5",
+    "artifacts/performance-2026-10-20/timer-probe-final-context-build.log": "5ff5a398f114a65bc255fe30ad8125546b3ab73d50a05af46e7bbc923d5c6dd3"
+  }
+}

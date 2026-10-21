@@ -600,16 +600,18 @@ async fn connection<R: ReadIo, W: WriteIo, H: Handler>(
             response.headers_mut().remove("transfer-encoding");
             *response.body_mut() = Body::empty();
         }
+        let switching = response.status() == StatusCode::SWITCHING_PROTOCOLS || tunnel;
         let close = (version == http::Version::HTTP_10
             && !is_head
             && response.body().size_hint().exact().is_none()
             && !response.headers().contains_key("content-length"))
             || head.close
+            // RFC 9931 §8: optimistic tunnel bytes must not become HTTP requests.
+            || connect && !switching
             || count == limits.requests_per_connection
             || response.status().is_client_error()
             || token(response.headers(), "connection", "close")
             || shutdown.is_cancelled();
-        let switching = response.status() == StatusCode::SWITCHING_PROTOCOLS || tunnel;
         write_response(
             &mut write,
             &mut output,

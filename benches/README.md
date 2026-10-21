@@ -2,7 +2,33 @@
 
 The comparison servers are an isolated Cargo workspace. Product builds do not resolve Axum, Actix or their benchmark dependencies. All Rust servers use thin LTO and one codegen unit. Commit both lockfiles when changing dependencies.
 
-Latest measurements: [HPACK lookup measurements](results/lean-io.md). Previous [HTTP/2 receive work](results/h2-receive.md) covers credit and payload ownership. Earlier [native HTTP/2 hot-path experiments](results/native-hot-paths.md) include rejected hypotheses, matched framework comparisons and dependency scope.
+Latest investigation: [approved local Docker/k6 campaign](results/local-docker-k6.md),
+with all five sources measured on plain H1, TLS H1 and TLS H2 against Hyper and Axum.
+The generated report explicitly records campaign completeness and sample counts.
+Earlier [joint wall/thread-CPU H1 control](results/head-len-cpu-http1.md) is separate.
+All performance experiments from this investigation are archived and
+unqualified; none is retained in root product code. Borrowed Error conversion,
+optional H1 completion state and the borrowed H2 timer are restored to HEAD.
+The RFC 9931 CONNECT correctness correction and functional regression coverage
+remain; the final host, Linux and interoperability checks pass as recorded in
+[final verification](results/performance-research-final.json). Historical
+[allocation and socket observations](results/h1-empty.md), the
+[aborted timer socket cohort](results/borrowed-timer.md), and the
+[rejected persistent H2 experiment](results/core-h2.md) preserve their exact
+source identities and adverse results. Earlier
+[HPACK lookup measurements](results/lean-io.md), [HTTP/2 receive work](results/h2-receive.md),
+and [native HTTP/2 hot-path experiments](results/native-hot-paths.md) retain
+their own source identities, decisions, and measurement limits.
+
+The user authorized the subsequent local Docker/k6 campaign on this machine.
+Its measured observations must still satisfy the performance and regression
+criteria before any candidate can be accepted. Earlier shared VM and standalone
+probes do not establish that acceptance or achieve the strict performance goal.
+
+The [dedicated Linux qualification bundle](qualification-candidates/README.md)
+exports the corrected source and three independent candidate patches with
+verified file hashes. Source preparation and Linux correctness checks do not
+accept those candidates or replace dedicated-host measurements.
 
 ## Build and run
 
@@ -49,9 +75,69 @@ Results and caveats belong in `results/`, with raw files retained locally under 
 
 Each runner writes per-trial CSVs, summaries and metadata under its output directory. Preserve failed trials when summarizing a new campaign; raw artifacts remain ignored.
 
+## Ownership and registration probes
+
+The `dynamic` engine uses the existing `DynamicRouter` on the same routes as
+the static `maximus` fixture. `/users/42` retains named capture extraction.
+The `/error` fixture returns status 500 and `handler error` on Maximus, Hyper,
+Axum and Actix. The client explicitly expects that status, while still checking
+the complete body and selected protocol on every response. An expected synthetic
+500 is not a transport failure in this workload.
+
+`run.py --binary /target/<frozen-directory>/maximus-comparison` selects an
+executable already stored in the `maximus-bench-target` Docker volume and records
+its SHA-256. Build each source with the same compiler, release profile, lockfiles
+and container source path, then copy its executable aside before another build.
+Retain source manifests and build logs alongside the binary hashes.
+
+```sh
+python3 benches/compare-ownership.py \
+  --baseline /target/baseline/maximus-comparison \
+  --candidate /target/candidate/maximus-comparison \
+  --label ownership --duration 15s --repeats 3
+cargo run --release --locked --manifest-path benches/baselines/Cargo.toml --bin components
+```
+
+The campaign alternates source order, rotates the candidate/Hyper/Axum order,
+and refuses to overwrite an existing trial prefix. It covers dynamic literal,
+captured, error and echo requests, static HTTP/1, and TLS HTTP/2 error and large
+echo requests. Its `passed` outcome means that execution and response checks
+passed. Performance acceptance requires examining all recorded metrics and
+the paired observations.
+
+For HTTP/1, build the tools image and select the lighter wrk generator. Keep
+these results separate from k6 observations. Both clients validate response
+status and body; k6 also checks the negotiated protocol on every response.
+
+```sh
+docker build -f benches/Dockerfile.tools -t maximus-tools .
+python3 benches/compare-ownership.py \
+  --baseline /target/baseline/maximus-comparison \
+  --candidate /target/candidate/maximus-comparison \
+  --label ownership-wrk --generator wrk --protocol plain --duration 15s --repeats 3
+python3 benches/compare-ownership.py \
+  --baseline /target/baseline/maximus-comparison \
+  --candidate /target/candidate/maximus-comparison \
+  --label ownership-tls --protocol h2 --duration 15s --repeats 3
+```
+
+The wrapper reuses one certificate across a TLS campaign and records its hash.
+wrk's synthetic `/error` responses remain visible in `status_error_responses`;
+they count as expected only when every response has the exact status and body.
+Its callback count must equal completed requests. wrk does not expose k6's
+started/completed iteration counters, so those CSV fields are empty for wrk.
+`--generator wrk` supports only plain HTTP/1 saturation and 1 KiB echo bodies.
+
+`components` times complete response construction/destruction, dynamic dispatch
+and table registration without allocation instrumentation. Run frozen baseline
+and candidate executables repeatedly on the same CPU. These timings complement
+the `allocations` diagnostic, whose counters themselves affect elapsed time.
+Neither component timing predicts an application throughput gain.
+
 ## Additional qualification commands
 
 ```sh
+python3 benches/test_run.py
 # Provision enough VUs for a common offered load, preserving any earlier failed run.
 python3 benches/run.py --label qualified-arrival-provisioned --paths /plaintext --rates 5000 --vus 512 --duration 10s --repeats 3
 # Give the VM client two CPUs while keeping the server on CPU 0.

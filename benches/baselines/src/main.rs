@@ -22,7 +22,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         None
     };
     match engine {
-        "maximus" | "epoll" => {
+        "maximus" | "epoll" | "dynamic" => {
             let backend = if engine == "epoll" {
                 maximus::Backend::Epoll
             } else {
@@ -52,14 +52,31 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             if let Some(tls) = tls {
                 server = server.tls(tls);
             }
-            let server = server.start(|| {
-                maximus::routes! {
-                    GET "/plaintext" => plain,
-                    GET "/json" => json,
-                    POST "/echo" => echo,
-                    GET "/users/{id:u64}" => user,
-                }
-            })?;
+            let server = if engine == "dynamic" {
+                server.start(|| {
+                    let mut router = maximus::DynamicRouter::new(5);
+                    router.add("GET", "/plaintext", plain).unwrap();
+                    router.add("GET", "/json", json).unwrap();
+                    router.add("POST", "/echo", echo).unwrap();
+                    router.add("GET", "/error", error).unwrap();
+                    router
+                        .add("GET", "/users/{id}", |req: maximus::Request| async move {
+                            req.path::<u64>("id").map(|id| id.to_string())
+                        })
+                        .unwrap();
+                    router
+                })?
+            } else {
+                server.start(|| {
+                    maximus::routes! {
+                        GET "/plaintext" => plain,
+                        GET "/json" => json,
+                        POST "/echo" => echo,
+                        GET "/error" => error,
+                        GET "/users/{id:u64}" => user,
+                    }
+                })?
+            };
             eprintln!("ready {engine} {} workers={workers}", server.local_addr());
             server.wait()?;
         }
@@ -73,6 +90,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 eprintln!("ready {engine} {address} workers={workers}");
                 let router = axum::Router::new()
                     .route("/plaintext", axum::routing::get(|| async { TEXT }))
+                    .route(
+                        "/error",
+                        axum::routing::get(|| async {
+                            (
+                                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                                "handler error",
+                            )
+                        }),
+                    )
                     .route(
                         "/json",
                         axum::routing::get(|| async {
@@ -159,6 +185,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let server = HttpServer::new(|| {
                     App::new()
                         .route(
+                            "/error",
+                            web::get().to(|| async {
+                                HttpResponse::InternalServerError()
+                                    .content_type("text/plain; charset=utf-8")
+                                    .body("handler error")
+                            }),
+                        )
+                        .route(
                             "/plaintext",
                             web::get().to(|| async {
                                 HttpResponse::Ok()
@@ -190,12 +224,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 server.run().await
             })?;
         }
-        _ => return Err("engine must be maximus, epoll, axum, hyper or actix".into()),
+        _ => return Err("engine must be maximus, dynamic, epoll, axum, hyper or actix".into()),
     }
     Ok(())
 }
 async fn plain(_: maximus::Request) -> &'static str {
     TEXT
+}
+async fn error(_: maximus::Request) -> maximus::Error {
+    maximus::Error::new(maximus::StatusCode::INTERNAL_SERVER_ERROR, "handler error")
 }
 async fn json(_: maximus::Request) -> maximus::Response {
     maximus::http::Response::builder()
@@ -213,6 +250,11 @@ async fn hyper_handler(
     req: hyper::Request<hyper::body::Incoming>,
 ) -> Result<hyper::Response<Full<Bytes>>, Infallible> {
     let (status, content, body) = match (req.method().as_str(), req.uri().path()) {
+        ("GET", "/error") => (
+            500,
+            "text/plain; charset=utf-8",
+            Bytes::from_static(b"handler error"),
+        ),
         ("GET", "/plaintext") => (
             200,
             "text/plain; charset=utf-8",

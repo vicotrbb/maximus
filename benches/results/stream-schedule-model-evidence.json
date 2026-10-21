@@ -1,0 +1,1616 @@
+{
+  "status": "REJECTED standalone traversal model; product implementation untouched",
+  "scope": "Standard-library BTreeMap stream-ID traversal model, not Connection::poll or an HTTP engine benchmark",
+  "executable_sha256": "01769a13e115047d7bd56807d0cc464c38cde587b2951dd010157462a2e0a8b8",
+  "source_sha256": "a60fe474a98a13e197051006c4d989b0cbea195666a9964cabce6c659b7db6fd",
+  "dependencies": "Rust standard library only; no Cargo dependency or product change",
+  "compiler_metadata": "rustc 1.96.1 (31fca3adb 2026-06-26)\nbinary: rustc\ncommit-hash: 31fca3adb283cc9dfd56b49cdee9a96eb9c96ffd\ncommit-date: 2026-06-26\nhost: aarch64-unknown-linux-gnu\nrelease: 1.96.1\nLLVM version: 22.1.2\n01769a13e115047d7bd56807d0cc464c38cde587b2951dd010157462a2e0a8b8  /target/stream-schedule-probe\n",
+  "embedded_source": "//! Standard-library traversal model, not an HTTP engine benchmark.\nuse std::{collections::BTreeMap, hint::black_box, ops::Bound, time::Instant};\ntype Map = BTreeMap<u32, u64>;\ntype Step = fn(&mut Map, &mut u32, usize) -> u64;\nfn snapshot(map: &mut Map, cursor: &mut u32, budget: usize) -> u64 {\n    let ids: Vec<_> = map\n        .range((Bound::Excluded(*cursor), Bound::Unbounded))\n        .chain(map.range(..=*cursor))\n        .map(|(&id, _)| id)\n        .collect();\n    let mut sum = 0u64;\n    for id in ids.into_iter().take(budget) {\n        let value = map.get_mut(&id).unwrap();\n        *value = value.wrapping_add(1);\n        sum = sum.wrapping_add(*value);\n        *cursor = id;\n    }\n    sum\n}\nfn live(map: &mut Map, cursor: &mut u32, budget: usize) -> u64 {\n    let count = map.len();\n    let ceiling = map.last_key_value().map_or(0, |(&id, _)| id);\n    let mut next_cursor = *cursor;\n    let mut sum = 0u64;\n    for _ in 0..count.min(budget) {\n        let lower = if next_cursor < ceiling {\n            Bound::Excluded(next_cursor)\n        } else {\n            Bound::Unbounded\n        };\n        let (&id, value) = map.range_mut((lower, Bound::Unbounded)).next().unwrap();\n        next_cursor = id;\n        *value = value.wrapping_add(1);\n        sum = sum.wrapping_add(*value);\n        *cursor = id;\n    }\n    sum\n}\nfn map(count: usize) -> Map {\n    (0..count).map(|i| (i as u32 * 2 + 1, 0)).collect()\n}\nfn measure(round: usize, count: usize, budget: usize, mode: &str, step: Step) {\n    let operations = (1_000_000 / count.min(budget).max(1)).max(2000);\n    let mut state = map(count);\n    let mut cursor = 0;\n    let step = black_box(step);\n    for _ in 0..1000 {\n        black_box(step(&mut state, &mut cursor, budget));\n    }\n    let started = Instant::now();\n    for _ in 0..operations {\n        black_box(step(\n            black_box(&mut state),\n            black_box(&mut cursor),\n            black_box(budget),\n        ));\n    }\n    let elapsed = started.elapsed();\n    assert_eq!(\n        state.values().sum::<u64>(),\n        (operations + 1000) as u64 * count.min(budget) as u64\n    );\n    println!(\n        \"{round},{count},{budget},{mode},{operations},{:.3}\",\n        elapsed.as_nanos() as f64 / operations as f64\n    );\n}\nfn main() {\n    for count in [0, 1, 3, 16, 256] {\n        for cursor in 0..=count as u32 * 2 + 2 {\n            for budget in [1, count.max(1)] {\n                let mut old = map(count);\n                let mut new = old.clone();\n                let mut before = cursor;\n                let mut after = cursor;\n                assert_eq!(\n                    snapshot(&mut old, &mut before, budget),\n                    live(&mut new, &mut after, budget)\n                );\n                assert_eq!(old, new);\n                assert_eq!(before, after);\n            }\n        }\n    }\n    println!(\"round,streams,budget,mode,operations,ns_per_operation\");\n    let cases = [(0, 1), (1, 1), (16, 1), (16, 16), (256, 1), (256, 256)];\n    for round in 0..7 {\n        for (count, budget) in cases {\n            if round % 2 == 0 {\n                measure(round, count, budget, \"snapshot\", snapshot);\n                measure(round, count, budget, \"live\", live);\n            } else {\n                measure(round, count, budget, \"live\", live);\n                measure(round, count, budget, \"snapshot\", snapshot);\n            }\n        }\n    }\n}\n",
+  "rows": [
+    {
+      "round": "0",
+      "streams": "0",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "4.614"
+    },
+    {
+      "round": "0",
+      "streams": "0",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "1.261"
+    },
+    {
+      "round": "0",
+      "streams": "1",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "13.957"
+    },
+    {
+      "round": "0",
+      "streams": "1",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "3.434"
+    },
+    {
+      "round": "0",
+      "streams": "16",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "74.435"
+    },
+    {
+      "round": "0",
+      "streams": "16",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "7.471"
+    },
+    {
+      "round": "0",
+      "streams": "16",
+      "budget": "16",
+      "mode": "snapshot",
+      "operations": "62500",
+      "ns_per_operation": "96.624"
+    },
+    {
+      "round": "0",
+      "streams": "16",
+      "budget": "16",
+      "mode": "live",
+      "operations": "62500",
+      "ns_per_operation": "96.012"
+    },
+    {
+      "round": "0",
+      "streams": "256",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "499.926"
+    },
+    {
+      "round": "0",
+      "streams": "256",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "11.380"
+    },
+    {
+      "round": "0",
+      "streams": "256",
+      "budget": "256",
+      "mode": "snapshot",
+      "operations": "3906",
+      "ns_per_operation": "2151.969"
+    },
+    {
+      "round": "0",
+      "streams": "256",
+      "budget": "256",
+      "mode": "live",
+      "operations": "3906",
+      "ns_per_operation": "2429.185"
+    },
+    {
+      "round": "1",
+      "streams": "0",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "1.267"
+    },
+    {
+      "round": "1",
+      "streams": "0",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "4.434"
+    },
+    {
+      "round": "1",
+      "streams": "1",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "3.994"
+    },
+    {
+      "round": "1",
+      "streams": "1",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "13.456"
+    },
+    {
+      "round": "1",
+      "streams": "16",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "6.895"
+    },
+    {
+      "round": "1",
+      "streams": "16",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "63.915"
+    },
+    {
+      "round": "1",
+      "streams": "16",
+      "budget": "16",
+      "mode": "live",
+      "operations": "62500",
+      "ns_per_operation": "89.743"
+    },
+    {
+      "round": "1",
+      "streams": "16",
+      "budget": "16",
+      "mode": "snapshot",
+      "operations": "62500",
+      "ns_per_operation": "97.906"
+    },
+    {
+      "round": "1",
+      "streams": "256",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "10.872"
+    },
+    {
+      "round": "1",
+      "streams": "256",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "492.820"
+    },
+    {
+      "round": "1",
+      "streams": "256",
+      "budget": "256",
+      "mode": "live",
+      "operations": "3906",
+      "ns_per_operation": "2280.288"
+    },
+    {
+      "round": "1",
+      "streams": "256",
+      "budget": "256",
+      "mode": "snapshot",
+      "operations": "3906",
+      "ns_per_operation": "2009.643"
+    },
+    {
+      "round": "2",
+      "streams": "0",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "4.306"
+    },
+    {
+      "round": "2",
+      "streams": "0",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "1.263"
+    },
+    {
+      "round": "2",
+      "streams": "1",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "12.988"
+    },
+    {
+      "round": "2",
+      "streams": "1",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "3.473"
+    },
+    {
+      "round": "2",
+      "streams": "16",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "61.447"
+    },
+    {
+      "round": "2",
+      "streams": "16",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "7.301"
+    },
+    {
+      "round": "2",
+      "streams": "16",
+      "budget": "16",
+      "mode": "snapshot",
+      "operations": "62500",
+      "ns_per_operation": "105.654"
+    },
+    {
+      "round": "2",
+      "streams": "16",
+      "budget": "16",
+      "mode": "live",
+      "operations": "62500",
+      "ns_per_operation": "92.100"
+    },
+    {
+      "round": "2",
+      "streams": "256",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "484.324"
+    },
+    {
+      "round": "2",
+      "streams": "256",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "10.805"
+    },
+    {
+      "round": "2",
+      "streams": "256",
+      "budget": "256",
+      "mode": "snapshot",
+      "operations": "3906",
+      "ns_per_operation": "2012.651"
+    },
+    {
+      "round": "2",
+      "streams": "256",
+      "budget": "256",
+      "mode": "live",
+      "operations": "3906",
+      "ns_per_operation": "2293.878"
+    },
+    {
+      "round": "3",
+      "streams": "0",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "1.260"
+    },
+    {
+      "round": "3",
+      "streams": "0",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "4.466"
+    },
+    {
+      "round": "3",
+      "streams": "1",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "3.373"
+    },
+    {
+      "round": "3",
+      "streams": "1",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "12.942"
+    },
+    {
+      "round": "3",
+      "streams": "16",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "7.283"
+    },
+    {
+      "round": "3",
+      "streams": "16",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "59.710"
+    },
+    {
+      "round": "3",
+      "streams": "16",
+      "budget": "16",
+      "mode": "live",
+      "operations": "62500",
+      "ns_per_operation": "88.753"
+    },
+    {
+      "round": "3",
+      "streams": "16",
+      "budget": "16",
+      "mode": "snapshot",
+      "operations": "62500",
+      "ns_per_operation": "96.638"
+    },
+    {
+      "round": "3",
+      "streams": "256",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "10.681"
+    },
+    {
+      "round": "3",
+      "streams": "256",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "489.177"
+    },
+    {
+      "round": "3",
+      "streams": "256",
+      "budget": "256",
+      "mode": "live",
+      "operations": "3906",
+      "ns_per_operation": "2377.106"
+    },
+    {
+      "round": "3",
+      "streams": "256",
+      "budget": "256",
+      "mode": "snapshot",
+      "operations": "3906",
+      "ns_per_operation": "2069.999"
+    },
+    {
+      "round": "4",
+      "streams": "0",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "4.475"
+    },
+    {
+      "round": "4",
+      "streams": "0",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "1.303"
+    },
+    {
+      "round": "4",
+      "streams": "1",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "12.920"
+    },
+    {
+      "round": "4",
+      "streams": "1",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "3.315"
+    },
+    {
+      "round": "4",
+      "streams": "16",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "60.001"
+    },
+    {
+      "round": "4",
+      "streams": "16",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "7.119"
+    },
+    {
+      "round": "4",
+      "streams": "16",
+      "budget": "16",
+      "mode": "snapshot",
+      "operations": "62500",
+      "ns_per_operation": "97.254"
+    },
+    {
+      "round": "4",
+      "streams": "16",
+      "budget": "16",
+      "mode": "live",
+      "operations": "62500",
+      "ns_per_operation": "88.129"
+    },
+    {
+      "round": "4",
+      "streams": "256",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "502.961"
+    },
+    {
+      "round": "4",
+      "streams": "256",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "10.634"
+    },
+    {
+      "round": "4",
+      "streams": "256",
+      "budget": "256",
+      "mode": "snapshot",
+      "operations": "3906",
+      "ns_per_operation": "1978.792"
+    },
+    {
+      "round": "4",
+      "streams": "256",
+      "budget": "256",
+      "mode": "live",
+      "operations": "3906",
+      "ns_per_operation": "2240.296"
+    },
+    {
+      "round": "5",
+      "streams": "0",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "1.215"
+    },
+    {
+      "round": "5",
+      "streams": "0",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "4.824"
+    },
+    {
+      "round": "5",
+      "streams": "1",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "3.349"
+    },
+    {
+      "round": "5",
+      "streams": "1",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "13.396"
+    },
+    {
+      "round": "5",
+      "streams": "16",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "7.316"
+    },
+    {
+      "round": "5",
+      "streams": "16",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "59.276"
+    },
+    {
+      "round": "5",
+      "streams": "16",
+      "budget": "16",
+      "mode": "live",
+      "operations": "62500",
+      "ns_per_operation": "88.891"
+    },
+    {
+      "round": "5",
+      "streams": "16",
+      "budget": "16",
+      "mode": "snapshot",
+      "operations": "62500",
+      "ns_per_operation": "97.780"
+    },
+    {
+      "round": "5",
+      "streams": "256",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "10.822"
+    },
+    {
+      "round": "5",
+      "streams": "256",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "466.720"
+    },
+    {
+      "round": "5",
+      "streams": "256",
+      "budget": "256",
+      "mode": "live",
+      "operations": "3906",
+      "ns_per_operation": "2280.822"
+    },
+    {
+      "round": "5",
+      "streams": "256",
+      "budget": "256",
+      "mode": "snapshot",
+      "operations": "3906",
+      "ns_per_operation": "1985.363"
+    },
+    {
+      "round": "6",
+      "streams": "0",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "4.554"
+    },
+    {
+      "round": "6",
+      "streams": "0",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "1.300"
+    },
+    {
+      "round": "6",
+      "streams": "1",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "12.869"
+    },
+    {
+      "round": "6",
+      "streams": "1",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "3.346"
+    },
+    {
+      "round": "6",
+      "streams": "16",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "59.397"
+    },
+    {
+      "round": "6",
+      "streams": "16",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "7.172"
+    },
+    {
+      "round": "6",
+      "streams": "16",
+      "budget": "16",
+      "mode": "snapshot",
+      "operations": "62500",
+      "ns_per_operation": "95.663"
+    },
+    {
+      "round": "6",
+      "streams": "16",
+      "budget": "16",
+      "mode": "live",
+      "operations": "62500",
+      "ns_per_operation": "85.885"
+    },
+    {
+      "round": "6",
+      "streams": "256",
+      "budget": "1",
+      "mode": "snapshot",
+      "operations": "1000000",
+      "ns_per_operation": "464.950"
+    },
+    {
+      "round": "6",
+      "streams": "256",
+      "budget": "1",
+      "mode": "live",
+      "operations": "1000000",
+      "ns_per_operation": "10.705"
+    },
+    {
+      "round": "6",
+      "streams": "256",
+      "budget": "256",
+      "mode": "snapshot",
+      "operations": "3906",
+      "ns_per_operation": "2014.443"
+    },
+    {
+      "round": "6",
+      "streams": "256",
+      "budget": "256",
+      "mode": "live",
+      "operations": "3906",
+      "ns_per_operation": "2284.054"
+    }
+  ],
+  "summaries": [
+    {
+      "streams": 0,
+      "budget": 1,
+      "operations_per_mode_per_round": 1000000,
+      "mode_statistics": {
+        "snapshot": {
+          "median": 4.475,
+          "minimum": 4.306,
+          "maximum": 4.824,
+          "samples": [
+            4.614,
+            4.434,
+            4.306,
+            4.466,
+            4.475,
+            4.824,
+            4.554
+          ]
+        },
+        "live": {
+          "median": 1.263,
+          "minimum": 1.215,
+          "maximum": 1.303,
+          "samples": [
+            1.261,
+            1.267,
+            1.263,
+            1.26,
+            1.303,
+            1.215,
+            1.3
+          ]
+        }
+      },
+      "pairs": [
+        {
+          "streams": 0,
+          "budget": 1,
+          "round": 0,
+          "snapshot_ns": 4.614,
+          "live_ns": 1.261,
+          "percent_change": -72.67013437364542
+        },
+        {
+          "streams": 0,
+          "budget": 1,
+          "round": 1,
+          "snapshot_ns": 4.434,
+          "live_ns": 1.267,
+          "percent_change": -71.42534957149302
+        },
+        {
+          "streams": 0,
+          "budget": 1,
+          "round": 2,
+          "snapshot_ns": 4.306,
+          "live_ns": 1.263,
+          "percent_change": -70.66883418485834
+        },
+        {
+          "streams": 0,
+          "budget": 1,
+          "round": 3,
+          "snapshot_ns": 4.466,
+          "live_ns": 1.26,
+          "percent_change": -71.78683385579939
+        },
+        {
+          "streams": 0,
+          "budget": 1,
+          "round": 4,
+          "snapshot_ns": 4.475,
+          "live_ns": 1.303,
+          "percent_change": -70.88268156424581
+        },
+        {
+          "streams": 0,
+          "budget": 1,
+          "round": 5,
+          "snapshot_ns": 4.824,
+          "live_ns": 1.215,
+          "percent_change": -74.81343283582089
+        },
+        {
+          "streams": 0,
+          "budget": 1,
+          "round": 6,
+          "snapshot_ns": 4.554,
+          "live_ns": 1.3,
+          "percent_change": -71.45366710584102
+        }
+      ]
+    },
+    {
+      "streams": 1,
+      "budget": 1,
+      "operations_per_mode_per_round": 1000000,
+      "mode_statistics": {
+        "snapshot": {
+          "median": 12.988,
+          "minimum": 12.869,
+          "maximum": 13.957,
+          "samples": [
+            13.957,
+            13.456,
+            12.988,
+            12.942,
+            12.92,
+            13.396,
+            12.869
+          ]
+        },
+        "live": {
+          "median": 3.373,
+          "minimum": 3.315,
+          "maximum": 3.994,
+          "samples": [
+            3.434,
+            3.994,
+            3.473,
+            3.373,
+            3.315,
+            3.349,
+            3.346
+          ]
+        }
+      },
+      "pairs": [
+        {
+          "streams": 1,
+          "budget": 1,
+          "round": 0,
+          "snapshot_ns": 13.957,
+          "live_ns": 3.434,
+          "percent_change": -75.3958587088916
+        },
+        {
+          "streams": 1,
+          "budget": 1,
+          "round": 1,
+          "snapshot_ns": 13.456,
+          "live_ns": 3.994,
+          "percent_change": -70.3180737217598
+        },
+        {
+          "streams": 1,
+          "budget": 1,
+          "round": 2,
+          "snapshot_ns": 12.988,
+          "live_ns": 3.473,
+          "percent_change": -73.25993224514937
+        },
+        {
+          "streams": 1,
+          "budget": 1,
+          "round": 3,
+          "snapshot_ns": 12.942,
+          "live_ns": 3.373,
+          "percent_change": -73.93756760933394
+        },
+        {
+          "streams": 1,
+          "budget": 1,
+          "round": 4,
+          "snapshot_ns": 12.92,
+          "live_ns": 3.315,
+          "percent_change": -74.3421052631579
+        },
+        {
+          "streams": 1,
+          "budget": 1,
+          "round": 5,
+          "snapshot_ns": 13.396,
+          "live_ns": 3.349,
+          "percent_change": -75.0
+        },
+        {
+          "streams": 1,
+          "budget": 1,
+          "round": 6,
+          "snapshot_ns": 12.869,
+          "live_ns": 3.346,
+          "percent_change": -73.99953376330717
+        }
+      ]
+    },
+    {
+      "streams": 16,
+      "budget": 1,
+      "operations_per_mode_per_round": 1000000,
+      "mode_statistics": {
+        "snapshot": {
+          "median": 60.001,
+          "minimum": 59.276,
+          "maximum": 74.435,
+          "samples": [
+            74.435,
+            63.915,
+            61.447,
+            59.71,
+            60.001,
+            59.276,
+            59.397
+          ]
+        },
+        "live": {
+          "median": 7.283,
+          "minimum": 6.895,
+          "maximum": 7.471,
+          "samples": [
+            7.471,
+            6.895,
+            7.301,
+            7.283,
+            7.119,
+            7.316,
+            7.172
+          ]
+        }
+      },
+      "pairs": [
+        {
+          "streams": 16,
+          "budget": 1,
+          "round": 0,
+          "snapshot_ns": 74.435,
+          "live_ns": 7.471,
+          "percent_change": -89.96305501444213
+        },
+        {
+          "streams": 16,
+          "budget": 1,
+          "round": 1,
+          "snapshot_ns": 63.915,
+          "live_ns": 6.895,
+          "percent_change": -89.21223499960885
+        },
+        {
+          "streams": 16,
+          "budget": 1,
+          "round": 2,
+          "snapshot_ns": 61.447,
+          "live_ns": 7.301,
+          "percent_change": -88.11821569808127
+        },
+        {
+          "streams": 16,
+          "budget": 1,
+          "round": 3,
+          "snapshot_ns": 59.71,
+          "live_ns": 7.283,
+          "percent_change": -87.80271311338134
+        },
+        {
+          "streams": 16,
+          "budget": 1,
+          "round": 4,
+          "snapshot_ns": 60.001,
+          "live_ns": 7.119,
+          "percent_change": -88.13519774670422
+        },
+        {
+          "streams": 16,
+          "budget": 1,
+          "round": 5,
+          "snapshot_ns": 59.276,
+          "live_ns": 7.316,
+          "percent_change": -87.65773668938525
+        },
+        {
+          "streams": 16,
+          "budget": 1,
+          "round": 6,
+          "snapshot_ns": 59.397,
+          "live_ns": 7.172,
+          "percent_change": -87.9253160934054
+        }
+      ]
+    },
+    {
+      "streams": 16,
+      "budget": 16,
+      "operations_per_mode_per_round": 62500,
+      "mode_statistics": {
+        "snapshot": {
+          "median": 97.254,
+          "minimum": 95.663,
+          "maximum": 105.654,
+          "samples": [
+            96.624,
+            97.906,
+            105.654,
+            96.638,
+            97.254,
+            97.78,
+            95.663
+          ]
+        },
+        "live": {
+          "median": 88.891,
+          "minimum": 85.885,
+          "maximum": 96.012,
+          "samples": [
+            96.012,
+            89.743,
+            92.1,
+            88.753,
+            88.129,
+            88.891,
+            85.885
+          ]
+        }
+      },
+      "pairs": [
+        {
+          "streams": 16,
+          "budget": 16,
+          "round": 0,
+          "snapshot_ns": 96.624,
+          "live_ns": 96.012,
+          "percent_change": -0.6333830104321869
+        },
+        {
+          "streams": 16,
+          "budget": 16,
+          "round": 1,
+          "snapshot_ns": 97.906,
+          "live_ns": 89.743,
+          "percent_change": -8.33758911609096
+        },
+        {
+          "streams": 16,
+          "budget": 16,
+          "round": 2,
+          "snapshot_ns": 105.654,
+          "live_ns": 92.1,
+          "percent_change": -12.828667158839234
+        },
+        {
+          "streams": 16,
+          "budget": 16,
+          "round": 3,
+          "snapshot_ns": 96.638,
+          "live_ns": 88.753,
+          "percent_change": -8.1593162110143
+        },
+        {
+          "streams": 16,
+          "budget": 16,
+          "round": 4,
+          "snapshot_ns": 97.254,
+          "live_ns": 88.129,
+          "percent_change": -9.382647500359887
+        },
+        {
+          "streams": 16,
+          "budget": 16,
+          "round": 5,
+          "snapshot_ns": 97.78,
+          "live_ns": 88.891,
+          "percent_change": -9.090816117815503
+        },
+        {
+          "streams": 16,
+          "budget": 16,
+          "round": 6,
+          "snapshot_ns": 95.663,
+          "live_ns": 85.885,
+          "percent_change": -10.221297680398889
+        }
+      ]
+    },
+    {
+      "streams": 256,
+      "budget": 1,
+      "operations_per_mode_per_round": 1000000,
+      "mode_statistics": {
+        "snapshot": {
+          "median": 489.177,
+          "minimum": 464.95,
+          "maximum": 502.961,
+          "samples": [
+            499.926,
+            492.82,
+            484.324,
+            489.177,
+            502.961,
+            466.72,
+            464.95
+          ]
+        },
+        "live": {
+          "median": 10.805,
+          "minimum": 10.634,
+          "maximum": 11.38,
+          "samples": [
+            11.38,
+            10.872,
+            10.805,
+            10.681,
+            10.634,
+            10.822,
+            10.705
+          ]
+        }
+      },
+      "pairs": [
+        {
+          "streams": 256,
+          "budget": 1,
+          "round": 0,
+          "snapshot_ns": 499.926,
+          "live_ns": 11.38,
+          "percent_change": -97.72366310213911
+        },
+        {
+          "streams": 256,
+          "budget": 1,
+          "round": 1,
+          "snapshot_ns": 492.82,
+          "live_ns": 10.872,
+          "percent_change": -97.79392070127024
+        },
+        {
+          "streams": 256,
+          "budget": 1,
+          "round": 2,
+          "snapshot_ns": 484.324,
+          "live_ns": 10.805,
+          "percent_change": -97.76905542570677
+        },
+        {
+          "streams": 256,
+          "budget": 1,
+          "round": 3,
+          "snapshot_ns": 489.177,
+          "live_ns": 10.681,
+          "percent_change": -97.81653675458986
+        },
+        {
+          "streams": 256,
+          "budget": 1,
+          "round": 4,
+          "snapshot_ns": 502.961,
+          "live_ns": 10.634,
+          "percent_change": -97.88572076164951
+        },
+        {
+          "streams": 256,
+          "budget": 1,
+          "round": 5,
+          "snapshot_ns": 466.72,
+          "live_ns": 10.822,
+          "percent_change": -97.68126499828591
+        },
+        {
+          "streams": 256,
+          "budget": 1,
+          "round": 6,
+          "snapshot_ns": 464.95,
+          "live_ns": 10.705,
+          "percent_change": -97.69760189267663
+        }
+      ]
+    },
+    {
+      "streams": 256,
+      "budget": 256,
+      "operations_per_mode_per_round": 3906,
+      "mode_statistics": {
+        "snapshot": {
+          "median": 2012.651,
+          "minimum": 1978.792,
+          "maximum": 2151.969,
+          "samples": [
+            2151.969,
+            2009.643,
+            2012.651,
+            2069.999,
+            1978.792,
+            1985.363,
+            2014.443
+          ]
+        },
+        "live": {
+          "median": 2284.054,
+          "minimum": 2240.296,
+          "maximum": 2429.185,
+          "samples": [
+            2429.185,
+            2280.288,
+            2293.878,
+            2377.106,
+            2240.296,
+            2280.822,
+            2284.054
+          ]
+        }
+      },
+      "pairs": [
+        {
+          "streams": 256,
+          "budget": 256,
+          "round": 0,
+          "snapshot_ns": 2151.969,
+          "live_ns": 2429.185,
+          "percent_change": 12.88196995402815
+        },
+        {
+          "streams": 256,
+          "budget": 256,
+          "round": 1,
+          "snapshot_ns": 2009.643,
+          "live_ns": 2280.288,
+          "percent_change": 13.467317329495842
+        },
+        {
+          "streams": 256,
+          "budget": 256,
+          "round": 2,
+          "snapshot_ns": 2012.651,
+          "live_ns": 2293.878,
+          "percent_change": 13.972964016116052
+        },
+        {
+          "streams": 256,
+          "budget": 256,
+          "round": 3,
+          "snapshot_ns": 2069.999,
+          "live_ns": 2377.106,
+          "percent_change": 14.83609412371698
+        },
+        {
+          "streams": 256,
+          "budget": 256,
+          "round": 4,
+          "snapshot_ns": 1978.792,
+          "live_ns": 2240.296,
+          "percent_change": 13.215335416759322
+        },
+        {
+          "streams": 256,
+          "budget": 256,
+          "round": 5,
+          "snapshot_ns": 1985.363,
+          "live_ns": 2280.822,
+          "percent_change": 14.881862913734167
+        },
+        {
+          "streams": 256,
+          "budget": 256,
+          "round": 6,
+          "snapshot_ns": 2014.443,
+          "live_ns": 2284.054,
+          "percent_change": 13.383898179298193
+        }
+      ]
+    }
+  ],
+  "pairs": [
+    {
+      "streams": 0,
+      "budget": 1,
+      "round": 0,
+      "snapshot_ns": 4.614,
+      "live_ns": 1.261,
+      "percent_change": -72.67013437364542
+    },
+    {
+      "streams": 0,
+      "budget": 1,
+      "round": 1,
+      "snapshot_ns": 4.434,
+      "live_ns": 1.267,
+      "percent_change": -71.42534957149302
+    },
+    {
+      "streams": 0,
+      "budget": 1,
+      "round": 2,
+      "snapshot_ns": 4.306,
+      "live_ns": 1.263,
+      "percent_change": -70.66883418485834
+    },
+    {
+      "streams": 0,
+      "budget": 1,
+      "round": 3,
+      "snapshot_ns": 4.466,
+      "live_ns": 1.26,
+      "percent_change": -71.78683385579939
+    },
+    {
+      "streams": 0,
+      "budget": 1,
+      "round": 4,
+      "snapshot_ns": 4.475,
+      "live_ns": 1.303,
+      "percent_change": -70.88268156424581
+    },
+    {
+      "streams": 0,
+      "budget": 1,
+      "round": 5,
+      "snapshot_ns": 4.824,
+      "live_ns": 1.215,
+      "percent_change": -74.81343283582089
+    },
+    {
+      "streams": 0,
+      "budget": 1,
+      "round": 6,
+      "snapshot_ns": 4.554,
+      "live_ns": 1.3,
+      "percent_change": -71.45366710584102
+    },
+    {
+      "streams": 1,
+      "budget": 1,
+      "round": 0,
+      "snapshot_ns": 13.957,
+      "live_ns": 3.434,
+      "percent_change": -75.3958587088916
+    },
+    {
+      "streams": 1,
+      "budget": 1,
+      "round": 1,
+      "snapshot_ns": 13.456,
+      "live_ns": 3.994,
+      "percent_change": -70.3180737217598
+    },
+    {
+      "streams": 1,
+      "budget": 1,
+      "round": 2,
+      "snapshot_ns": 12.988,
+      "live_ns": 3.473,
+      "percent_change": -73.25993224514937
+    },
+    {
+      "streams": 1,
+      "budget": 1,
+      "round": 3,
+      "snapshot_ns": 12.942,
+      "live_ns": 3.373,
+      "percent_change": -73.93756760933394
+    },
+    {
+      "streams": 1,
+      "budget": 1,
+      "round": 4,
+      "snapshot_ns": 12.92,
+      "live_ns": 3.315,
+      "percent_change": -74.3421052631579
+    },
+    {
+      "streams": 1,
+      "budget": 1,
+      "round": 5,
+      "snapshot_ns": 13.396,
+      "live_ns": 3.349,
+      "percent_change": -75.0
+    },
+    {
+      "streams": 1,
+      "budget": 1,
+      "round": 6,
+      "snapshot_ns": 12.869,
+      "live_ns": 3.346,
+      "percent_change": -73.99953376330717
+    },
+    {
+      "streams": 16,
+      "budget": 1,
+      "round": 0,
+      "snapshot_ns": 74.435,
+      "live_ns": 7.471,
+      "percent_change": -89.96305501444213
+    },
+    {
+      "streams": 16,
+      "budget": 1,
+      "round": 1,
+      "snapshot_ns": 63.915,
+      "live_ns": 6.895,
+      "percent_change": -89.21223499960885
+    },
+    {
+      "streams": 16,
+      "budget": 1,
+      "round": 2,
+      "snapshot_ns": 61.447,
+      "live_ns": 7.301,
+      "percent_change": -88.11821569808127
+    },
+    {
+      "streams": 16,
+      "budget": 1,
+      "round": 3,
+      "snapshot_ns": 59.71,
+      "live_ns": 7.283,
+      "percent_change": -87.80271311338134
+    },
+    {
+      "streams": 16,
+      "budget": 1,
+      "round": 4,
+      "snapshot_ns": 60.001,
+      "live_ns": 7.119,
+      "percent_change": -88.13519774670422
+    },
+    {
+      "streams": 16,
+      "budget": 1,
+      "round": 5,
+      "snapshot_ns": 59.276,
+      "live_ns": 7.316,
+      "percent_change": -87.65773668938525
+    },
+    {
+      "streams": 16,
+      "budget": 1,
+      "round": 6,
+      "snapshot_ns": 59.397,
+      "live_ns": 7.172,
+      "percent_change": -87.9253160934054
+    },
+    {
+      "streams": 16,
+      "budget": 16,
+      "round": 0,
+      "snapshot_ns": 96.624,
+      "live_ns": 96.012,
+      "percent_change": -0.6333830104321869
+    },
+    {
+      "streams": 16,
+      "budget": 16,
+      "round": 1,
+      "snapshot_ns": 97.906,
+      "live_ns": 89.743,
+      "percent_change": -8.33758911609096
+    },
+    {
+      "streams": 16,
+      "budget": 16,
+      "round": 2,
+      "snapshot_ns": 105.654,
+      "live_ns": 92.1,
+      "percent_change": -12.828667158839234
+    },
+    {
+      "streams": 16,
+      "budget": 16,
+      "round": 3,
+      "snapshot_ns": 96.638,
+      "live_ns": 88.753,
+      "percent_change": -8.1593162110143
+    },
+    {
+      "streams": 16,
+      "budget": 16,
+      "round": 4,
+      "snapshot_ns": 97.254,
+      "live_ns": 88.129,
+      "percent_change": -9.382647500359887
+    },
+    {
+      "streams": 16,
+      "budget": 16,
+      "round": 5,
+      "snapshot_ns": 97.78,
+      "live_ns": 88.891,
+      "percent_change": -9.090816117815503
+    },
+    {
+      "streams": 16,
+      "budget": 16,
+      "round": 6,
+      "snapshot_ns": 95.663,
+      "live_ns": 85.885,
+      "percent_change": -10.221297680398889
+    },
+    {
+      "streams": 256,
+      "budget": 1,
+      "round": 0,
+      "snapshot_ns": 499.926,
+      "live_ns": 11.38,
+      "percent_change": -97.72366310213911
+    },
+    {
+      "streams": 256,
+      "budget": 1,
+      "round": 1,
+      "snapshot_ns": 492.82,
+      "live_ns": 10.872,
+      "percent_change": -97.79392070127024
+    },
+    {
+      "streams": 256,
+      "budget": 1,
+      "round": 2,
+      "snapshot_ns": 484.324,
+      "live_ns": 10.805,
+      "percent_change": -97.76905542570677
+    },
+    {
+      "streams": 256,
+      "budget": 1,
+      "round": 3,
+      "snapshot_ns": 489.177,
+      "live_ns": 10.681,
+      "percent_change": -97.81653675458986
+    },
+    {
+      "streams": 256,
+      "budget": 1,
+      "round": 4,
+      "snapshot_ns": 502.961,
+      "live_ns": 10.634,
+      "percent_change": -97.88572076164951
+    },
+    {
+      "streams": 256,
+      "budget": 1,
+      "round": 5,
+      "snapshot_ns": 466.72,
+      "live_ns": 10.822,
+      "percent_change": -97.68126499828591
+    },
+    {
+      "streams": 256,
+      "budget": 1,
+      "round": 6,
+      "snapshot_ns": 464.95,
+      "live_ns": 10.705,
+      "percent_change": -97.69760189267663
+    },
+    {
+      "streams": 256,
+      "budget": 256,
+      "round": 0,
+      "snapshot_ns": 2151.969,
+      "live_ns": 2429.185,
+      "percent_change": 12.88196995402815
+    },
+    {
+      "streams": 256,
+      "budget": 256,
+      "round": 1,
+      "snapshot_ns": 2009.643,
+      "live_ns": 2280.288,
+      "percent_change": 13.467317329495842
+    },
+    {
+      "streams": 256,
+      "budget": 256,
+      "round": 2,
+      "snapshot_ns": 2012.651,
+      "live_ns": 2293.878,
+      "percent_change": 13.972964016116052
+    },
+    {
+      "streams": 256,
+      "budget": 256,
+      "round": 3,
+      "snapshot_ns": 2069.999,
+      "live_ns": 2377.106,
+      "percent_change": 14.83609412371698
+    },
+    {
+      "streams": 256,
+      "budget": 256,
+      "round": 4,
+      "snapshot_ns": 1978.792,
+      "live_ns": 2240.296,
+      "percent_change": 13.215335416759322
+    },
+    {
+      "streams": 256,
+      "budget": 256,
+      "round": 5,
+      "snapshot_ns": 1985.363,
+      "live_ns": 2280.822,
+      "percent_change": 14.881862913734167
+    },
+    {
+      "streams": 256,
+      "budget": 256,
+      "round": 6,
+      "snapshot_ns": 2014.443,
+      "live_ns": 2284.054,
+      "percent_change": 13.383898179298193
+    }
+  ],
+  "timed_model_poll_operations": 56929684,
+  "warmup_model_poll_operations": 84000,
+  "model_equivalence_controls": {
+    "counts": [
+      0,
+      1,
+      3,
+      16,
+      256
+    ],
+    "cursors": "every integer from zero through 2*count+2 inclusive",
+    "budgets": "1 and max(count,1)",
+    "checks": "one-step returned sums, full maps, and final cursors equal; measured state sum matches expected visited entries after warmup+timing",
+    "cases": 1134
+  },
+  "root_tool_observed_run": {
+    "exit": 0,
+    "exec_session": 1033
+  },
+  "inference": "Repeated range_mut initialization/search plausibly contributes to the 256-stream full-budget slowdown; no profile or isolated cost measurement establishes its cause.",
+  "limits": [
+    "No product edits or actual Connection::poll test; independent model equivalence does not establish engine scheduling correctness.",
+    "No HTTP throughput, socket latency, allocation-counter, retained-memory or RSS claim.",
+    "ns_per_operation is per model poll; stream visit counts differ by budget and are not the printed denominator.",
+    "One standalone process, six fixed cases and seven alternating pairs; all slower samples remain present.",
+    "Raw elapsed timestamps, exact rustc invocation/optimization flags, CPU affinity and immutable execution image are not independently recorded in these files.",
+    "Source/executable hashes record supplied provenance but alone cannot prove the executable was compiled from this exact source."
+  ],
+  "artifact_sha256": {
+    "artifacts/performance-2026-10-20/stream-schedule-probe-build.log": "afdb4a0d56d903af9fb56774b690cd098af64ef08c1628fe9c2c1d062204e1a0",
+    "artifacts/performance-2026-10-20/stream-schedule-probe.csv": "8fecd6c55c8ae4ad3df56c9e0212bcc8253275e631598f0f93cde0ab7d94a3c7",
+    "artifacts/performance-2026-10-20/stream-schedule-probe.rs": "a60fe474a98a13e197051006c4d989b0cbea195666a9964cabce6c659b7db6fd",
+    "artifacts/performance-2026-10-20/stream-schedule-probe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "analysis_script": "#!/usr/bin/env python3\n\"\"\"Offline reconciliation of the rejected standard-library traversal model.\"\"\"\n\nimport csv\nimport hashlib\nimport json\nimport math\nimport re\nimport statistics\nfrom pathlib import Path\n\nROOT = Path(__file__).resolve().parents[1]\nART = ROOT / \"artifacts/performance-2026-10-20\"\nOUT = ROOT / \"benches/results\"\nCASES = [(0, 1), (1, 1), (16, 1), (16, 16), (256, 1), (256, 256)]\nobserved = set()\n\n\ndef read(name):\n    path = ART / name\n    observed.add(path)\n    return path.read_text()\n\n\ndef require(condition, message):\n    if not condition:\n        raise ValueError(message)\n\n\nsource = read(\"stream-schedule-probe.rs\")\nrequire(hashlib.sha256(source.encode()).hexdigest() == \"a60fe474a98a13e197051006c4d989b0cbea195666a9964cabce6c659b7db6fd\", \"model source differs from reviewed artifact\")\nbuild = read(\"stream-schedule-probe-build.log\")\nstderr = read(\"stream-schedule-probe.stderr\")\nbinary_hash = \"01769a13e115047d7bd56807d0cc464c38cde587b2951dd010157462a2e0a8b8\"\nrequire(re.findall(r\"^([0-9a-f]{64})\\s+\\S*/stream-schedule-probe$\", build, re.MULTILINE) == [binary_hash], \"unexpected model executable hash\")\nrequire(\"release: 1.96.1\" in build and \"host: aarch64-unknown-linux-gnu\" in build, \"unexpected compiler/target\")\nrequire(stderr == \"\", \"unexpected stderr\")\nrequire(\"let operations = (1_000_000 / count.min(budget).max(1)).max(2000);\" in source and \"elapsed.as_nanos() as f64 / operations as f64\" in source, \"model denominator form differs\")\nrequire(\"for _ in 0..1000\" in source and \"(operations + 1000) as u64 * count.min(budget) as u64\" in source, \"model warmup/visit invariant differs\")\nrecords = list(csv.DictReader(read(\"stream-schedule-probe.csv\").splitlines()))\nexpected = [(round_number, count, budget, mode) for round_number in range(7) for count, budget in CASES for mode in ([\"snapshot\", \"live\"] if round_number % 2 == 0 else [\"live\", \"snapshot\"])]\nrequire(len(records) == 84 and [(int(r[\"round\"]), int(r[\"streams\"]), int(r[\"budget\"]), r[\"mode\"]) for r in records] == expected, \"model rows/order differ\")\nfor row in records:\n    streams, budget = int(row[\"streams\"]), int(row[\"budget\"])\n    require(int(row[\"operations\"]) == max(1_000_000 // max(min(streams, budget), 1), 2000), \"operation denominator differs\")\n    require(math.isfinite(float(row[\"ns_per_operation\"])) and float(row[\"ns_per_operation\"]) > 0, \"invalid timing\")\nsummaries, pairs = [], []\nfor streams, budget in CASES:\n    by_mode = {mode:[float(r[\"ns_per_operation\"]) for r in records if int(r[\"streams\"]) == streams and int(r[\"budget\"]) == budget and r[\"mode\"] == mode] for mode in [\"snapshot\", \"live\"]}\n    pp = [dict(streams=streams, budget=budget, round=i, snapshot_ns=by_mode[\"snapshot\"][i], live_ns=by_mode[\"live\"][i], percent_change=100 * (by_mode[\"live\"][i] / by_mode[\"snapshot\"][i] - 1)) for i in range(7)]\n    pairs.extend(pp)\n    summaries.append(dict(streams=streams, budget=budget, operations_per_mode_per_round=max(1_000_000 // max(min(streams, budget), 1), 2000), mode_statistics={mode:dict(median=statistics.median(v), minimum=min(v), maximum=max(v), samples=v) for mode, v in by_mode.items()}, pairs=pp))\nresult = dict(status=\"REJECTED standalone traversal model; product implementation untouched\", scope=\"Standard-library BTreeMap stream-ID traversal model, not Connection::poll or an HTTP engine benchmark\", executable_sha256=binary_hash, source_sha256=hashlib.sha256(source.encode()).hexdigest(), dependencies=\"Rust standard library only; no Cargo dependency or product change\", compiler_metadata=build, embedded_source=source, rows=records, summaries=summaries, pairs=pairs, timed_model_poll_operations=sum(int(r[\"operations\"]) for r in records), warmup_model_poll_operations=len(records) * 1000, model_equivalence_controls=dict(counts=[0,1,3,16,256], cursors=\"every integer from zero through 2*count+2 inclusive\", budgets=\"1 and max(count,1)\", checks=\"one-step returned sums, full maps, and final cursors equal; measured state sum matches expected visited entries after warmup+timing\", cases=1134), root_tool_observed_run=dict(exit=0, exec_session=1033), inference=\"Repeated range_mut initialization/search plausibly contributes to the 256-stream full-budget slowdown; no profile or isolated cost measurement establishes its cause.\", limits=[\"No product edits or actual Connection::poll test; independent model equivalence does not establish engine scheduling correctness.\", \"No HTTP throughput, socket latency, allocation-counter, retained-memory or RSS claim.\", \"ns_per_operation is per model poll; stream visit counts differ by budget and are not the printed denominator.\", \"One standalone process, six fixed cases and seven alternating pairs; all slower samples remain present.\", \"Raw elapsed timestamps, exact rustc invocation/optimization flags, CPU affinity and immutable execution image are not independently recorded in these files.\", \"Source/executable hashes record supplied provenance but alone cannot prove the executable was compiled from this exact source.\"], artifact_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(observed)}, analysis_script=Path(__file__).read_text())\n(OUT / \"stream-schedule-model-evidence.json\").write_text(json.dumps(result, indent=2) + \"\\n\")\nfor filename, data in [(\"stream-schedule-model-trials.csv\", records), (\"stream-schedule-model-pairs.csv\", pairs)]:\n    with (OUT / filename).open(\"w\") as output:\n        writer = csv.DictWriter(output, fieldnames=list(data[0]))\n        writer.writeheader()\n        writer.writerows(data)\nprint(json.dumps({\"source_sha256\":result[\"source_sha256\"], \"timed_model_poll_operations\":result[\"timed_model_poll_operations\"], \"summaries\":summaries}, indent=2))\n"
+}

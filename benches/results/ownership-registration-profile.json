@@ -1,0 +1,36 @@
+{
+  "source_commit": "b5bb664bd6faf9b417cd8af5235ec12e7f0037de",
+  "binary": "75a3c08056ed5caf320c59c5e094777ba632249ce8df6d8a236b7ed4df913045  /target/oct20-baseline/maximus-comparison",
+  "samples": 2740,
+  "lost_samples": 0,
+  "responses": 69091,
+  "event": "cpu-clock",
+  "frequency_hz": 199,
+  "record_seconds": 20,
+  "client_seconds": 15,
+  "protocol": "verified TLS1.3 HTTP2",
+  "payload_bytes": 131072,
+  "top_entries": [
+    "13.61%  maximus-0  libc.so.6           [.] 0x000000000009d200",
+    "9.85%  maximus-0  maximus-comparison  [.] ring_core_0_17_14__aes_gcm_dec_kernel",
+    "8.54%  maximus-0  maximus-comparison  [.] ring_core_0_17_14__aes_gcm_enc_kernel",
+    "2.63%  maximus-0  [vdso]              [.] __kernel_clock_gettime",
+    "2.63%  maximus-0  [unknown]           [k] 0xffffbb3b598d28cc",
+    "2.52%  maximus-0  [unknown]           [k] 0xffffbb3b5997df40",
+    "2.04%  maximus-0  maximus-comparison  [.] <compio_runtime::time::future::TimerFuture as core::future::future::Future>::poll",
+    "1.61%  maximus-0  [unknown]           [k] 0xffffbb3b59c6a2ac",
+    "1.57%  maximus-0  [unknown]           [k] 0xffffbb3b598d2668",
+    "1.17%  maximus-0  libc.so.6           [.] malloc",
+    "1.09%  maximus-0  maximus-comparison  [.] compio_io::compat::sync_stream::SyncStreamReadHalf<S>::fill_read_buf::{{closure}}",
+    "1.02%  maximus-0  libc.so.6           [.] 0x000000000009d214",
+    "1.02%  maximus-0  maximus-comparison  [.] <compio_runtime::time::future::TimerFuture as core::ops::drop::Drop>::drop",
+    "0.95%  maximus-0  maximus-comparison  [.] maximus::transport::Transport::serve::{{closure}}",
+    "0.88%  maximus-0  libc.so.6           [.] cfree"
+  ],
+  "limitations": [
+    "sampled CPU time, not hardware PMU cycles",
+    "kernel symbol restrictions",
+    "unresolved libc symbols",
+    "profile traffic excluded from measured comparisons"
+  ]
+}

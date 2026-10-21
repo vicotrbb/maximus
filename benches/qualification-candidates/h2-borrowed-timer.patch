@@ -1,0 +1,24 @@
+--- a/crates/http2/src/lib.rs
++++ b/crates/http2/src/lib.rs
+@@ -1169,8 +1169,7 @@
+         let draining = connection.draining.is_some();
+         let event = {
+             let work = futures_util::future::poll_fn(|cx| connection.poll(cx, &mut output)).fuse();
+-            let timer =
+-                compio::time::sleep(deadline.saturating_duration_since(Instant::now())).fuse();
++            let timer = compio::time::sleep_until(deadline);
+             let stop = async {
+                 if draining {
+                     futures_util::future::pending::<()>().await;
+@@ -1180,9 +1179,9 @@
+             .fuse();
+             futures_util::pin_mut!(work, timer, stop);
+             if read_turn {
+-                futures_util::select_biased! {_=stop=>Event::Stop,_=timer=>Event::Timer,r=reading.as_mut().fuse()=>Event::Read(r),_=work=>Event::Work}
++                futures_util::select_biased! {_=stop=>Event::Stop,_=timer.as_mut().fuse()=>Event::Timer,r=reading.as_mut().fuse()=>Event::Read(r),_=work=>Event::Work}
+             } else {
+-                futures_util::select_biased! {_=stop=>Event::Stop,_=timer=>Event::Timer,_=work=>Event::Work,r=reading.as_mut().fuse()=>Event::Read(r)}
++                futures_util::select_biased! {_=stop=>Event::Stop,_=timer.as_mut().fuse()=>Event::Timer,_=work=>Event::Work,r=reading.as_mut().fuse()=>Event::Read(r)}
+             }
+         };
+         match event {

@@ -1,0 +1,14 @@
+--- a/crates/core/src/lib.rs
++++ b/crates/core/src/lib.rs
+@@ -88,7 +88,10 @@
+ }
+ impl IntoResponse for Error {
+     fn into_response(self) -> Response {
+-        (self.status, self.message.into_owned()).into_response()
++        match self.message {
++            Cow::Borrowed(message) => (self.status, message).into_response(),
++            Cow::Owned(message) => (self.status, message).into_response(),
++        }
+     }
+ }
+ impl<T: IntoResponse, E: IntoResponse> IntoResponse for std::result::Result<T, E> {
