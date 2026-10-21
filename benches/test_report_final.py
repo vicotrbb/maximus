@@ -53,6 +53,15 @@ class QualificationTests(unittest.TestCase):
                     "path": "/sse",
                     "body_bytes": 0,
                     "engine": "maximus",
+                    "generator": "k6",
+                    "requests": 100,
+                    "iterations_started": 100,
+                    "iterations_completed": 100,
+                    "failures": 0,
+                    "checks_failed": 0,
+                    "network_errors": 0,
+                    "dropped": 0,
+                    "exit": 0,
                     "rps": 100,
                     "p50_ms": 1,
                     "p99_ms": 2,
@@ -164,6 +173,22 @@ class QualificationTests(unittest.TestCase):
                 self.assertFalse(report["qualified_input"])
                 self.assertEqual(report["trials"], trials)
                 self.assertEqual(report["paired"], {})
+
+    def test_raw_failures_and_incomplete_iterations_override_driver_pass(self):
+        for metric, value in [
+            ("failures", 1), ("checks_failed", 1), ("network_errors", 64),
+            ("dropped", 1), ("exit", 1), ("requests", 0),
+            ("requests", "nan"), ("iterations_started", 101),
+            ("iterations_completed", 99),
+        ]:
+            with self.subTest(metric=metric, value=value):
+                trials = [self.trial("baseline"), self.trial("candidate")]
+                trials[1]["rows"][0][metric] = value
+                result, report = self.report(trials)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertFalse(report["qualified_input"])
+                self.assertEqual(report["paired"], {})
+                self.assertEqual(report["trials"], trials)
 
 
 if __name__ == "__main__":
