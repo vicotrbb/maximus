@@ -69,6 +69,7 @@ def run_trial(options, binary, engine, protocol, path, size, prefix, cert):
                                   GODEBUG='x509sslcertoverrideplatform=1',
                                   URL=('http://' if protocol == 'plain' else 'https://') + address,
                                   PATHNAME=path, BODY_BYTES=str(size), VUS=str(options.vus),
+                                  CHURN='1' if getattr(options, 'churn', False) else '0',
                                   DURATION=duration, RESULT=str(result.resolve()))
                 if options.rate:
                     client_env['RATE'] = str(options.rate)
@@ -137,6 +138,7 @@ def main():
     parser.add_argument('--rate', type=int, default=0)
     parser.add_argument('--backend', choices=('poll', 'io-uring'), default='poll')
     parser.add_argument('--no-peers', action='store_true')
+    parser.add_argument('--churn', action='store_true', help='disable HTTP connection reuse consistently')
     args = parser.parse_args()
     cases = [int(case) for case in args.cases.split(',')]
     if len(cases) != len(set(cases)) or any(case not in range(len(SOCKET_CASES)) for case in cases) or min(args.repeats, args.vus, args.workers) < 1:
