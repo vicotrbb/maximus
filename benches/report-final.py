@@ -79,8 +79,15 @@ def main():
     response_errors = []
     for trial in trials:
         try:
-            command = trial["command"]
-            engines = command[command.index("--engines") + 1].split(",")
+            if "engines" in trial:
+                engines = trial["engines"]
+            else:
+                command = trial["command"]
+                engines = command[command.index("--engines") + 1].split(",")
+            if (not isinstance(engines, list) or not engines
+                    or any(not isinstance(engine, str) or not engine for engine in engines)
+                    or len(engines) != len(set(engines))):
+                raise ValueError("invalid engine contract")
             required = response_keys(trial["case"], engines)
         except (KeyError, ValueError, IndexError):
             response_errors.append(

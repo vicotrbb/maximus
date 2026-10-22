@@ -190,6 +190,15 @@ class QualificationTests(unittest.TestCase):
                 self.assertEqual(report["paired"], {})
                 self.assertEqual(report["trials"], trials)
 
+    def test_explicit_engine_contract_supports_native_commands(self):
+        trials = [self.trial("baseline"), self.trial("candidate")]
+        for trial in trials:
+            trial["engines"] = ["maximus"]
+            trial["command"] = ["run-native.py", "--backend", "poll"]
+        result, report = self.report(trials)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(report["qualified_input"])
+
 
 if __name__ == "__main__":
     unittest.main()
