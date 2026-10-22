@@ -5834,7 +5834,10 @@
     "artifacts/shared-path-performance/final-body-integrity-green.log": "4e0db62c1b7be2ee719ccb02a7c6766e9d522cce55216c6c383164635c4841b1",
     "artifacts/shared-path-performance/final-body-integrity-candidate.log": "48ee7b3acbfd81cab84da0c6fa955843d2b1a9d360dd4b2b1ee81f33fbd0e1ff",
     "artifacts/shared-path-performance/final-body-integrity-mutation.log": "d5783b02e9545dbe76f7bb8f45b04031d0e7260a2cedab9901826d670e6164b6",
-    "crates/framework/tests/body_reuse.rs": "78449a9aed216577c170adff27ef876ee17f1ccd79b8a1daa1db0351d9facb7b"
+    "crates/framework/tests/body_reuse.rs": "78449a9aed216577c170adff27ef876ee17f1ccd79b8a1daa1db0351d9facb7b",
+    "artifacts/shared-path-performance/pr12-h1-host-check.log": "af8aa12ec7d3befed6b66b40c2506e34e1b88f48813cceb1edd8acc36a54e9ce",
+    "artifacts/shared-path-performance/pr12-h1-linux-clean.log": "aac2d19f938465aa7feb6d181f723fa88709e72607fb49ae06644a6664026785",
+    "artifacts/shared-path-performance/pr12-h1-linux-tests.log": "38c94adc53cbc5c6dba9dc7357ee17e78d4a332b5f04d357a7dc778e72475784"
   },
   "peer_observations_per_framework_per_main_path": 7,
   "review": {
@@ -5919,5 +5922,29 @@
       "P3 peer sample count"
     ],
     "product_optimizations_retained": []
+  },
+  "pr_revision": {
+    "date": "2026-10-22",
+    "selected_for_review": [
+      "HTTP/1 single receive buffer"
+    ],
+    "runtime_qualification": "unresolved; no overall speedup claim",
+    "production_matches_measured_candidate": true,
+    "test_only_difference": "ranged-read test permits legal short TCP reads",
+    "original_campaign_fields_are_historical": true,
+    "source_sha256": {
+      "crates/http1/src/lib.rs": "ac047342e4e72a7976e9eb3084984f944ac5e6b84f2d1a1cd1822351b1c984c2",
+      "crates/http1/src/io.rs": "024de050f169cff06e158d5a7aae3fde68bef6f0e55a8d34427e71af2cbe5101"
+    },
+    "verification": {
+      "host_check_exit": 0,
+      "fresh_linux_workspace_all_features_exit": 0,
+      "production_code_previously_benchmarked_against": [
+        "baseline Maximus",
+        "Hyper",
+        "Axum"
+      ],
+      "runtime_qualification": "unresolved; proposed memory/size tradeoff"
+    }
   }
 }

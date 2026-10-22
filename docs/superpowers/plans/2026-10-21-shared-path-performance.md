@@ -146,3 +146,11 @@ and machine evidence record actual outcomes and skipped/failed gates.
 
 The final branch retains reproducible diagnostics and focused body-ownership
 regression coverage. It establishes no overall throughput gain or leadership.
+
+## PR revision, 2026-10-22
+
+Following the user's correction that the PR must include a product improvement,
+PR #12 includes the measured HTTP/1 single-buffer implementation for review
+as a memory/size tradeoff. The earlier closed-campaign disposition remains
+historical. Runtime qualification is still unresolved; no overall speedup or
+bounded-regression claim is made. Other product experiments remain excluded.

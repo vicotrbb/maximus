@@ -1,6 +1,27 @@
 # Shared-path performance campaign, 2026-10-21
 
-The campaign and final restored-branch verification are complete.
+## PR #12 revision, 2026-10-22
+
+PR #12 now includes the HTTP/1 single-buffer implementation as a concrete
+memory/size optimization for review. It removes the separate read scratch
+buffer, reads into initialized parser storage and advances an unread range
+instead of shifting bytes after each consumed prefix. Production code matches
+the previously measured candidate. The ranged-read test now permits legal
+short TCP reads. No dependency or public API is added.
+
+This revision changes the proposed product scope; it does not qualify the
+unresolved runtime observations. The measured benefit is 19.71% lower held
+process RSS in the tested scenario and smaller linked sections in five builds.
+Plain SSE throughput/CPU and intermittent TLS latency remain explicit costs
+or uncertainties. These results support reviewing a memory/size tradeoff;
+they do not establish an overall speedup or a bounded runtime regression.
+The original campaign disposition and baseline identity below record the
+state before this revision. Fresh `scripts/check.sh` and clean Linux workspace/all-feature tests passed
+for this PR revision, including native/TLS body ownership, direct-buffer
+boundaries and explicit io_uring. Check-log hashes are recorded in the
+machine-readable companion. Runtime qualification remains unresolved.
+
+The original campaign and restored-branch verification are complete.
 The HTTP/1 receive-storage experiment remains runtime-unqualified and is not
 retained: smaller applications and promising retention do not resolve the
 adverse timing observations. No framework-leadership claim is made.

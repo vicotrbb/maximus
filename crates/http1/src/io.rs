@@ -1,11 +1,12 @@
 //! The TCP path submits owned buffers directly. TLS keeps its explicit futures adapter.
 use compio::io::{AsyncRead, AsyncWrite, AsyncWriteExt};
-use std::io;
 #[cfg(feature = "websocket")]
 use std::pin::Pin;
+use std::{io, ops::Range};
 
 pub(crate) trait ReadIo: 'static {
-    async fn read(&mut self, buffer: Vec<u8>) -> (io::Result<usize>, Vec<u8>);
+    /// Read into initialized storage without consuming its prefix.
+    async fn read(&mut self, buffer: Vec<u8>, range: Range<usize>) -> (io::Result<usize>, Vec<u8>);
     #[cfg(feature = "websocket")]
     fn into_futures(self, capacity: usize) -> Pin<Box<dyn futures_util::AsyncRead>>;
 }
@@ -18,9 +19,10 @@ pub(crate) trait WriteIo: 'static {
 }
 pub(crate) struct Native<T>(pub T);
 impl<T: AsyncRead + Unpin + 'static> ReadIo for Native<T> {
-    async fn read(&mut self, buffer: Vec<u8>) -> (io::Result<usize>, Vec<u8>) {
-        let compio::BufResult(result, buffer) = self.0.read(buffer).await;
-        (result, buffer)
+    async fn read(&mut self, buffer: Vec<u8>, range: Range<usize>) -> (io::Result<usize>, Vec<u8>) {
+        use compio::buf::{IntoInner, IoBuf};
+        let compio::BufResult(result, buffer) = self.0.read(buffer.slice(range)).await;
+        (result, buffer.into_inner())
     }
     #[cfg(feature = "websocket")]
     fn into_futures(self, capacity: usize) -> Pin<Box<dyn futures_util::AsyncRead>> {
@@ -53,8 +55,12 @@ impl<T: AsyncWrite + Unpin + 'static> WriteIo for Native<T> {
 }
 pub(crate) struct Futures<T>(pub T);
 impl<T: futures_util::AsyncRead + Unpin + 'static> ReadIo for Futures<T> {
-    async fn read(&mut self, mut buffer: Vec<u8>) -> (io::Result<usize>, Vec<u8>) {
-        let result = futures_util::AsyncReadExt::read(&mut self.0, &mut buffer).await;
+    async fn read(
+        &mut self,
+        mut buffer: Vec<u8>,
+        range: Range<usize>,
+    ) -> (io::Result<usize>, Vec<u8>) {
+        let result = futures_util::AsyncReadExt::read(&mut self.0, &mut buffer[range]).await;
         (result, buffer)
     }
     #[cfg(feature = "websocket")]

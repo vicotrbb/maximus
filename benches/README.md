@@ -8,7 +8,7 @@ rows, identical-binary controls, native size distinctions, standards research,
 and rejected Body, H1, and HPACK experiments. Whole-server throughput gains
 are not established. Unstripped SSE artifact growth remains disclosed.
 
-Latest investigation: the [2026-10-21 shared-path campaign](results/2026-10-21-shared-path-performance.md) and [machine-readable evidence](results/2026-10-21-shared-path-performance.json) record rejected and unqualified experiments, the seven-pair native matrix, and remaining qualification limits. No product optimization was retained.
+Latest investigation: the [2026-10-21 shared-path campaign](results/2026-10-21-shared-path-performance.md) and [machine-readable evidence](results/2026-10-21-shared-path-performance.json) record rejected and unqualified experiments, the seven-pair native matrix, and remaining qualification limits. PR #12 now proposes the measured HTTP/1 receive-buffer optimization for review; its unresolved runtime observations remain documented.
 
 Previous investigation: [approved local Docker/k6 campaign](results/local-docker-k6.md),
 with all five sources measured on plain H1, TLS H1 and TLS H2 against Hyper and Axum.

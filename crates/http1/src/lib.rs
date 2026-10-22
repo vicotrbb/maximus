@@ -79,35 +79,56 @@ async fn serve_halves<R: ReadIo, W: WriteIo, H: Handler>(
 
 struct Reader<R> {
     io: R,
+    // Keep storage initialized between reads; range tracks unread bytes.
     bytes: Vec<u8>,
-    scratch: Vec<u8>,
+    range: std::ops::Range<usize>,
     capacity: usize,
     activity: Activity,
 }
 impl<R: ReadIo> Reader<R> {
+    fn buffered(&self) -> &[u8] {
+        &self.bytes[self.range.clone()]
+    }
+    fn take(&mut self, count: usize) -> Vec<u8> {
+        let bytes = self.buffered()[..count].to_vec();
+        self.range.start += count;
+        bytes
+    }
     async fn fill(&mut self) -> io::Result<bool> {
-        let mut scratch = std::mem::take(&mut self.scratch);
-        scratch.resize(self.capacity, 0);
-        let (result, scratch) = self.io.read(scratch).await;
-        self.scratch = scratch;
+        if self.range.start > 0 {
+            self.bytes.copy_within(self.range.clone(), 0);
+            self.range.end -= self.range.start;
+            self.range.start = 0;
+        }
+        if self.range.end == self.bytes.len() {
+            self.bytes
+                .resize(self.bytes.len().saturating_add(self.capacity), 0);
+        }
+        let available = self.bytes.len() - self.range.end;
+        let end = self.range.end + available.min(self.capacity);
+        let (result, bytes) = self
+            .io
+            .read(std::mem::take(&mut self.bytes), self.range.end..end)
+            .await;
+        self.bytes = bytes;
         let n = result?;
+        self.range.end += n;
         if n > 0 {
             self.activity.touch();
-            self.bytes.extend_from_slice(&self.scratch[..n]);
         }
         Ok(n > 0)
     }
     async fn line(&mut self, max: usize) -> Result<Vec<u8>, Error> {
         loop {
-            if let Some(end) = self.bytes.windows(2).position(|s| s == b"\r\n") {
+            if let Some(end) = self.buffered().windows(2).position(|s| s == b"\r\n") {
                 if end + 2 > max {
                     return Err(Error::bad_request("line limit exceeded"));
                 }
-                let mut line: Vec<_> = self.bytes.drain(..end + 2).collect();
-                line.truncate(end);
+                let line = self.take(end);
+                self.range.start += 2;
                 return Ok(line);
             }
-            if self.bytes.len() >= max {
+            if self.buffered().len() >= max {
                 return Err(Error::bad_request("line limit exceeded"));
             }
             if !self
@@ -122,7 +143,7 @@ impl<R: ReadIo> Reader<R> {
     async fn head(&mut self, max: usize) -> Result<Option<Vec<u8>>, Error> {
         let mut scanned = 0;
         loop {
-            if let Some(end) = self.bytes[scanned..]
+            if let Some(end) = self.buffered()[scanned..]
                 .windows(4)
                 .position(|s| s == b"\r\n\r\n")
             {
@@ -133,21 +154,21 @@ impl<R: ReadIo> Reader<R> {
                         "header limit exceeded",
                     ));
                 }
-                return Ok(Some(self.bytes.drain(..end).collect()));
+                return Ok(Some(self.take(end)));
             }
-            if self.bytes.len() >= max {
+            if self.buffered().len() >= max {
                 return Err(Error::new(
                     StatusCode::REQUEST_HEADER_FIELDS_TOO_LARGE,
                     "header limit exceeded",
                 ));
             }
-            scanned = self.bytes.len().saturating_sub(3);
+            scanned = self.buffered().len().saturating_sub(3);
             if !self
                 .fill()
                 .await
                 .map_err(|_| Error::bad_request("request read failed"))?
             {
-                return if self.bytes.is_empty() {
+                return if self.buffered().is_empty() {
                     Ok(None)
                 } else {
                     Err(Error::bad_request("truncated headers"))
@@ -156,7 +177,7 @@ impl<R: ReadIo> Reader<R> {
         }
     }
     async fn data(&mut self, remaining: usize) -> Result<Bytes, Error> {
-        if self.bytes.is_empty()
+        if self.buffered().is_empty()
             && !self
                 .fill()
                 .await
@@ -164,8 +185,8 @@ impl<R: ReadIo> Reader<R> {
         {
             return Err(Error::bad_request("truncated body"));
         }
-        let count = remaining.min(self.capacity).min(self.bytes.len());
-        Ok(self.bytes.drain(..count).collect::<Vec<_>>().into())
+        let count = remaining.min(self.capacity).min(self.buffered().len());
+        Ok(self.take(count).into())
     }
 }
 #[derive(Clone, Copy)]
@@ -493,7 +514,7 @@ async fn connection<R: ReadIo, W: WriteIo, H: Handler>(
     let reader = Rc::new(Mutex::new(Reader {
         io: read,
         bytes: Vec::new(),
-        scratch: Vec::new(),
+        range: 0..0,
         capacity: limits.io_buffer_bytes,
         activity: activity.clone(),
     }));
@@ -632,10 +653,12 @@ async fn connection<R: ReadIo, W: WriteIo, H: Handler>(
                 let reader = Rc::try_unwrap(reader)
                     .map_err(|_| io::Error::other("request reader retained during upgrade"))?
                     .into_inner();
+                let pending = reader.buffered().to_vec();
+                drop(reader.bytes);
                 callback(Upgraded {
                     read: reader.io.into_futures(limits.io_buffer_bytes),
                     write: write.into_futures(limits.io_buffer_bytes),
-                    pending: reader.bytes,
+                    pending,
                     offset: 0,
                     activity,
                 })
@@ -870,6 +893,129 @@ async fn send_output<W: WriteIo>(
 mod line_tests {
     use super::*;
 
+    async fn check_read_window<R: ReadIo>(mut io: R) {
+        let mut bytes = vec![b'p'; 1024];
+        let mut end = 8;
+        while end < 12 {
+            let (result, buffer) = io.read(bytes, end..16).await;
+            bytes = buffer;
+            let n = result.unwrap();
+            assert!(n > 0);
+            end += n;
+        }
+        assert_eq!(end, 12);
+        assert_eq!(bytes.len(), 1024);
+        assert_eq!(&bytes[..8], b"pppppppp");
+        assert_eq!(&bytes[8..12], b"body");
+        assert!(bytes[12..].iter().all(|&byte| byte == b'p'));
+    }
+
+    #[test]
+    fn read_windows_preserve_prefixes_and_initialized_storage() {
+        use compio::io::AsyncWriteExt;
+        compio::runtime::Runtime::new().unwrap().block_on(async {
+            let listener = compio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let address = listener.local_addr().unwrap();
+            let sender = compio::runtime::spawn(async move {
+                let mut stream = compio::net::TcpStream::connect(address).await.unwrap();
+                stream.write_all(b"body".to_vec()).await.0.unwrap();
+            });
+            let (stream, _) = listener.accept().await.unwrap();
+            check_read_window(Native(stream)).await;
+            sender.await.unwrap();
+            check_read_window(Futures(RecordingRead {
+                input: b"body",
+                address: Rc::new(std::cell::Cell::new(0)),
+            }))
+            .await;
+        });
+    }
+
+    struct RecordingRead {
+        input: &'static [u8],
+        address: Rc<std::cell::Cell<usize>>,
+    }
+
+    impl compio::io::AsyncRead for RecordingRead {
+        async fn read<B: compio::buf::IoBufMut>(
+            &mut self,
+            buffer: B,
+        ) -> compio::BufResult<usize, B> {
+            self.address.set(buffer.buf_ptr() as usize);
+            compio::io::AsyncRead::read(&mut self.input, buffer).await
+        }
+    }
+
+    impl futures_util::AsyncRead for RecordingRead {
+        fn poll_read(
+            mut self: std::pin::Pin<&mut Self>,
+            _: &mut std::task::Context<'_>,
+            buffer: &mut [u8],
+        ) -> std::task::Poll<io::Result<usize>> {
+            self.address.set(buffer.as_ptr() as usize);
+            let n = self.input.len().min(buffer.len());
+            buffer[..n].copy_from_slice(&self.input[..n]);
+            self.input = &self.input[n..];
+            std::task::Poll::Ready(Ok(n))
+        }
+    }
+
+    async fn check_direct_fill<R: ReadIo>(io: R, address: Rc<std::cell::Cell<usize>>) {
+        let mut reader = Reader {
+            io,
+            bytes: Vec::new(),
+            range: 0..0,
+            capacity: 1024,
+            activity: Activity::new(),
+        };
+        assert!(reader.fill().await.unwrap());
+        assert_eq!(
+            reader.bytes.as_ptr() as usize,
+            address.get(),
+            "read directly into parser storage"
+        );
+        assert_eq!(
+            reader.bytes.len(),
+            1024,
+            "short reads retain initialized storage"
+        );
+        assert_eq!(
+            reader.head(1024).await.unwrap().unwrap(),
+            b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n"
+        );
+        assert_eq!(reader.data(4).await.unwrap(), b"body".as_slice());
+        assert!(!reader.fill().await.unwrap());
+        assert!(
+            reader.head(1024).await.unwrap().is_none(),
+            "spare initialized bytes are not input"
+        );
+    }
+
+    #[test]
+    fn parsing_uses_the_transport_read_buffer_and_only_received_bytes() {
+        const WIRE: &[u8] = b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\nbody";
+        compio::runtime::Runtime::new().unwrap().block_on(async {
+            let address = Rc::new(std::cell::Cell::new(0));
+            check_direct_fill(
+                Native(RecordingRead {
+                    input: WIRE,
+                    address: address.clone(),
+                }),
+                address,
+            )
+            .await;
+            let address = Rc::new(std::cell::Cell::new(0));
+            check_direct_fill(
+                Futures(RecordingRead {
+                    input: WIRE,
+                    address: address.clone(),
+                }),
+                address,
+            )
+            .await;
+        });
+    }
+
     #[test]
     fn line_boundaries_preserve_limits_and_following_bytes() {
         compio::runtime::Runtime::new().unwrap().block_on(async {
@@ -884,8 +1030,8 @@ mod line_tests {
                 ] {
                     let mut reader = Reader {
                         io: Futures(futures_util::io::Cursor::new(wire.to_vec())),
-                        bytes: vec![],
-                        scratch: vec![],
+                        bytes: Vec::new(),
+                        range: 0..0,
                         capacity,
                         activity: Activity::new(),
                     };
