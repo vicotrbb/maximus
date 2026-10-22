@@ -264,3 +264,18 @@ requests. Client CPU uses the same wall interval. RSS fields describe two
 post-client process observations; `peak_rss_kib` is their maximum, not a
 continuous peak or live requested heap. Preserve these scopes and keep native
 and container results in separate cohorts.
+
+`idle-native.py` separately checks retention after a 128 KiB HTTP/1 upload,
+a following small request, and an idle hold. It verifies every held connection
+again, on the same socket, so early closure cannot masquerade as a memory win.
+It alternates baseline/candidate order and preserves bare Hyper/Axum rows:
+
+```sh
+python3 benches/idle-native.py --baseline artifacts/native-bin/baseline/maximus-comparison \
+  --candidate artifacts/native-bin/candidate/maximus-comparison \
+  --out artifacts/native-idle --connections 256 --repeats 3
+```
+
+The three held RSS snapshots are process observations, not requested-heap
+measurements or an admission-capacity comparison. Run this probe outside timed
+socket trials. Its file-descriptor adjustment applies only to the probe process.
