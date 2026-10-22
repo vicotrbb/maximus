@@ -13,6 +13,7 @@ const scenario = __ENV.RATE ? {
 } : { executor: 'constant-vus', vus: Number(__ENV.VUS || 64), duration: __ENV.DURATION || '30s' };
 export const options = {
   scenarios: { measured: scenario },
+  noConnectionReuse: __ENV.CHURN === '1',
   tlsVersion: { min: 'tls1.3', max: 'tls1.3' },
   summaryTrendStats: ['avg', 'med', 'p(99)', 'p(99.9)', 'max'],
   thresholds: { http_req_failed: ['rate<0.001'], checks: ['rate==1'], ...(__ENV.RATE ? { dropped_iterations: ['count==0'] } : {}) },

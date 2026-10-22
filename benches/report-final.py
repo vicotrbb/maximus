@@ -3,10 +3,35 @@
 
 import argparse
 import json
+import math
 import pathlib
 import statistics
 
 from workloads import DEFAULT_CASES, SOCKET_CASES, response_keys
+
+METRICS = (
+    "rps", "p50_ms", "p99_ms", "p999_ms", "cpu_us_per_request",
+    "rss_kib", "peak_rss_kib", "client_cpu_percent", "server_cpu_percent",
+)
+
+
+def valid_row(row):
+    """Recheck raw results rather than trusting the driver's pass flag."""
+    try:
+        for metric in ("failures", "checks_failed", "network_errors", "dropped", "exit"):
+            if float(row[metric]) != 0:
+                return False
+        values = {metric: float(row[metric]) for metric in ("requests", *METRICS)}
+        if not all(math.isfinite(value) and value >= 0 for value in values.values()):
+            return False
+        count = values["requests"]
+        if count <= 0 or not count.is_integer() or values["rps"] <= 0:
+            return False
+        if row["generator"] == "k6":
+            return all(float(row[key]) == count for key in ("iterations_started", "iterations_completed"))
+        return row["generator"] == "wrk"
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return False
 
 
 def main():
@@ -43,6 +68,7 @@ def main():
         if trial.get("passed") is not True
         or trial["exit"] != 0
         or not any(row["engine"] == "maximus" for row in trial["rows"])
+        or any(not valid_row(row) for row in trial["rows"])
     ]
     diagnostics = {
         "missing": sorted(expected - set(observed)),
@@ -53,8 +79,15 @@ def main():
     response_errors = []
     for trial in trials:
         try:
-            command = trial["command"]
-            engines = command[command.index("--engines") + 1].split(",")
+            if "engines" in trial:
+                engines = trial["engines"]
+            else:
+                command = trial["command"]
+                engines = command[command.index("--engines") + 1].split(",")
+            if (not isinstance(engines, list) or not engines
+                    or any(not isinstance(engine, str) or not engine for engine in engines)
+                    or len(engines) != len(set(engines))):
+                raise ValueError("invalid engine contract")
             required = response_keys(trial["case"], engines)
         except (KeyError, ValueError, IndexError):
             response_errors.append(
@@ -111,29 +144,18 @@ def main():
         raise SystemExit(
             "campaign is incomplete or failed; raw trials and diagnostics preserved, qualification statistics withheld"
         )
-    metrics = [
-        "rps",
-        "p50_ms",
-        "p99_ms",
-        "p999_ms",
-        "cpu_us_per_request",
-        "rss_kib",
-        "peak_rss_kib",
-        "client_cpu_percent",
-        "server_cpu_percent",
-    ]
     for key, variants in grouped.items():
         result["summary"][key] = {
             v: {
                 metric: statistics.median(float(row[metric]) for row in rows)
-                for metric in metrics
+                for metric in METRICS
             }
             for v, rows in variants.items()
         }
     for key, repeats in pairs.items():
         valid = [r for r in repeats.values() if set(r) == {"baseline", "candidate"}]
         comparison = {}
-        for metric in metrics:
+        for metric in METRICS:
             changes = [
                 100 * (float(r["candidate"][metric]) / float(r["baseline"][metric]) - 1)
                 for r in valid

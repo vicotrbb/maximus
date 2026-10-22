@@ -2,11 +2,13 @@
 
 The comparison servers are an isolated Cargo workspace. Product builds do not resolve Axum, Actix or their benchmark dependencies. All Rust servers use thin LTO and one codegen unit. Commit both lockfiles when changing dependencies.
 
-Latest investigation: [SSE and gzip measurements, 2026-10-21](results/2026-10-21-performance.md).
+Earlier investigation: [SSE and gzip measurements, 2026-10-21](results/2026-10-21-performance.md).
 It records retained component improvements, all 150 response-checked socket
 rows, identical-binary controls, native size distinctions, standards research,
 and rejected Body, H1, and HPACK experiments. Whole-server throughput gains
 are not established. Unstripped SSE artifact growth remains disclosed.
+
+Latest investigation: the [2026-10-21 shared-path campaign](results/2026-10-21-shared-path-performance.md) and [machine-readable evidence](results/2026-10-21-shared-path-performance.json) record rejected and unqualified experiments, the seven-pair native matrix, and remaining qualification limits. PR #12 now proposes the measured HTTP/1 receive-buffer optimization for review; its unresolved runtime observations remain documented.
 
 Previous investigation: [approved local Docker/k6 campaign](results/local-docker-k6.md),
 with all five sources measured on plain H1, TLS H1 and TLS H2 against Hyper and Axum.
@@ -224,3 +226,58 @@ To resume, repeat the identical command with `--resume`. It checks the retained 
 The Kubernetes runner calculates each CPU percentage from that container's cgroup CPU delta divided by its own `server_sample_seconds` or `client_sample_seconds`, with one CPU equal to 100%. These intervals come from `/proc/uptime` readings adjacent to `cpu.stat`; missing, nonfinite or nonpositive intervals fail validation. For example, 36 CPU-seconds over a 15-second sampling interval is 240%, even when the client workload reports ten seconds. The intervals include control and profiling overhead around the workload. `measurement_wall_seconds` remains the controller's elapsed time from after the initial snapshots through the final snapshots; `cpu_us_per_request` remains the broader server cgroup CPU delta divided by completed requests.
 
 Historical and in-flight qualification CSVs are preserved as recorded. Their older harness divided the broader cgroup CPU delta by the client's shorter reported workload duration. Those historical CPU percentages are duration-normalized accounting ratios and cannot by themselves establish average cores used or quota saturation. Do not combine them with the new interval-based percentages as if they measured the same quantity.
+
+## Native comparison fallback
+
+`build-native.py` builds frozen exports at one canonical source path and
+invalidates every local release package before each build. Use distinct output
+directories; existing outputs are never overwritten. Keep builds and correctness
+checks outside timed socket trials.
+
+```sh
+python3 benches/build-native.py --source /path/to/frozen-source \
+  --out artifacts/native-bin/baseline --target /path/to/native-cargo-target
+python3 benches/run-native.py --baseline artifacts/native-bin/baseline \
+  --candidate artifacts/native-bin/candidate --k6 /path/to/pinned/native/k6 \
+  --out artifacts/native-campaign --cases 0,4 --repeats 7 --duration 10s
+python3 benches/report-final.py --campaign artifacts/native-campaign/campaign.json \
+  --output artifacts/native-report.json --expected-cases 0,4 --expected-repeats 7
+```
+
+On macOS, `--backend poll` uses Maximus's documented native poller through the
+comparison fixture's `epoll` argument. This does not measure Linux epoll or
+io_uring. Hyper and Axum retain their existing Tokio fixtures. All native cases
+use the same checked k6 workload, including cases that use wrk on Linux. Each
+trial starts a fresh server, validates warmup and measured completions, and
+reaps its server even after client failure. Run baseline-versus-itself controls
+first. A report with `qualified_input: true` validates the supplied trial
+contract; it does not itself establish a performance improvement.
+
+TLS uses a temporary loopback certificate and per-process `SSL_CERT_FILE` with
+verification enabled. Darwin k6 must be built with Go 1.27 or later; older Go
+versions ignore this environment variable on that platform. The controller
+sets `x509sslcertoverrideplatform=1`, uses an empty k6 configuration file, and
+disables usage reporting. It records executable/workload hashes and host
+metadata. There is no CPU affinity or OS quota on this native fallback.
+
+Native CPU/request covers the server's complete lifetime, including startup,
+warmup, measurement, and cleanup, divided by validated warmup plus measured
+requests. Client CPU uses the same wall interval. RSS fields describe two
+post-client process observations; `peak_rss_kib` is their maximum, not a
+continuous peak or live requested heap. Preserve these scopes and keep native
+and container results in separate cohorts.
+
+`idle-native.py` separately checks retention after a 128 KiB HTTP/1 upload,
+a following small request, and an idle hold. It verifies every held connection
+again, on the same socket, so early closure cannot masquerade as a memory win.
+It alternates baseline/candidate order and preserves bare Hyper/Axum rows:
+
+```sh
+python3 benches/idle-native.py --baseline artifacts/native-bin/baseline/maximus-comparison \
+  --candidate artifacts/native-bin/candidate/maximus-comparison \
+  --out artifacts/native-idle --connections 256 --repeats 3
+```
+
+The three held RSS snapshots are process observations, not requested-heap
+measurements or an admission-capacity comparison. Run this probe outside timed
+socket trials. Its file-descriptor adjustment applies only to the probe process.

@@ -8,6 +8,11 @@ SOCKET_CASES = (
     ("h2", "/sse", 1024, "k6", "maximus-comparison"),
     ("h2", "/echo", 131072, "k6", "maximus-comparison"),
     ("plain", "/compress", 1024, "k6", "gzip-server"),
+    ("plain", "/echo", 1024, "k6", "maximus-comparison"),
+    ("plain", "/echo", 131072, "k6", "maximus-comparison"),
+    ("h1", "/plaintext,/users/42,/error,/echo", 1024, "k6", "maximus-comparison"),
+    ("h2", "/plaintext,/users/42,/error,/echo", 1024, "k6", "maximus-comparison"),
+    ("h1", "/echo", 131072, "k6", "maximus-comparison"),
 )
 
 DEFAULT_CASES = ",".join(str(case) for case in range(len(SOCKET_CASES)))

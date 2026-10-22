@@ -6,12 +6,17 @@ fn layer() -> CompressionLayer {
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let engine = std::env::args().nth(1).unwrap_or("maximus".into());
-    let address = "0.0.0.0:8080".parse()?;
+    let address = std::env::var("ADDRESS")
+        .unwrap_or_else(|_| "0.0.0.0:8080".into())
+        .parse()?;
+    let workers: usize = std::env::var("WORKERS")
+        .unwrap_or_else(|_| "1".into())
+        .parse()?;
     match engine.as_str() {
         "maximus" => {
             let server = maximus::Server::new(address)
                 .workers(maximus::WorkerConfig {
-                    workers: 1,
+                    workers,
                     ..Default::default()
                 })
                 .start(|| {
@@ -23,7 +28,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         "hyper" | "axum" => {
             tokio::runtime::Builder::new_multi_thread()
-                .worker_threads(1)
+                .worker_threads(workers)
                 .enable_all()
                 .build()?
                 .block_on(async {
