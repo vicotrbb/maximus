@@ -31,8 +31,10 @@ def digest(path):
 
 def run_trial(options, binary, engine, protocol, path, size, prefix, cert):
     prefix.parent.mkdir(parents=True, exist_ok=True)
+    config = prefix.with_suffix('.config.json')
+    config.write_text('{}\n')
     with socket.socket() as reservation:
-        reservation.bind(('127.0.0.1', 8080 if binary.name == 'gzip-server' else 0))
+        reservation.bind(('127.0.0.1', 0))
         port = reservation.getsockname()[1]
     address = f'127.0.0.1:{port}'
     env = {key: value for key, value in os.environ.items() if not key.startswith('K6_')}
@@ -64,6 +66,7 @@ def run_trial(options, binary, engine, protocol, path, size, prefix, cert):
                 if result.exists():
                     raise ValueError(f'refusing to overwrite {result}')
                 client_env = dict(env, K6_NO_USAGE_REPORT='true', GOMAXPROCS='4',
+                                  GODEBUG='x509sslcertoverrideplatform=1',
                                   URL=('http://' if protocol == 'plain' else 'https://') + address,
                                   PATHNAME=path, BODY_BYTES=str(size), VUS=str(options.vus),
                                   DURATION=duration, RESULT=str(result.resolve()))
@@ -73,7 +76,7 @@ def run_trial(options, binary, engine, protocol, path, size, prefix, cert):
                     client_env.pop('RATE', None)
                 before = cpu()
                 with result.with_suffix('.log').open('w') as client_log:
-                    completed = subprocess.run([str(options.k6.resolve()), 'run', '--quiet', '--no-color',
+                    completed = subprocess.run([str(options.k6.resolve()), 'run', '--quiet', '--no-color', '--config', str(config.resolve()),
                                                 str(ROOT / 'benches/load.js')], env=client_env,
                                                stdout=client_log, stderr=subprocess.STDOUT,
                                                timeout=180)
@@ -141,6 +144,7 @@ def main():
     args.out.mkdir(parents=True, exist_ok=False)
     metadata = dict(options={key: str(value) if isinstance(value, pathlib.Path) else value for key, value in vars(args).items()},
                     platform=platform.platform(), machine=platform.machine(), cpu_affinity='uncontrolled',
+                    client_gomaxprocs=4, tls_verification=True, controller_sha256=digest(pathlib.Path(__file__).resolve()),
                     workload_sha256=digest(ROOT / 'benches/load.js'), k6_sha256=digest(args.k6),
                     binaries={variant: {name: digest(directory / name) for name in {SOCKET_CASES[case][4] for case in cases}}
                               for variant, directory in (('baseline', args.baseline), ('candidate', args.candidate))})
