@@ -2,11 +2,13 @@
 
 The comparison servers are an isolated Cargo workspace. Product builds do not resolve Axum, Actix or their benchmark dependencies. All Rust servers use thin LTO and one codegen unit. Commit both lockfiles when changing dependencies.
 
-Latest investigation: [SSE and gzip measurements, 2026-10-21](results/2026-10-21-performance.md).
+Earlier investigation: [SSE and gzip measurements, 2026-10-21](results/2026-10-21-performance.md).
 It records retained component improvements, all 150 response-checked socket
 rows, identical-binary controls, native size distinctions, standards research,
 and rejected Body, H1, and HPACK experiments. Whole-server throughput gains
 are not established. Unstripped SSE artifact growth remains disclosed.
+
+Latest investigation: the [2026-10-21 shared-path campaign](results/2026-10-21-shared-path-performance.md) and [machine-readable evidence](results/2026-10-21-shared-path-performance.json) record rejected and unqualified experiments, the seven-pair native matrix, and remaining qualification limits. No product optimization was retained.
 
 Previous investigation: [approved local Docker/k6 campaign](results/local-docker-k6.md),
 with all five sources measured on plain H1, TLS H1 and TLS H2 against Hyper and Axum.

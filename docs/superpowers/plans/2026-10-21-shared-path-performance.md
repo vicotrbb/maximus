@@ -127,3 +127,22 @@ Execution method is already selected: sequential implementation in this chat.
 Review this plan before implementation. Routine implementation decisions and
 rejections are recorded in the execution ledger and do not require repeated
 permission. An explicit tradeoff outside the acceptance rules still needs review.
+
+## Execution outcome, 2026-10-21
+
+This campaign is closed with no product optimization retained. The checklist
+above is the original planned gate list, not an assertion that every gate
+passed. The final [report](../../../benches/results/2026-10-21-shared-path-performance.md)
+and machine evidence record actual outcomes and skipped/failed gates.
+
+| Task | Outcome |
+| --- | --- |
+| 1 | Tooling retained and tested. Linux unchanged-binary performance control failed; native controls remain a separate cohort. |
+| 2 | H2 envelope storage implemented, tested, frozen and compared; runtime unqualified, restored. |
+| 3 | Bounded batching implemented, tested, frozen and compared; mixed results, restored. |
+| 4 | Bounded scheduling scratch implemented, tested at 1/16/256 streams and compared; cost unjustified, restored. No deadline change qualified. |
+| 5 | Policy representations implemented and tested; all rejected on independently sufficient application-size growth before dedicated socket cohorts. This gate was skipped, not passed. |
+| 6 | Seven-pair H1 matrix and retention completed. Fixed-load and unbounded churn failed; separately labeled bounded churn and four-worker probes passed diagnostically. H1 runtime remains unqualified. Product restored, review fixes and final host/Linux/tooling checks passed. |
+
+The final branch retains reproducible diagnostics and focused body-ownership
+regression coverage. It establishes no overall throughput gain or leadership.
